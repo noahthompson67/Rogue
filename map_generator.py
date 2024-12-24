@@ -35,9 +35,10 @@ class MapGenerator:
         while hotspring_location in zone_ends or self.grid[hotspring_location[0]][hotspring_location[1]] == 0:
             hotspring_location = random.randrange(0, len(self.grid)), random.randrange(0, len(self.grid[0]))
         self.zone[hotspring_location[0]][hotspring_location[1]].add_entity(HotSpring(self.player, self.zone[hotspring_location[0]][hotspring_location[1]]))
-        boss_map_idx = zone_ends[random.randrange(0, len(zone_ends))]
-        bx = boss_map_idx[0]
-        by = boss_map_idx[1]
+        self.boss_map_idx = zone_ends[random.randrange(0, len(zone_ends))]
+        print(self.boss_map_idx)
+        bx = self.boss_map_idx[0]
+        by = self.boss_map_idx[1]
         self.biome.generate_boss_map(self.zone[bx][by])
         if bx > 0 and self.grid[bx-1][by] == 1:
             self.biome.generate_boss_entrance(self.zone[bx-1][by], 's')
@@ -49,7 +50,7 @@ class MapGenerator:
             self.biome.generate_boss_entrance(self.zone[bx][by+1], 'w')
         self.zone[8][1].entities = []
 
-        zone_ends.remove(boss_map_idx)
+        zone_ends.remove(self.boss_map_idx)
         treasure_idx = zone_ends[random.randrange(0, len(zone_ends))]
         self.biome.generate_challenge_room(self.zone[treasure_idx[0]][treasure_idx[1]])
 
@@ -129,6 +130,7 @@ class MapGenerator:
         pygame.draw.rect(screen, BLACK, self.minimap_outer_rect_border)
         pygame.draw.rect(screen, WHITE, self.minimap_inner_rect_border)
         for map in self.minimap:
+            print(map[1])
             if map[1] == self.current_map.location:
                 pygame.draw.rect(screen, c.MAP_POSITION, map[0])
                 if map[1] not in self.visited:
@@ -146,7 +148,10 @@ class MapGenerator:
             elif map[1] in self.visited:
                 pygame.draw.rect(screen, c.MAP_DISCOVERED, map[0])
             elif map[1] in self.visited_adjacent:
-                pygame.draw.rect(screen, c.MAP_ADJACENT, map[0])
+                if map[1] == self.boss_map_idx:
+                    pygame.draw.rect(screen, c.MAP_BOSS, map[0])
+                else:
+                    pygame.draw.rect(screen, c.MAP_ADJACENT, map[0])
 
     def set_full_minimap(self):
         for map in self.minimap:
