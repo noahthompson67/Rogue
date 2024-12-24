@@ -399,5 +399,5 @@ class MainTask:
 
 
 task = MainTask()
-cProfile.run("task.run()", "profile_results.prof")
+cProfile.run("task.run()", "assets/profile_results.prof")
 

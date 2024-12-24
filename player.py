@@ -25,23 +25,11 @@ class Player:
         self.radius = 1
         self.x_pos = ss.SCREEN_WIDTH / 2
         self.y_pos = ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2
-        self.sprites = [
-            pygame.image.load("player_left_idle.png"),
-            pygame.image.load("player_right_idle.png"),
-            pygame.image.load("player_up_idle.png"),
-            pygame.image.load("player_down_idle.png"),
-            pygame.image.load("player_down_left_step.png"),
-            pygame.image.load("player_down_right_step.png"),
-        ]
+
 
         self.rect = Rect(0, 0, config.PLAYER_SIZE, config.PLAYER_SIZE)
         self.rect.center = self.x_pos, self.y_pos
-        for i in range(len(self.sprites)):
-            self.sprites[i] = pygame.transform.scale(
-                self.sprites[i], (self.rect.width, self.rect.height)
-            )
-        self.sprite = self.sprites[LEFT_IDLE]
-        self.active_sprite = LEFT_IDLE
+
         self.sword_hitbox = Rect(
             self.y_pos, self.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
         )
@@ -126,23 +114,16 @@ class Player:
             self.sword_active = False
             if not self.shield_active:
                 self.last_direction = "W"
-                self.change_sprite(LEFT_IDLE)
         if keys[self.controls[3]] and 'E' not in self.blocked_directions:  # Move right
             self.x_pos += self.speed * self.speed_modifier
             self.sword_active = False
             if not self.shield_active:
                 self.last_direction = "E"
-                self.change_sprite(RIGHT_IDLE)
         if keys[pygame.K_q]:
             self.switch_weapon(False)
         if keys[pygame.K_e]:
             self.switch_weapon(True)
-        else:
-            if self.frame_count % 10 == 0:
-                if self.last_direction == "W":
-                    self.change_sprite(RIGHT_IDLE)
-                elif self.last_direction == "E":
-                    self.change_sprite(LEFT_IDLE)
+
 
         self.rect.center = self.x_pos, self.y_pos
 
@@ -191,7 +172,6 @@ class Player:
     def draw(self, screen):
         self.handle_color()
         if self.visible:
-            screen.blit(self.sprite, self.rect)
             if self.sword_active:
                 if pygame.time.get_ticks() - self.sword_time > SWORD_TIMEOUT:
                     self.sword_active = False
@@ -249,9 +229,6 @@ class Player:
             self.health_max += 1
             self.health += 1
 
-    def change_sprite(self, num):
-        self.active_sprite = num
-        self.sprite = self.sprites[num]
 
 
 

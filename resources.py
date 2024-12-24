@@ -18,5 +18,7 @@ bat_2 = pygame.image.load("assets/bat-2.png")
 mushroom = pygame.image.load("assets/cave-mushrooms.png")
 grass = pygame.image.load("assets/grass.png")
 medkit = pygame.image.load("assets/medkit.png")
+gargoyle = pygame.image.load("assets/gargoyle.png")
+projectile = pygame.image.load("assets/projectile.png")
 
 

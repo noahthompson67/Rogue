@@ -65,9 +65,8 @@ class Shooter(Entity, Enemy):
         self.action_rect.center = self.x_pos, self.y_pos
         self.color = c.SHOOTER_COLOR
         self.state = 'undead'
-        self.sprite = pygame.image.load("gargoyle.png")
-        self.sprite = pygame.transform.scale(
-            self.sprite, (self.rect.width, self.rect.height)
+        self.image = pygame.transform.scale(
+            resources.gargoyle, (self.rect.width, self.rect.height)
         )
         self.shot = False
 
@@ -82,10 +81,6 @@ class Shooter(Entity, Enemy):
             to_add.reflectable = True
             self.map.add_entity(to_add)
             self.last_shot_time = pygame.time.get_ticks()
-
-    def draw(self, screen):
-        screen.blit(self.sprite, self.rect)
-
 
 class Projectile(Entity, Enemy):
     def __init__(self, player, map, x_pos, y_pos):
@@ -102,9 +97,8 @@ class Projectile(Entity, Enemy):
         self.reflectable = False
         self.reflected = False
         distance = math.sqrt(self.direction_x**2 + self.direction_y**2)
-        self.sprite = pygame.image.load("projectile.png")
-        self.sprite = pygame.transform.scale(
-            self.sprite, (self.rect.width, self.rect.height)
+        self.image = pygame.transform.scale(
+            resources.projectile, (self.rect.width, self.rect.height)
         )
         # Normalize the direction vector
         if distance != 0:
@@ -187,8 +181,6 @@ class Projectile(Entity, Enemy):
                     self.direction_x /= distance
                     self.direction_y /= distance
 
-    def draw(self, screen):
-        screen.blit(self.sprite, self.rect)
 
 
 class Ghost(Entity, Enemy):
