@@ -1,0 +1,112 @@
+Map
+    - Dynamic map generation based on a seed input
+    - buildings/villages
+    - terrains
+        - deep water: impassable without some ability
+        - lava: impassable, deals fire damage
+
+ NPCs
+    - signs/NPCs with dialog
+    - shopkeeper
+    - buildings/villages
+
+ Pause menu
+    - Options
+    - Pause everything
+
+ Console commands
+    -spawn items
+
+Player enhancements
+    - player stats
+    - stats based on level
+    - upgrade choices on level up
+    - dialog boxes
+    - Statuses
+        - slow (slow speed)
+        - sleep (no movement)
+
+====================== MECHANICS ======================
+
+Items
+    - Ammo for player projectiles
+    - Keys
+    - Stat boosts
+
+
+
+
+doors/keys
+    - Warps locked until key is acquired
+
+interactions between entities
+    -NPCs hide from enemies
+    -NPCs/enemies affected by environment objects
+    -NPCs/enemies no longer overlap
+
+secret maps
+    - not marked by warp until discovered
+
+biomes
+    -single class that all biomes inherit from
+    - mob generation per biome
+    - modify drops per biome
+    - light levels per biome
+    - forest
+        - tree objects impassable
+        - ponds
+        - day/night cycle
+        - goblins, spiders
+        - boss: elder tree
+    - graveyard
+        - headstone object impassable
+        - zombies, ghosts
+        - always dark
+        - boss: death
+    - cave
+        - rock objects impassable
+        - rock monsters, bats, shooters
+        - always dark
+        - boss: golem
+        - periodically spawns bats
+        - pickaxe item that allows to break rocks
+
+====================== MOBS ======================
+goblin
+    - fast mob that steals money
+
+spider
+    -lays hard-to-see trap
+    -quickly rushes after trap is triggered
+    -trap gives temporary slow effect
+
+
+
+====================== BOSSES ======================
+
+Dark Wizard
+    -freeze spell: slow/paralyze player
+    -fireball : projectiles
+    - hex: jumble controls
+    - summon minions
+
+Death
+    - spawns zombies
+    - fast slice lunge attach
+    - throws scythe projectile
+    - poison aura:
+        - circular burst of poison gas that poisons player
+
+Elder Tree
+    - spawns root spikes that come out of the ground
+    - sap projectile: causes slow
+    - leaf projectiles
+        - patterned projectiles
+
+ Fixes
+    - make speed modifiers smarter (and probably processed by player, not entity)
+    - Statis HUD above normal screen
+
+ Day/night cycle
+    - different mobs/items available at different times
+
