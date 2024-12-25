@@ -299,5 +299,39 @@ class MobGenerator(Entity, Enemy):
         pass
 
 
+class Rock(Entity, Enemy):
+    def __init__(self, player, map):
+        super().__init__(player, map)
+        self.generate_nearby_location()
+        self.action_rect = Rect(
+            self.x_pos, self.y_pos, ZOMBIE_SIZE * 5, ZOMBIE_SIZE * 5
+        )
+        self.health = 100
+        self.rect = Rect(0, 0, 50, 50)
+        self.image = pygame.transform.scale(resources.rock, (self.rect.width, self.rect.height))
+        self.default_color = c.ZOMBIE_RED
+        self.color = self.default_color
+        self.speed = 0.75
+
+    def update(self):
+        if self.health <= 0:
+            if self.state == "alive":
+                self.end()
+            return
+        self.move_towards_player()
+
+        self.check_damage_timeout()
+
+    def collide(self):
+        if self.state != "dead":
+            self.check_contact_damage(1)
+            if self.action_rect.colliderect(self.player.rect):
+                self.speed = min(1.5, self.speed + 0.05)
+            else:
+                self.speed = max(ZOMBIE_SPEED, self.speed - 0.05)
+            if self.player.sword_active and self.rect.colliderect(
+                self.player.sword_hitbox
+            ):
+                self.player.weapon.collide(self)
 
 

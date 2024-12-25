@@ -29,7 +29,7 @@ class CaveBiome(Biome):
                 rock.block_rect.center = rock.rect.center
                 rock.drops = []
                 map.add_entity(rock)
-        map.add_entity(MobGenerator(self.player, map, Bat, 10000))
+        #map.add_entity(MobGenerator(self.player, map, Bat, 10000))
 
     def generate_map(self, map):
         n = map.north_map is not None

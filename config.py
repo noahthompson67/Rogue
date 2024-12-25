@@ -1,7 +1,8 @@
+import enemies
 from enemies import Zombie, Shooter, Ghost, Bat
 from environment_objects import Hole, Fire, Water, Grass, Rock, MushroomPatch, HotSpring
 from boss import Telekinetic, Golem
-from npc import NPC, Medic, Merchant
+from npc import NPC, Medic, Merchant, DemonMerchant
 from items import Coin, HealthPickup, EnergyPickup, TreasureChest, Key
 import config_files.screen_size as ss
 
@@ -44,7 +45,9 @@ mob_registry = {
     "hotspring": HotSpring,
     "key": Key,
     "medic": Medic,
-    "merchant": Merchant
+    "merchant": Merchant,
+    "badrock": enemies.Rock,
+    "demonmerchant": DemonMerchant
 }
 
 

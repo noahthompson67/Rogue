@@ -21,7 +21,6 @@ Player enhancements
     - player stats
     - stats based on level
     - upgrade choices on level up
-    - dialog boxes
     - Statuses
         - slow (slow speed)
         - sleep (no movement)
@@ -30,7 +29,6 @@ Player enhancements
 
 Items
     - Ammo for player projectiles
-    - Keys
     - Stat boosts
 
 
