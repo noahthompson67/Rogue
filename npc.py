@@ -153,7 +153,7 @@ class NPC(Entity):
                 elif not self.prompt and self.prompt_text is not None:
                     self.prompt = True
                 elif self.prompt:
-                    self.handle_prompt(self.prompt_options[self.prompt_cursor_index], screen)
+                    self.handle_prompt(self.prompt_options[self.prompt_cursor_index])
                 else:
                     self.active = False
                     self.message_text = self.default_message_text
@@ -183,7 +183,7 @@ class Medic(NPC):
         self.inactive_text = "All patched up. That's all I can do."
         self.generate_prompt_option_rects()
 
-    def handle_prompt(self, response, screen):
+    def handle_prompt(self, response):
         if response == 'no':
             self.prompt = False
             self.message_text.append('Suit yourself, hombre.')
@@ -205,7 +205,7 @@ class Merchant(NPC):
         self.inactive_text = "Pleasure doing business with you"
         self.prompt_cursor.center = self.prompt_options_rects[0].center
 
-    def handle_prompt(self, response, screen):
+    def handle_prompt(self, response):
         if response == 'no':
             self.prompt = False
             self.message_text.append('Suit yourself, hombre.')
