@@ -149,9 +149,6 @@ class MainTask:
                     enemy.draw(self.screen)
                 self.player.draw(self.screen)
                 if self.player.console_state:
-                   # pygame.draw.rect(self.screen, BLACK, self.console_rect)
-                    #self.screen.blit(self.text_background, self.console_rect)
-                    # pygame.draw.rect(self.screen, WHITE, self.console_rect_inner)
                     self.screen.blit(self.console_right_end_image, self.console_right_end)
                     self.screen.blit(self.console_left_end_image, self.console_left_end)
                     self.screen.blit(self.console_mid_image, self.console_mid)
@@ -168,9 +165,8 @@ class MainTask:
             else:
                 self.enemies = self.map.get_entities()
                 self.player_rect = self.player.rect
-                if self.player.interacting:
-                    for entity in self.enemies:
-                        entity.interact(self.screen)
+                for entity in self.enemies:
+                    entity.interact(self.screen)
                 for enemy in self.enemies:
                     enemy.update()
                     enemy.collide()

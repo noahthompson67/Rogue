@@ -126,7 +126,6 @@ class Player:
 
 
         self.rect.center = self.x_pos, self.y_pos
-
         if keys[pygame.K_UP]:
             self.sword_active = True
             self.sword_time = pygame.time.get_ticks()

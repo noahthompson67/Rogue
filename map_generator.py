@@ -36,7 +36,6 @@ class MapGenerator:
             hotspring_location = random.randrange(0, len(self.grid)), random.randrange(0, len(self.grid[0]))
         self.zone[hotspring_location[0]][hotspring_location[1]].add_entity(HotSpring(self.player, self.zone[hotspring_location[0]][hotspring_location[1]]))
         self.boss_map_idx = zone_ends[random.randrange(0, len(zone_ends))]
-        print(self.boss_map_idx)
         bx = self.boss_map_idx[0]
         by = self.boss_map_idx[1]
         self.biome.generate_boss_map(self.zone[bx][by])
@@ -130,7 +129,6 @@ class MapGenerator:
         pygame.draw.rect(screen, BLACK, self.minimap_outer_rect_border)
         pygame.draw.rect(screen, WHITE, self.minimap_inner_rect_border)
         for map in self.minimap:
-            print(map[1])
             if map[1] == self.current_map.location:
                 pygame.draw.rect(screen, c.MAP_POSITION, map[0])
                 if map[1] not in self.visited:
