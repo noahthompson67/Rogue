@@ -261,7 +261,7 @@ class Golem(Boss):
 
     def end(self):
         self.state = "dead"
-        to_add = Coin(self.player, self.map, self.x_pos, self.y_pos, value=10)
+        to_add = Coin(self.player, self.map, (self.x_pos, self.y_pos), 10)
         self.map.add_entity(to_add)
 
         self.player.update_xp(self.xp)
