@@ -40,3 +40,4 @@ class CursedBlade(Weapon):
 
     def collide(self, entity):
         super().collide(entity)
+        self.player.health = min(self.player.health, 1)
