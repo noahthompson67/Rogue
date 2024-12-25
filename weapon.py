@@ -1,3 +1,4 @@
+import enemies
 import environment_objects
 import colors as c
 class Weapon():
@@ -21,6 +22,8 @@ class Pickaxe(Weapon):
     def collide(self, entity):
         if isinstance(entity, environment_objects.Rock) and self.player.energy > 0:
             entity.update_health(-100)
+        elif isinstance(entity, enemies.Rock) and self.player.energy > 0:
+            entity.update_health(-100)
         elif self.player.energy > 0:
             entity.update_health(-1)
         else:
@@ -28,3 +31,12 @@ class Pickaxe(Weapon):
         self.player.energy -= 1
         self.player.energy = max(0, self.player.energy)
 
+
+class CursedBlade(Weapon):
+    def __init__(self, player, name):
+        super().__init__(player, name)
+        self.damage = 1000
+        self.color = (120, 0, 0)
+
+    def collide(self, entity):
+        super().collide(entity)

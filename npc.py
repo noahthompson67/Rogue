@@ -5,6 +5,7 @@ import colors as c
 import random
 import config_files.screen_size as ss
 import resources
+from weapon import CursedBlade
 class NPC(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
@@ -221,6 +222,44 @@ class Merchant(NPC):
                 self.prompt = False
                 self.message_text.append("You don't have enough money.")
                 self.message_index = len(self.message_text) - 1
+
+class DemonMerchant(NPC):
+    def __init__(self, player, map):
+        super().__init__(player, map)
+        self.interacted = False
+        self.color = (50, 50, 40)
+        self.generate_prompt_option_rects()
+        self.message_text = ['...']
+        self.cursed = True
+        if self.cursed:
+            self.prompt_text = "[Accept the cursed offering?]"
+            self.inactive_text = "[You feel cursed]"
+        else:
+            self.prompt_text = "[Exchange life force for power?]"
+            self.inactive_text = "[You feel stronger]"
+        self.default_message_text = self.message_text
+        self.prompt_cursor.center = self.prompt_options_rects[0].center
+
+    def handle_prompt(self, response):
+        if response == 'no':
+            self.prompt = False
+            self.message_index = 0
+        elif response == 'yes':
+            if self.cursed:
+                weapon = CursedBlade(self.player, 'Cursed Blade')
+                self.player.weapons[0] = weapon
+                self.player.weapon_idx = 0
+                self.player.weapon = self.player.weapons[0]
+            else:
+                self.player.damage += 3
+                self.player.health_max *= 0.5
+                self.prompt = False
+                self.message_index = len(self.message_text) - 1
+                self.inactive = True
+                self.state = 'dead'
+
+
+
 
 
 
