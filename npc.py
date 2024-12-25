@@ -230,7 +230,7 @@ class DemonMerchant(NPC):
         self.color = (50, 50, 40)
         self.generate_prompt_option_rects()
         self.message_text = ['...']
-        self.cursed = True
+        self.cursed = random.random() < 0.1
         if self.cursed:
             self.prompt_text = "[Accept the cursed offering?]"
             self.inactive_text = "[You feel cursed]"
