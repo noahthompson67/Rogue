@@ -247,9 +247,9 @@ class DemonMerchant(NPC):
         elif response == 'yes':
             if self.cursed:
                 weapon = CursedBlade(self.player, 'Cursed Blade')
-                self.player.weapons[0] = weapon
-                self.player.weapon_idx = 0
-                self.player.weapon = self.player.weapons[0]
+                self.player.weapons.append(weapon)
+                self.player.health_max *= 0.5
+                self.player.health = 1
             else:
                 self.player.damage += 3
                 self.player.health_max *= 0.5

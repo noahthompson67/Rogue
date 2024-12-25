@@ -286,7 +286,7 @@ class HotSpring(Entity):
         self.rect.center = ss.SCREEN_WIDTH / 2, (ss.SCREEN_HEIGHT + ss.HUD_HEIGHT) / 2
         self.frame_count = 0
         self.state = "alive"
-        self.color = (0, 80, 180)
+        self.color = c.HOTSPRING
 
     def collide(self):
         if self.rect.colliderect(self.player.rect):
