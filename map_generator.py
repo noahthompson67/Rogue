@@ -94,7 +94,8 @@ class MapGenerator:
         y_offset = minimap_y_offset + config.MINIMAP_CELL_SIZE * 2
         for i in range(0, len(self.grid)):
             for j in range(0, len(self.grid[i])):
-                if self.grid[i][j] == 1:
+                print(f'{i, j}: {self.grid[i][j]}')
+                if self.grid[i][j] != 0:
                     rect = Rect(
                         x_offset + (j * config.MINIMAP_CELL_SIZE),
                         y_offset + (i * config.MINIMAP_CELL_SIZE),
@@ -235,6 +236,7 @@ class MapGenerator:
         zone_ends.remove(self.treasure_map)
 
         self.settlement_map = zone_ends[random.randrange(0, len(zone_ends))]
+        print(f'settlement: {self.settlement_map}')
         self.biome.generate_settlement(self.zone[self.settlement_map[0]][self.settlement_map[1]])
 
 
