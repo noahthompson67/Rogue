@@ -183,6 +183,11 @@ class Entity:
 
     def set_random_position(self):
         positioned = False
+        if len(self.map.entities) == 0:
+            x = random.randrange(50, ss.SCREEN_WIDTH - 50)
+            y = random.randrange(ss.HUD_HEIGHT + 50, ss.SCREEN_HEIGHT - 50)
+            self.rect.center = x, y
+            return
         while not positioned:
             for entity in self.map.entities:
                 if self.rect.colliderect(entity.rect):
