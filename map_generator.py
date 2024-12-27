@@ -3,14 +3,12 @@ import random
 from pygame import Rect
 
 import colors as c
-import resources
 from map import Map
 import config
 from colors import BLACK, WHITE
 import time
 from biome_map_generators.cave import CaveBiome
 import config_files.screen_size as ss
-# from entity import Zombie, Wall, Shooter, Hole
 from environment_objects import HotSpring
 import pygame
 
@@ -21,6 +19,7 @@ class MapGenerator:
         self.player = player
         self.origin_cell = 5, 5
         self.grid_size = 10, 10
+        self.biome_name = 'cave'
         self.biome = CaveBiome(self.player)
         self.zone = self.generate_grid(self.grid_size[0], self.grid_size[1])
 
@@ -197,7 +196,7 @@ class MapGenerator:
                 s = i < len(self.grid)-1 and self.grid[i+1][j] == 1
                 e = j < len(self.grid[0])-1 and self.grid[i][j+1] == 1
                 w = j > 0 and self.grid[i][j-1] == 1
-                if n^s^e^w:
+                if n+s+e+w == 1:
                     result.append((i, j))
         return result
 
@@ -236,6 +235,7 @@ class MapGenerator:
         zone_ends.remove(self.treasure_map)
 
         self.settlement_map = zone_ends[random.randrange(0, len(zone_ends))]
+        self.biome.generate_settlement(self.zone[self.settlement_map[0]][self.settlement_map[1]])
 
 
 
