@@ -53,6 +53,7 @@ class Fire(Entity):
             (200, 0, 0),
             (250, 0, 0),
         ]
+        self.flicker = True
 
     def update(self):
         if self.frame_count % 10 == 0:

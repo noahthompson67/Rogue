@@ -9,7 +9,7 @@ from weapon import CursedBlade
 class NPC(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
-        self.size = 30
+        self.size = 28
         self.x_pos = random.randrange(
             int(self.size * 1.5), ss.SCREEN_WIDTH - int(self.size * 1.5)
         )
@@ -18,9 +18,11 @@ class NPC(Entity):
         )
         self.message_text = ["NPC message..."]
         self.rect = Rect(self.x_pos, self.y_pos, self.size, self.size)
+        self.outer_rect = Rect(self.x_pos, self.y_pos, 30, 30)
         self.set_random_position()
-        self.action_rect = Rect(0, 0, self.size * 4, self.size * 4)
+        self.action_rect = Rect(0, 0, self.size * 3, self.size * 3)
         self.action_rect.center = self.rect.center
+        self.outer_rect.center = self.rect.center
         self.default_color = c.GREEN
         self.color = c.GREEN
         self.state = "alive"
@@ -95,6 +97,11 @@ class NPC(Entity):
             ss.PAUSE_HEIGHT - 10,
         )
 
+    def set_pos(self, x, y):
+        self.rect.center = x, y
+        self.action_rect.center = x, y
+        self.outer_rect.center = x, y
+
     def update(self):
         if not self.action_rect.colliderect(self.player.rect):
             self.active = False
@@ -115,6 +122,7 @@ class NPC(Entity):
                 self.prompt_cursor.center = self.prompt_options_rects[self.prompt_cursor_index].center
     def draw(self, screen):
         pygame.draw.rect(screen, c.ZOMBIE_RED, self.action_rect)
+        pygame.draw.rect(screen, c.BLACK, self.outer_rect)
         super().draw(screen)
         if self.active:
             if self.inactive:
@@ -183,6 +191,7 @@ class Medic(NPC):
         self.prompt_text = "Let me help you with that."
         self.inactive_text = "All patched up. That's all I can do."
         self.generate_prompt_option_rects()
+        self.color = (150, 19, 12)
 
     def handle_prompt(self, response):
         if response == 'no':
@@ -205,6 +214,7 @@ class Merchant(NPC):
         self.prompt_text = "I'll sell it to you for 25 cents."
         self.inactive_text = "Pleasure doing business with you"
         self.prompt_cursor.center = self.prompt_options_rects[0].center
+        self.color = (222, 111, 20)
 
     def handle_prompt(self, response):
         if response == 'no':

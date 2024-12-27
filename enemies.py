@@ -299,7 +299,7 @@ class MobGenerator(Entity, Enemy):
         pass
 
 
-class Rock(Entity, Enemy):
+class BadRock(Entity, Enemy):
     def __init__(self, player, map):
         super().__init__(player, map)
         self.generate_nearby_location()

@@ -10,6 +10,7 @@ import sys
 from player import Player
 from colors import WHITE, BLACK
 import cProfile
+import random
 import config_files.screen_size as ss
 # Initialize Pygame
 
@@ -34,7 +35,7 @@ class MainTask:
         self.map_generator = MapGenerator(self.screen, self.player)
         self.map = self.map_generator.get_current_map()
         self.light_sources = []
-        self.light_sources.append((self.player.x_pos, self.player.y_pos, 75))
+        self.light_sources.append((self.player.x_pos, self.player.y_pos, 75, False))
         self.player_rect = Rect(
             self.player.y_pos, self.player.x_pos, self.player.radius, self.player.radius
         )
@@ -45,7 +46,7 @@ class MainTask:
             10, ss.SCREEN_HEIGHT - 75, ss.SCREEN_WIDTH - 15, 40
         )
 
-
+        self.flicker_time = 0
         self.console_right_end_image = resources.console_right
         self.console_left_end_image = resources.console_left
         self.console_mid_image = resources.console_mid
@@ -91,6 +92,8 @@ class MainTask:
         )
 
         self.option_rects = []
+        self.light_source_counter = 0
+        self.cached_radii = {}
 
         for i in range(len(config.OPTIONS)):
             option_rect = Rect(
@@ -106,7 +109,7 @@ class MainTask:
         self.paused = False
         for entity in self.map.get_entities():
             if entity.light_source:
-                self.light_sources.append((entity.rect.centerx, entity.rect.centery, 75))
+                self.light_sources.append((entity.rect.centerx, entity.rect.centery, entity.flicker_radius, entity.flicker))
 
     # Main loop
 
@@ -141,7 +144,7 @@ class MainTask:
             self.screen.fill(c.BIOME_BACKGROUND_COLORS[self.map_generator.biome.name])
 
             self.player.update()
-            self.light_sources[0] = (self.player.x_pos, self.player.y_pos, 75)
+            self.light_sources[0] = (self.player.x_pos, self.player.y_pos, 75, False)
             self.map.draw_map(self.screen)
             self.map_generator.draw_minimap(self.screen)
             if self.player.paused or self.player.console_state:
@@ -196,7 +199,7 @@ class MainTask:
         self.light_sources = self.light_sources[:1]
         for entity in self.map.get_entities():
             if entity.light_source:
-                self.light_sources.append((entity.rect.centerx, entity.rect.centery, 75))
+                self.light_sources.append((entity.rect.centerx, entity.rect.centery, entity.flicker_radius, entity.flicker))
         self.enemies = self.map.get_entities()
 
     def draw_background(self):
@@ -271,7 +274,7 @@ class MainTask:
         return f"{str(hours).zfill(2)}:{str(minutes).zfill(2)}"
 
     def draw_dimmer_overlay(self):
-        if self.map_generator.biome == 'cave':
+        if self.map_generator.biome_name == 'cave':
             dim_alpha = 220
         elif self.time_of_day < config.MAX_TIME // 2:  # daytime
             dim_alpha = 0
@@ -386,12 +389,24 @@ class MainTask:
             pygame.draw.circle(light, (*color, alpha), (radius, radius), r)
         return light
 
+    import random
+
     def draw_light_sources(self):
-        if self.time_of_day < config.MAX_TIME // 2 and self.map_generator.biome != 'cave':  # daytime
+        if self.time_of_day < config.MAX_TIME // 2 and self.map_generator.biome_name != 'cave':  # daytime
             return
-        for x,y, radius in self.light_sources:
-            light = self.generate_light_source(radius)
-            self.screen.blit(light, (x - radius, y - radius), special_flags=pygame.BLEND_RGBA_ADD)
+
+        self.light_source_counter += 1
+
+        for i, (x, y, radius, flickers) in enumerate(self.light_sources):
+            if i not in self.cached_radii:
+                self.cached_radii[i] = max(1, int(radius))
+            if self.light_source_counter % 5 == 0 or i not in self.cached_radii and flickers:
+                flicker = random.uniform(-radius * 0.05, radius * 0.05)
+                self.cached_radii[i] = max(1, int(radius + flicker))
+
+            flickering_radius = self.cached_radii[i]
+            light = self.generate_light_source(flickering_radius)
+            self.screen.blit(light, (x - flickering_radius, y - flickering_radius), special_flags=pygame.BLEND_RGBA_ADD)
 
 
 task = MainTask()

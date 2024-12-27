@@ -7,7 +7,6 @@ import random
 import config
 
 
-
 class Entity:
     def __init__(self, player, entity_map=None, position=None):
         self.player = player
@@ -32,6 +31,10 @@ class Entity:
         self.impassable = False
         self.health_timeout = 0.5
         self.light_source = False
+        self.flicker = False
+        self.flicker_radius = 75
+
+
 
     def set_entities(self, entities):
         self.entities = entities

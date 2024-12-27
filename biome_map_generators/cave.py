@@ -1,4 +1,7 @@
 import random
+
+import environment_objects
+import npc
 from environment_objects import Rock, Fire, Hole, MushroomPatch
 from items import TreasureChest
 from enemies import MobGenerator, Bat, Shooter
@@ -143,3 +146,29 @@ class CaveBiome(Biome):
             map.add_entity(MobGenerator(self.player, map, Bat, 60, 8))
         map.add_entity(treasure_chest)
 
+
+    def generate_settlement(self, map):
+        map.entities = []
+        offset = ss.SCREEN_WIDTH * 0.05
+        merchant = npc.Merchant(self.player, map)
+        merchant.set_pos(ss.SCREEN_WIDTH / 2 - offset, (ss.HUD_HEIGHT + ss.SCREEN_HEIGHT) / 2)
+        medic = npc.Medic(self.player, map)
+        medic.set_pos(ss.SCREEN_WIDTH / 2, (ss.HUD_HEIGHT + ss.SCREEN_HEIGHT) / 2 + offset)
+        if random.random() < 0.3:
+            d_merchant = npc.DemonMerchant(self.player, map)
+            d_merchant.set_pos(ss.SCREEN_WIDTH * 0.95, ss.HUD_HEIGHT + offset)
+            map.add_entity(d_merchant)
+        fire = environment_objects.Fire(self.player, map)
+        fire.rect.center = ss.SCREEN_WIDTH / 2, (ss.HUD_HEIGHT + ss.SCREEN_HEIGHT) / 2
+        fire.flicker_radius = ss.SCREEN_WIDTH / 8
+        npc1 = npc.NPC(self.player, map)
+        npc1.set_pos(ss.SCREEN_WIDTH / 2 + offset, (ss.HUD_HEIGHT + ss.SCREEN_HEIGHT) / 2)
+        npc1.message_text = ["One of our members went off by himself.", "He should be back by now..."]
+        npc2 = npc.NPC(self.player, map)
+        npc2.set_pos(ss.SCREEN_WIDTH / 2, (ss.HUD_HEIGHT + ss.SCREEN_HEIGHT) / 2 - offset)
+        npc2.message_text = ["We're a group of researchers studying remote biomes.", "This cave appears to largely untouched by humans."]
+        map.add_entity(merchant)
+        map.add_entity(medic)
+        map.add_entity(fire)
+        map.add_entity(npc1)
+        map.add_entity(npc2)
