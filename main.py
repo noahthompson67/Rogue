@@ -400,7 +400,7 @@ class MainTask:
         for i, (x, y, radius, flickers) in enumerate(self.light_sources):
             if i not in self.cached_radii:
                 self.cached_radii[i] = max(1, int(radius))
-            if self.light_source_counter % 5 == 0 or i not in self.cached_radii and flickers:
+            if (self.light_source_counter % 5 == 0 or i not in self.cached_radii) and flickers:
                 flicker = random.uniform(-radius * 0.05, radius * 0.05)
                 self.cached_radii[i] = max(1, int(radius + flicker))
 
