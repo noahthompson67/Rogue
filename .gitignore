@@ -1,2 +1,4 @@
 .venv/
 profile_results.prof
+__pycache__/
+*.pyc
