@@ -6,6 +6,8 @@ import random
 import config_files.screen_size as ss
 import resources
 from weapon import CursedBlade
+
+
 class NPC(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
@@ -43,9 +45,7 @@ class NPC(Entity):
         self.message_visible = False
         self.interact_time = 0
         self.font = pygame.font.Font("freesansbold.ttf", 20)
-        self.console_rect = Rect(
-            0, ss.SCREEN_HEIGHT - 75, ss.SCREEN_WIDTH - 10, 50
-        )
+        self.console_rect = Rect(0, ss.SCREEN_HEIGHT - 75, ss.SCREEN_WIDTH - 10, 50)
         self.console_rect_inner = Rect(
             5, ss.SCREEN_HEIGHT - 70, ss.SCREEN_WIDTH - 20, 40
         )
@@ -61,27 +61,58 @@ class NPC(Entity):
         self.hud_mid_image = resources.hud_mid
         self.hud_right_image = resources.hud_right
 
-        self.hud_left = Rect(0, 0, ss.SCREEN_WIDTH*0.01, ss.HUD_HEIGHT)
+        self.hud_left = Rect(0, 0, ss.SCREEN_WIDTH * 0.01, ss.HUD_HEIGHT)
         self.hud_mid = Rect(0, 0, ss.SCREEN_WIDTH, ss.HUD_HEIGHT)
-        self.hud_right = Rect(ss.SCREEN_WIDTH*0.99, 0, ss.SCREEN_WIDTH*0.01, ss.HUD_HEIGHT)
+        self.hud_right = Rect(
+            ss.SCREEN_WIDTH * 0.99, 0, ss.SCREEN_WIDTH * 0.01, ss.HUD_HEIGHT
+        )
 
-        self.console_right_end = Rect(ss.SCREEN_WIDTH * 0.95, ss.SCREEN_HEIGHT* 0.9, ss.SCREEN_WIDTH*0.01, ss.SCREEN_HEIGHT*0.05)
-        self.console_left_end = Rect(0, ss.SCREEN_HEIGHT * 0.9, ss.SCREEN_WIDTH*0.01, ss.SCREEN_HEIGHT*0.05)
-        self.console_mid = Rect(self.console_left_end.width, ss.SCREEN_HEIGHT * 0.9, ss.SCREEN_WIDTH * 0.95-self.console_right_end.width, ss.SCREEN_HEIGHT*0.05)
+        self.console_right_end = Rect(
+            ss.SCREEN_WIDTH * 0.95,
+            ss.SCREEN_HEIGHT * 0.9,
+            ss.SCREEN_WIDTH * 0.01,
+            ss.SCREEN_HEIGHT * 0.05,
+        )
+        self.console_left_end = Rect(
+            0, ss.SCREEN_HEIGHT * 0.9, ss.SCREEN_WIDTH * 0.01, ss.SCREEN_HEIGHT * 0.05
+        )
+        self.console_mid = Rect(
+            self.console_left_end.width,
+            ss.SCREEN_HEIGHT * 0.9,
+            ss.SCREEN_WIDTH * 0.95 - self.console_right_end.width,
+            ss.SCREEN_HEIGHT * 0.05,
+        )
 
-        self.console_right_end_image = pygame.transform.scale(self.console_right_end_image, (self.console_right_end.width, self.console_right_end.height))
-        self.console_left_end_image = pygame.transform.scale(self.console_left_end_image, (self.console_left_end.width, self.console_left_end.height))
-        self.console_mid_image = pygame.transform.scale(self.console_mid_image, (self.console_mid.width, self.console_mid.height))
+        self.console_right_end_image = pygame.transform.scale(
+            self.console_right_end_image,
+            (self.console_right_end.width, self.console_right_end.height),
+        )
+        self.console_left_end_image = pygame.transform.scale(
+            self.console_left_end_image,
+            (self.console_left_end.width, self.console_left_end.height),
+        )
+        self.console_mid_image = pygame.transform.scale(
+            self.console_mid_image, (self.console_mid.width, self.console_mid.height)
+        )
 
-        self.hud_right_end_image = pygame.transform.scale(self.hud_right_image, (self.hud_right.width, self.hud_right.height))
-        self.hud_mid_image = pygame.transform.scale(self.hud_mid_image, (self.hud_mid.width, self.hud_mid.height))
-        self.hud_left_end_image = pygame.transform.scale(self.hud_left_image, (self.hud_left.width, self.hud_left.height))
+        self.hud_right_end_image = pygame.transform.scale(
+            self.hud_right_image, (self.hud_right.width, self.hud_right.height)
+        )
+        self.hud_mid_image = pygame.transform.scale(
+            self.hud_mid_image, (self.hud_mid.width, self.hud_mid.height)
+        )
+        self.hud_left_end_image = pygame.transform.scale(
+            self.hud_left_image, (self.hud_left.width, self.hud_left.height)
+        )
 
         self.console_rect_inner = Rect(
             15, ss.SCREEN_HEIGHT - 70, ss.SCREEN_WIDTH - 25, 40
         )
         self.console_text_rect = Rect(
-            20, ss.SCREEN_HEIGHT * 0.9 + self.console_mid.height * 0.3, ss.SCREEN_WIDTH - 30, 30
+            20,
+            ss.SCREEN_HEIGHT * 0.9 + self.console_mid.height * 0.3,
+            ss.SCREEN_WIDTH - 30,
+            30,
         )
 
         self.pause_rect_outer = Rect(
@@ -108,18 +139,27 @@ class NPC(Entity):
             self.message_index = 0
         if self.prompt and self.active:
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_RIGHT] and pygame.time.get_ticks() - self.prompt_time > 250:
+            if (
+                keys[pygame.K_RIGHT]
+                and pygame.time.get_ticks() - self.prompt_time > 250
+            ):
                 self.prompt_cursor_index += 1
                 self.prompt_time = pygame.time.get_ticks()
-                if self.prompt_cursor_index > len(self.prompt_options)-1:
+                if self.prompt_cursor_index > len(self.prompt_options) - 1:
                     self.prompt_cursor_index = 0
-                self.prompt_cursor.center = self.prompt_options_rects[self.prompt_cursor_index].center
-            elif keys[pygame.K_LEFT] and pygame.time.get_ticks() - self.prompt_time > 250:
+                self.prompt_cursor.center = self.prompt_options_rects[
+                    self.prompt_cursor_index
+                ].center
+            elif (
+                keys[pygame.K_LEFT] and pygame.time.get_ticks() - self.prompt_time > 250
+            ):
                 self.prompt_time = pygame.time.get_ticks()
                 self.prompt_cursor_index -= 1
                 if self.prompt_cursor_index < 0:
-                    self.prompt_cursor_index = len(self.prompt_options)-1
-                self.prompt_cursor.center = self.prompt_options_rects[self.prompt_cursor_index].center
+                    self.prompt_cursor_index = len(self.prompt_options) - 1
+                self.prompt_cursor.center = self.prompt_options_rects[
+                    self.prompt_cursor_index
+                ].center
 
     def draw(self, screen):
         pygame.draw.rect(screen, c.ZOMBIE_RED, self.action_rect)
@@ -132,7 +172,10 @@ class NPC(Entity):
                 )
             else:
                 self.message = self.font.render(
-                    self.message_text[self.message_index], True, c.BLACK, c.CONSOLE_BACKGROUND
+                    self.message_text[self.message_index],
+                    True,
+                    c.BLACK,
+                    c.CONSOLE_BACKGROUND,
                 )
             screen.blit(self.console_right_end_image, self.console_right_end)
             screen.blit(self.console_left_end_image, self.console_left_end)
@@ -150,19 +193,27 @@ class NPC(Entity):
                     screen.blit(temp, self.prompt_options_rects[i])
 
                     if i == self.prompt_cursor_index:
-                        pygame.draw.rect(screen, c.BLACK, self.prompt_options_rects[i].move(0, -5).inflate(15,0), width=3)
+                        pygame.draw.rect(
+                            screen,
+                            c.BLACK,
+                            self.prompt_options_rects[i].move(0, -5).inflate(15, 0),
+                            width=3,
+                        )
             else:
                 screen.blit(self.message, self.console_text_rect)
 
     def interact(self, screen):
         if self.action_rect.colliderect(self.player.rect):
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_SPACE] and pygame.time.get_ticks() - self.prompt_time > 800:
+            if (
+                keys[pygame.K_SPACE]
+                and pygame.time.get_ticks() - self.prompt_time > 800
+            ):
                 self.prompt_time = pygame.time.get_ticks()
                 if self.interactions == 0:
                     self.active = True
                     self.interactions += 1
-                elif self.message_index+1 < len(self.message_text):
+                elif self.message_index + 1 < len(self.message_text):
                     self.message_index += 1
                     self.interactions += 1
                 elif not self.prompt and self.prompt_text is not None:
@@ -181,11 +232,14 @@ class NPC(Entity):
                 self.message_text = self.default_message_text
 
     def generate_prompt_option_rects(self):
-        current_pos = self.console_text_rect.right-ss.SCREEN_WIDTH*0.30, self.console_text_rect.top
+        current_pos = (
+            self.console_text_rect.right - ss.SCREEN_WIDTH * 0.30,
+            self.console_text_rect.top,
+        )
         for i in range(len(self.prompt_options)):
-            self.prompt_options_rects.append(Rect(current_pos[0]+(i*50), current_pos[1], 30, 30))
-
-
+            self.prompt_options_rects.append(
+                Rect(current_pos[0] + (i * 50), current_pos[1], 30, 30)
+            )
 
 
 class Medic(NPC):
@@ -200,11 +254,11 @@ class Medic(NPC):
         self.color = (150, 19, 12)
 
     def handle_prompt(self, response):
-        if response == 'no':
+        if response == "no":
             self.prompt = False
-            self.message_text.append('Suit yourself, hombre.')
+            self.message_text.append("Suit yourself, hombre.")
             self.message_index = len(self.message_text) - 1
-        elif response == 'yes':
+        elif response == "yes":
             self.prompt = False
             self.message_index = len(self.message_text) - 1
             self.inactive = True
@@ -215,7 +269,7 @@ class Merchant(NPC):
         super().__init__(player, map)
         self.interacted = False
         self.generate_prompt_option_rects()
-        self.message_text = ['I found this rusty key on the ground.']
+        self.message_text = ["I found this rusty key on the ground."]
         self.default_message_text = self.message_text
         self.prompt_text = "I'll sell it to you for 25 cents."
         self.inactive_text = "Pleasure doing business with you"
@@ -223,11 +277,11 @@ class Merchant(NPC):
         self.color = (222, 111, 20)
 
     def handle_prompt(self, response):
-        if response == 'no':
+        if response == "no":
             self.prompt = False
-            self.message_text.append('Suit yourself, hombre.')
+            self.message_text.append("Suit yourself, hombre.")
             self.message_index = len(self.message_text) - 1
-        elif response == 'yes':
+        elif response == "yes":
             if self.player.money >= 25:
                 self.prompt = False
                 self.player.money -= 25
@@ -239,13 +293,14 @@ class Merchant(NPC):
                 self.message_text.append("You don't have enough money.")
                 self.message_index = len(self.message_text) - 1
 
+
 class DemonMerchant(NPC):
     def __init__(self, player, map):
         super().__init__(player, map)
         self.interacted = False
         self.color = (50, 50, 40)
         self.generate_prompt_option_rects()
-        self.message_text = ['...']
+        self.message_text = ["..."]
         self.cursed = random.random() < 0.1
         if self.cursed:
             self.prompt_text = "[Accept the cursed offering?]"
@@ -257,12 +312,12 @@ class DemonMerchant(NPC):
         self.prompt_cursor.center = self.prompt_options_rects[0].center
 
     def handle_prompt(self, response):
-        if response == 'no':
+        if response == "no":
             self.prompt = False
             self.message_index = 0
-        elif response == 'yes':
+        elif response == "yes":
             if self.cursed:
-                weapon = CursedBlade(self.player, 'Cursed Blade')
+                weapon = CursedBlade(self.player, "Cursed Blade")
                 self.player.weapons.append(weapon)
                 self.player.health_max *= 0.5
                 self.player.health = 1
@@ -272,10 +327,4 @@ class DemonMerchant(NPC):
                 self.prompt = False
                 self.message_index = len(self.message_text) - 1
                 self.inactive = True
-                self.state = 'dead'
-
-
-
-
-
-
+                self.state = "dead"

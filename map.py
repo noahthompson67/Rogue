@@ -7,6 +7,7 @@ import colors as c
 import config
 import config_files.screen_size as ss
 from enemies import Enemy
+
 WHITE = (255, 255, 255)
 WARP_COLOR = (150, 0, 255)
 
@@ -27,8 +28,6 @@ class MapName(Enum):
     WEST_TEE = 13
     EAST_TEE = 14
     CROSS = 15
-
-
 
 
 class Map:
@@ -194,8 +193,14 @@ class Map:
             ss.SCREEN_WIDTH / 2,
             ss.SCREEN_HEIGHT - config.WARP_SIZE / 2,
         )
-        self.WEST_WARP_POS = config.WARP_SIZE / 2, ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2
-        self.EAST_WARP_POS = ss.SCREEN_WIDTH - config.WARP_SIZE / 2, ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2
+        self.WEST_WARP_POS = (
+            config.WARP_SIZE / 2,
+            ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2,
+        )
+        self.EAST_WARP_POS = (
+            ss.SCREEN_WIDTH - config.WARP_SIZE / 2,
+            ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2,
+        )
 
         self.NORTH_WARP_PLAYER_POS = (
             self.SOUTH_WARP_POS[0],
@@ -217,9 +222,10 @@ class Map:
     def get_enemies_remaining(self):
         count = 0
         for entity in self.entities:
-            if isinstance(entity, Enemy) and entity.state == 'alive':
+            if isinstance(entity, Enemy) and entity.state == "alive":
                 count += 1
         return count
+
 
 class Warp:
     def __init__(self, map, position, player, player_pos, location=(-1, -1)):
@@ -249,5 +255,3 @@ class Warp:
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
-
-

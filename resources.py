@@ -20,5 +20,3 @@ grass = pygame.image.load("assets/grass.png")
 medkit = pygame.image.load("assets/medkit.png")
 gargoyle = pygame.image.load("assets/gargoyle.png")
 projectile = pygame.image.load("assets/projectile.png")
-
-

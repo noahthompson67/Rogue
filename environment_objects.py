@@ -7,6 +7,7 @@ import math
 import resources
 import config_files.screen_size as ss
 
+
 class Hole(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
@@ -31,6 +32,7 @@ class Hole(Entity):
     def collide(self):
         if self.state != "dead":
             self.block_path()
+
 
 class Fire(Entity):
     def __init__(self, player, map):
@@ -68,7 +70,7 @@ class Fire(Entity):
 
     def collide(self):
         if self.rect.colliderect(self.player.rect):
-            self.player.add_status('fire', 2)
+            self.player.add_status("fire", 2)
 
 
 class Water(Entity):
@@ -118,7 +120,7 @@ class Water(Entity):
     def collide(self):
         if self.point_in_polygon(self.player.rect.center, self.points):
             self.player.speed_modifier = 0.1
-            self.player.status = [x for x in self.player.status if x[0] != 'fire']
+            self.player.status = [x for x in self.player.status if x[0] != "fire"]
         else:
             self.player.speed_modifier = 1
 
@@ -133,7 +135,9 @@ class Grass(Entity):
             min(player.y_pos - 40, 0), max(player.y_pos + 40, ss.SCREEN_WIDTH)
         )
         self.rect = Rect(0, 0, 30, 30)
-        self.image = pygame.transform.scale(resources.grass, (self.rect.width, self.rect.height))
+        self.image = pygame.transform.scale(
+            resources.grass, (self.rect.width, self.rect.height)
+        )
         self.health = 1
         self.rect.center = self.x_pos, self.y_pos
         self.action_rect = Rect(self.x_pos, self.y_pos, 15, 15)
@@ -183,15 +187,17 @@ class Rock(Entity):
         super().__init__(player, map)
 
         self.x_pos = random.randrange(
-            min(player.x_pos - 40, 75), max(player.x_pos + 40, ss.SCREEN_HEIGHT-75)
+            min(player.x_pos - 40, 75), max(player.x_pos + 40, ss.SCREEN_HEIGHT - 75)
         )
         self.y_pos = random.randrange(
-            min(player.y_pos - 40, 75), max(player.y_pos + 40, ss.SCREEN_WIDTH-75)
+            min(player.y_pos - 40, 75), max(player.y_pos + 40, ss.SCREEN_WIDTH - 75)
         )
         self.rect = Rect(0, 0, 50, 50)
         self.block_rect = Rect(0, 0, 60, 60)
         self.health = 1
-        self.image = pygame.transform.scale(resources.rock,(self.rect.width, self.rect.height))
+        self.image = pygame.transform.scale(
+            resources.rock, (self.rect.width, self.rect.height)
+        )
         self.rect.center = self.x_pos, self.y_pos
         self.block_rect.center = self.x_pos, self.y_pos
         self.action_rect = Rect(self.x_pos, self.y_pos, 15, 15)
@@ -202,17 +208,14 @@ class Rock(Entity):
         self.color_index = 0
         self.color = (100, 100, 100)
 
-
     def collide(self):
-        if self.state == 'dead':
+        if self.state == "dead":
             return
         self.block_path()
 
         if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
-            if 'pickaxe' in self.player.weapon.name:
+            if "pickaxe" in self.player.weapon.name:
                 self.player.weapon.collide(self)
-
-
 
 
 def distance(p1, p2):
@@ -256,15 +259,17 @@ def nearest_neighbor_path(points):
 class MushroomPatch(Entity):
     def __init__(self, player, map, x_pos=100, y_pos=100):
         super().__init__(player, map)
-        self.x_pos = random.randrange(30, ss.SCREEN_WIDTH-30)
-        self.y_pos = random.randrange(ss.HUD_HEIGHT+30, ss.SCREEN_HEIGHT-30)
+        self.x_pos = random.randrange(30, ss.SCREEN_WIDTH - 30)
+        self.y_pos = random.randrange(ss.HUD_HEIGHT + 30, ss.SCREEN_HEIGHT - 30)
         self.rect = Rect(0, 0, 30, 30)
-        self.image = pygame.transform.scale(resources.mushroom, (self.rect.width, self.rect.height))
+        self.image = pygame.transform.scale(
+            resources.mushroom, (self.rect.width, self.rect.height)
+        )
         self.health = 1
         self.rect.center = self.x_pos, self.y_pos
         self.action_rect = Rect(self.x_pos, self.y_pos, 15, 15)
         self.action_rect.center = self.x_pos, self.y_pos
-        self.drops = [('healthpickup', 5), ('energy', 5), ('coin', 5)]
+        self.drops = [("healthpickup", 5), ("energy", 5), ("coin", 5)]
         self.frame_count = 0
         self.state = "alive"
         self.xp = 0
@@ -280,6 +285,7 @@ class MushroomPatch(Entity):
         if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
             self.player.weapon.collide(self)
 
+
 class HotSpring(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
@@ -294,6 +300,5 @@ class HotSpring(Entity):
             self.frame_count += 1
             if self.frame_count % 100 == 0:
                 self.player.update_health(1)
-                self.player.energy = min(self.player.energy_max, self.player.energy+1)
+                self.player.energy = min(self.player.energy_max, self.player.energy + 1)
                 self.frame_count = 0
-

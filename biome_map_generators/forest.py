@@ -2,18 +2,18 @@ import random
 
 import environment_objects
 import npc
-from environment_objects import Rock, Fire, Hole, MushroomPatch
+from environment_objects import Rock, Fire, Hole, Grass
 from items import TreasureChest
 from enemies import MobGenerator, Bat, Shooter
 from boss import Golem
 from pygame import Rect
-import config_files.screen_size as ss
 from biome_map_generators.biome import Biome
+import config_files.screen_size as ss
 
 
-class CaveBiome(Biome):
-    def __init__(self, player, *args, **kwargs):
-        super().__init__( player, "cave", *args, **kwargs)
+class ForestBiome(Biome):
+    def __init__(self, player):
+        super().__init__(player, "forest")
 
     def generate_random_map(self, map):
         rock_wall_count = random.randrange(4, 10)
@@ -42,8 +42,8 @@ class CaveBiome(Biome):
         w = map.west_map is not None
         map.entities = []
         for _ in range(random.randrange(1, 5)):
-            mushroom = MushroomPatch(self.player, map)
-            map.entities.append(mushroom)
+            grass = Grass(self.player, map)
+            map.entities.append(grass)
         self.build_hallways(n, s, e, w, map)
         map.add_entity(MobGenerator(self.player, map, Bat, 15000))
         if n and s and not e and not w:

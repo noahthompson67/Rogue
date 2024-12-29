@@ -12,8 +12,8 @@ from colors import WHITE, BLACK
 import cProfile
 import random
 import config_files.screen_size as ss
+import os
 # Initialize Pygame
-
 
 
 class MainTask:
@@ -23,9 +23,11 @@ class MainTask:
         display_info = pygame.display.Info()
         ss.SCREEN_WIDTH = display_info.current_w  # Current screen width
         ss.SCREEN_HEIGHT = display_info.current_h
-        ss.PAUSE_HEIGHT = ss.SCREEN_HEIGHT * .5
-        ss.HUD_HEIGHT = ss.SCREEN_HEIGHT * .15
-        self.screen = self.screen = pygame.display.set_mode((ss.SCREEN_WIDTH, ss.SCREEN_HEIGHT), pygame.NOFRAME)
+        ss.PAUSE_HEIGHT = ss.SCREEN_HEIGHT * 0.5
+        ss.HUD_HEIGHT = ss.SCREEN_HEIGHT * 0.15
+        self.screen = self.screen = pygame.display.set_mode(
+            (ss.SCREEN_WIDTH, ss.SCREEN_HEIGHT), pygame.NOFRAME
+        )
         self.warp_timeout = 0
         self.player = Player()
         self.init_hud()
@@ -42,9 +44,7 @@ class MainTask:
         self.console_state = False
         self.console_command = ""
         self.font = pygame.font.Font("freesansbold.ttf", 20)
-        self.console_rect = Rect(
-            10, ss.SCREEN_HEIGHT - 75, ss.SCREEN_WIDTH - 15, 40
-        )
+        self.console_rect = Rect(10, ss.SCREEN_HEIGHT - 75, ss.SCREEN_WIDTH - 15, 40)
 
         self.flicker_time = 0
         self.console_right_end_image = resources.console_right
@@ -55,27 +55,58 @@ class MainTask:
         self.hud_mid_image = resources.hud_mid
         self.hud_right_image = resources.hud_right
 
-        self.hud_left = Rect(0, 0, ss.SCREEN_WIDTH*0.01, ss.HUD_HEIGHT)
+        self.hud_left = Rect(0, 0, ss.SCREEN_WIDTH * 0.01, ss.HUD_HEIGHT)
         self.hud_mid = Rect(0, 0, ss.SCREEN_WIDTH, ss.HUD_HEIGHT)
-        self.hud_right = Rect(ss.SCREEN_WIDTH*0.99, 0, ss.SCREEN_WIDTH*0.01, ss.HUD_HEIGHT)
+        self.hud_right = Rect(
+            ss.SCREEN_WIDTH * 0.99, 0, ss.SCREEN_WIDTH * 0.01, ss.HUD_HEIGHT
+        )
 
-        self.console_right_end = Rect(ss.SCREEN_WIDTH * 0.95, ss.SCREEN_HEIGHT* 0.9, ss.SCREEN_WIDTH*0.01, ss.SCREEN_HEIGHT*0.05)
-        self.console_left_end = Rect(0, ss.SCREEN_HEIGHT * 0.9, ss.SCREEN_WIDTH*0.01, ss.SCREEN_HEIGHT*0.05)
-        self.console_mid = Rect(self.console_left_end.width, ss.SCREEN_HEIGHT * 0.9, ss.SCREEN_WIDTH * 0.95-self.console_right_end.width, ss.SCREEN_HEIGHT*0.05)
+        self.console_right_end = Rect(
+            ss.SCREEN_WIDTH * 0.95,
+            ss.SCREEN_HEIGHT * 0.9,
+            ss.SCREEN_WIDTH * 0.01,
+            ss.SCREEN_HEIGHT * 0.05,
+        )
+        self.console_left_end = Rect(
+            0, ss.SCREEN_HEIGHT * 0.9, ss.SCREEN_WIDTH * 0.01, ss.SCREEN_HEIGHT * 0.05
+        )
+        self.console_mid = Rect(
+            self.console_left_end.width,
+            ss.SCREEN_HEIGHT * 0.9,
+            ss.SCREEN_WIDTH * 0.95 - self.console_right_end.width,
+            ss.SCREEN_HEIGHT * 0.05,
+        )
 
-        self.console_right_end_image = pygame.transform.scale(self.console_right_end_image, (self.console_right_end.width, self.console_right_end.height))
-        self.console_left_end_image = pygame.transform.scale(self.console_left_end_image, (self.console_left_end.width, self.console_left_end.height))
-        self.console_mid_image = pygame.transform.scale(self.console_mid_image, (self.console_mid.width, self.console_mid.height))
+        self.console_right_end_image = pygame.transform.scale(
+            self.console_right_end_image,
+            (self.console_right_end.width, self.console_right_end.height),
+        )
+        self.console_left_end_image = pygame.transform.scale(
+            self.console_left_end_image,
+            (self.console_left_end.width, self.console_left_end.height),
+        )
+        self.console_mid_image = pygame.transform.scale(
+            self.console_mid_image, (self.console_mid.width, self.console_mid.height)
+        )
 
-        self.hud_right_end_image = pygame.transform.scale(self.hud_right_image, (self.hud_right.width, self.hud_right.height))
-        self.hud_mid_image = pygame.transform.scale(self.hud_mid_image, (self.hud_mid.width, self.hud_mid.height))
-        self.hud_left_end_image = pygame.transform.scale(self.hud_left_image, (self.hud_left.width, self.hud_left.height))
+        self.hud_right_end_image = pygame.transform.scale(
+            self.hud_right_image, (self.hud_right.width, self.hud_right.height)
+        )
+        self.hud_mid_image = pygame.transform.scale(
+            self.hud_mid_image, (self.hud_mid.width, self.hud_mid.height)
+        )
+        self.hud_left_end_image = pygame.transform.scale(
+            self.hud_left_image, (self.hud_left.width, self.hud_left.height)
+        )
 
         self.console_rect_inner = Rect(
             15, ss.SCREEN_HEIGHT - 70, ss.SCREEN_WIDTH - 25, 40
         )
         self.console_text_rect = Rect(
-            20, ss.SCREEN_HEIGHT * 0.9 + self.console_mid.height * 0.3, ss.SCREEN_WIDTH - 30, 30
+            20,
+            ss.SCREEN_HEIGHT * 0.9 + self.console_mid.height * 0.3,
+            ss.SCREEN_WIDTH - 30,
+            30,
         )
 
         self.pause_rect_outer = Rect(
@@ -109,7 +140,14 @@ class MainTask:
         self.paused = False
         for entity in self.map.get_entities():
             if entity.light_source:
-                self.light_sources.append((entity.rect.centerx, entity.rect.centery, entity.flicker_radius, entity.flicker))
+                self.light_sources.append(
+                    (
+                        entity.rect.centerx,
+                        entity.rect.centery,
+                        entity.flicker_radius,
+                        entity.flicker,
+                    )
+                )
 
     # Main loop
 
@@ -136,10 +174,13 @@ class MainTask:
                     if keys[pygame.K_f]:
                         self.fullscreen = not self.fullscreen
                         if self.fullscreen:
-                            self.screen = pygame.display.set_mode((ss.SCREEN_WIDTH, ss.SCREEN_HEIGHT),
-                                                                  pygame.FULLSCREEN)
+                            self.screen = pygame.display.set_mode(
+                                (ss.SCREEN_WIDTH, ss.SCREEN_HEIGHT), pygame.FULLSCREEN
+                            )
                         else:
-                            self.screen = pygame.display.set_mode((ss.SCREEN_WIDTH, ss.SCREEN_HEIGHT))
+                            self.screen = pygame.display.set_mode(
+                                (ss.SCREEN_WIDTH, ss.SCREEN_HEIGHT)
+                            )
             self.update_time()
             self.screen.fill(c.BIOME_BACKGROUND_COLORS[self.map_generator.biome.name])
 
@@ -152,10 +193,14 @@ class MainTask:
                     enemy.draw(self.screen)
                 self.player.draw(self.screen)
                 if self.player.console_state:
-                    self.screen.blit(self.console_right_end_image, self.console_right_end)
+                    self.screen.blit(
+                        self.console_right_end_image, self.console_right_end
+                    )
                     self.screen.blit(self.console_left_end_image, self.console_left_end)
                     self.screen.blit(self.console_mid_image, self.console_mid)
-                    command = self.font.render(self.console_command, True, BLACK, c.CONSOLE_BACKGROUND)
+                    command = self.font.render(
+                        self.console_command, True, BLACK, c.CONSOLE_BACKGROUND
+                    )
                     self.screen.blit(command, self.console_text_rect)
                 elif self.player.paused:
                     pygame.draw.rect(self.screen, BLACK, self.pause_rect_outer)
@@ -186,7 +231,6 @@ class MainTask:
 
             pygame.time.Clock().tick(60)
 
-
             self.draw_dimmer_overlay()
             self.draw_light_sources()
             self.draw_hud(self.screen)
@@ -199,7 +243,14 @@ class MainTask:
         self.light_sources = self.light_sources[:1]
         for entity in self.map.get_entities():
             if entity.light_source:
-                self.light_sources.append((entity.rect.centerx, entity.rect.centery, entity.flicker_radius, entity.flicker))
+                self.light_sources.append(
+                    (
+                        entity.rect.centerx,
+                        entity.rect.centery,
+                        entity.flicker_radius,
+                        entity.flicker,
+                    )
+                )
         self.enemies = self.map.get_entities()
 
     def draw_background(self):
@@ -245,14 +296,14 @@ class MainTask:
                 self.map_generator.set_full_minimap()
             elif cmd[0] == "status":
                 self.player.add_status(cmd[1], int(cmd[2]))
-            elif cmd[0] == 'exit':
+            elif cmd[0] == "exit":
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
-            elif cmd[0] == 'time':
+            elif cmd[0] == "time":
                 self.time_of_day += int(cmd[1])
-            elif cmd[0] == 'fullheal':
+            elif cmd[0] == "fullheal":
                 self.player.health = self.player.health_max
                 self.player.status = []
-            elif cmd[0] == 'speed':
+            elif cmd[0] == "speed":
                 self.player.speed = int(cmd[1])
             else:
                 print(f"unknown command: {cmd}")
@@ -264,7 +315,10 @@ class MainTask:
             print(e)
 
     def update_time(self):
-        if pygame.time.get_ticks() - self.time_last_update > config.TIME_UPDATE_INTERVAL:
+        if (
+            pygame.time.get_ticks() - self.time_last_update
+            > config.TIME_UPDATE_INTERVAL
+        ):
             self.time_of_day = (self.time_of_day + 1) % config.MAX_TIME
             self.time_last_update = pygame.time.get_ticks()
 
@@ -274,50 +328,64 @@ class MainTask:
         return f"{str(hours).zfill(2)}:{str(minutes).zfill(2)}"
 
     def draw_dimmer_overlay(self):
-        if self.map_generator.biome_name == 'cave':
+        if self.map_generator.biome_name == "cave":
             dim_alpha = 220
         elif self.time_of_day < config.MAX_TIME // 2:  # daytime
             dim_alpha = 0
         else:  # nighttime
-            progress = (self.time_of_day - config.MAX_TIME // 2) / (config.MAX_TIME // 2)
+            progress = (self.time_of_day - config.MAX_TIME // 2) / (
+                config.MAX_TIME // 2
+            )
             dim_alpha = int(220 * progress)
         overlay = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, dim_alpha))
-        self.screen.blit(overlay, (0,0))
+        self.screen.blit(overlay, (0, 0))
 
     def init_hud(self):
         x = config.X_HUD_OFFSET
         y = config.Y_HUD_OFFSET
 
-        self.hud_background = Rect(x,y, ss.SCREEN_WIDTH-10, ss.HUD_HEIGHT-10)
+        self.hud_background = Rect(x, y, ss.SCREEN_WIDTH - 10, ss.HUD_HEIGHT - 10)
         self.hud_background_border = Rect(0, 0, ss.SCREEN_WIDTH, ss.HUD_HEIGHT)
         self.outer_health_bar = Rect(x, y, 100, 20)
-        self.inner_health_bar = Rect(x+2, y+2, 95, 15)
-        self.outer_xp_bar = Rect(x, y+25, 85, 20)
-        self.inner_xp_bar = Rect(x+2, y+27, 80, 15)
-        self.outer_energy_bar = Rect(x, y+50, 85, 20)
-        self.inner_energy_bar = Rect(x+2, y+52, 80, 15)
-        self.money_text_rect = Rect(x+110, y, 0, 0)
-        self.level_text_rect = Rect(x+110, y+25, 0, 0)
-        self.time_text_rect = Rect(x+110, y+50, 0, 0)
-        self.key_text_rect = Rect(x+150, y, 0, 0)
+        self.inner_health_bar = Rect(x + 2, y + 2, 95, 15)
+        self.outer_xp_bar = Rect(x, y + 25, 85, 20)
+        self.inner_xp_bar = Rect(x + 2, y + 27, 80, 15)
+        self.outer_energy_bar = Rect(x, y + 50, 85, 20)
+        self.inner_energy_bar = Rect(x + 2, y + 52, 80, 15)
+        self.money_text_rect = Rect(x + 110, y, 0, 0)
+        self.level_text_rect = Rect(x + 110, y + 25, 0, 0)
+        self.time_text_rect = Rect(x + 110, y + 50, 0, 0)
+        self.key_text_rect = Rect(x + 150, y, 0, 0)
 
-        self.location_text_rect = Rect(ss.SCREEN_WIDTH * 0.95, ss.HUD_HEIGHT * 0.85, 0, 0)
-        self.money_icon = Rect(x+120, y, 10, 10)
+        self.location_text_rect = Rect(
+            ss.SCREEN_WIDTH * 0.95, ss.HUD_HEIGHT * 0.85, 0, 0
+        )
+        self.money_icon = Rect(x + 120, y, 10, 10)
         self.status_icons = []
         for i in range(10):
-            status_rect = Rect(x + i * 50, y+75, 50, 50)
+            status_rect = Rect(x + i * 50, y + 75, 50, 50)
             self.status_icons.append(status_rect)
 
-        self.poison_icon_image = pygame.image.load('assets/poison_icon.png').convert_alpha()
-        self.poison_icon_image = pygame.transform.scale(self.poison_icon_image,
-                                                        (self.status_icons[0].width, self.status_icons[0].height))
-        self.fire_icon_image = pygame.image.load('assets/fire_icon.png').convert_alpha()
-        self.fire_icon_image = pygame.transform.scale(self.fire_icon_image,
-                                                        (self.status_icons[0].width, self.status_icons[0].height))
-        self.confusion_icon_image = pygame.image.load('assets/confusion_icon.png').convert_alpha()
-        self.confusion_icon_image = pygame.transform.scale(self.confusion_icon_image,
-                                                      (self.status_icons[0].width, self.status_icons[0].height))
+        self.poison_icon_image = pygame.image.load(
+            "assets/poison_icon.png"
+        ).convert_alpha()
+        self.poison_icon_image = pygame.transform.scale(
+            self.poison_icon_image,
+            (self.status_icons[0].width, self.status_icons[0].height),
+        )
+        self.fire_icon_image = pygame.image.load("assets/fire_icon.png").convert_alpha()
+        self.fire_icon_image = pygame.transform.scale(
+            self.fire_icon_image,
+            (self.status_icons[0].width, self.status_icons[0].height),
+        )
+        self.confusion_icon_image = pygame.image.load(
+            "assets/confusion_icon.png"
+        ).convert_alpha()
+        self.confusion_icon_image = pygame.transform.scale(
+            self.confusion_icon_image,
+            (self.status_icons[0].width, self.status_icons[0].height),
+        )
         self.key_image = pygame.transform.scale(resources.key, (30, 30))
 
     def draw_hud(self, screen):
@@ -328,29 +396,61 @@ class MainTask:
         pygame.draw.rect(screen, BLACK, self.outer_health_bar)
         pygame.draw.rect(screen, WHITE, self.inner_health_bar)
         pygame.draw.rect(
-            screen, c.RED, Rect(config.X_HUD_OFFSET+2, config.Y_HUD_OFFSET+2, (self.player.health / self.player.health_max) * 95, self.inner_health_bar.height)
+            screen,
+            c.RED,
+            Rect(
+                config.X_HUD_OFFSET + 2,
+                config.Y_HUD_OFFSET + 2,
+                (self.player.health / self.player.health_max) * 95,
+                self.inner_health_bar.height,
+            ),
         )
-
-
-
 
         # XP BAR
         pygame.draw.rect(screen, BLACK, self.outer_xp_bar)
         pygame.draw.rect(screen, WHITE, self.inner_xp_bar)
-        pygame.draw.rect(screen, c.GREEN, Rect(config.X_HUD_OFFSET+2, config.Y_HUD_OFFSET+27, (self.player.XP / self.player.XP_max) * 80, 15))
+        pygame.draw.rect(
+            screen,
+            c.GREEN,
+            Rect(
+                config.X_HUD_OFFSET + 2,
+                config.Y_HUD_OFFSET + 27,
+                (self.player.XP / self.player.XP_max) * 80,
+                15,
+            ),
+        )
 
         # ENERGY BAR
         pygame.draw.rect(screen, BLACK, self.outer_energy_bar)
         pygame.draw.rect(screen, WHITE, self.inner_energy_bar)
-        pygame.draw.rect(screen, c.ENERGY, Rect(config.X_HUD_OFFSET+2, config.Y_HUD_OFFSET+52, (self.player.energy / self.player.energy_max) * 80, 15))
+        pygame.draw.rect(
+            screen,
+            c.ENERGY,
+            Rect(
+                config.X_HUD_OFFSET + 2,
+                config.Y_HUD_OFFSET + 52,
+                (self.player.energy / self.player.energy_max) * 80,
+                15,
+            ),
+        )
 
         font = pygame.font.Font("freesansbold.ttf", 20)
-        level_text = font.render(str(self.player.level), True, BLACK, c.CONSOLE_BACKGROUND)
-        money_text = font.render(str(self.player.money) + '¢', True, BLACK, c.CONSOLE_BACKGROUND)
-        location_text = font.render(str(self.map.location), True, BLACK, c.CONSOLE_BACKGROUND)
-        keys_text = font.render(str(self.player.keys), True, BLACK, c.CONSOLE_BACKGROUND)
+        level_text = font.render(
+            str(self.player.level), True, BLACK, c.CONSOLE_BACKGROUND
+        )
+        money_text = font.render(
+            str(self.player.money) + "¢", True, BLACK, c.CONSOLE_BACKGROUND
+        )
+        location_text = font.render(
+            str(self.map.location), True, BLACK, c.CONSOLE_BACKGROUND
+        )
+        keys_text = font.render(
+            str(self.player.keys), True, BLACK, c.CONSOLE_BACKGROUND
+        )
         pygame.draw.rect(screen, c.GOLD, self.money_icon, 15, 15, 15, 15)
-        time_text = font.render(self.time_to_string(), True, BLACK, c.CONSOLE_BACKGROUND)
+        time_text = font.render(
+            self.time_to_string(), True, BLACK, c.CONSOLE_BACKGROUND
+        )
         if len(self.player.status) > 0:
             status_icon_idx = 0
             current_statuses = [sublist[0] for sublist in self.player.status]
@@ -358,7 +458,9 @@ class MainTask:
                 screen.blit(self.poison_icon_image, self.status_icons[status_icon_idx])
                 status_icon_idx += 1
             if "confusion" in current_statuses:
-                screen.blit(self.confusion_icon_image, self.status_icons[status_icon_idx])
+                screen.blit(
+                    self.confusion_icon_image, self.status_icons[status_icon_idx]
+                )
                 status_icon_idx += 1
             if "fire" in current_statuses:
                 screen.blit(self.fire_icon_image, self.status_icons[status_icon_idx])
@@ -392,7 +494,10 @@ class MainTask:
     import random
 
     def draw_light_sources(self):
-        if self.time_of_day < config.MAX_TIME // 2 and self.map_generator.biome_name != 'cave':  # daytime
+        if (
+            self.time_of_day < config.MAX_TIME // 2
+            and self.map_generator.biome_name != "cave"
+        ):  # daytime
             return
 
         self.light_source_counter += 1
@@ -400,15 +505,20 @@ class MainTask:
         for i, (x, y, radius, flickers) in enumerate(self.light_sources):
             if i not in self.cached_radii:
                 self.cached_radii[i] = max(1, int(radius))
-            if (self.light_source_counter % 5 == 0 or i not in self.cached_radii) and flickers:
+            if (
+                self.light_source_counter % 5 == 0 or i not in self.cached_radii
+            ) and flickers:
                 flicker = random.uniform(-radius * 0.05, radius * 0.05)
                 self.cached_radii[i] = max(1, int(radius + flicker))
 
             flickering_radius = self.cached_radii[i]
             light = self.generate_light_source(flickering_radius)
-            self.screen.blit(light, (x - flickering_radius, y - flickering_radius), special_flags=pygame.BLEND_RGBA_ADD)
+            self.screen.blit(
+                light,
+                (x - flickering_radius, y - flickering_radius),
+                special_flags=pygame.BLEND_RGBA_ADD,
+            )
 
 
 task = MainTask()
 cProfile.run("task.run()", "assets/profile_results.prof")
-

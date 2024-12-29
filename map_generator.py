@@ -7,7 +7,7 @@ from map import Map
 import config
 from colors import BLACK, WHITE
 import time
-from biome_map_generators.cave import CaveBiome
+from biome_map_generators.biome import Biome
 import config_files.screen_size as ss
 from environment_objects import HotSpring
 import pygame
@@ -19,8 +19,8 @@ class MapGenerator:
         self.player = player
         self.origin_cell = 5, 5
         self.grid_size = 10, 10
-        self.biome_name = 'cave'
-        self.biome = CaveBiome(self.player)
+        self.biome_name = "cave"
+        self.biome = Biome(self.player, self.biome_name)
         self.zone = self.generate_grid(self.grid_size[0], self.grid_size[1])
 
         self.zone[5][6].warps[1].lock()
@@ -31,9 +31,6 @@ class MapGenerator:
         self.visited = []
         self.visited_adjacent = []
         self.generate_special_rooms()
-
-
-
 
     def warp(self, warp_rect, map_idx=-1):
         if map_idx >= 0:
@@ -76,7 +73,7 @@ class MapGenerator:
 
     def init_minimap(self):
         minimap_x_offset = (
-                ss.SCREEN_WIDTH - (self.grid_size[0] + 5) * config.MINIMAP_CELL_SIZE
+            ss.SCREEN_WIDTH - (self.grid_size[0] + 5) * config.MINIMAP_CELL_SIZE
         )
         minimap_y_offset = config.MINIMAP_CELL_SIZE
         self.minimap_outer_rect_border = Rect(
@@ -97,7 +94,7 @@ class MapGenerator:
         y_offset = minimap_y_offset + config.MINIMAP_CELL_SIZE * 2
         for i in range(0, len(self.grid)):
             for j in range(0, len(self.grid[i])):
-                print(f'{i, j}: {self.grid[i][j]}')
+                print(f"{i, j}: {self.grid[i][j]}")
                 if self.grid[i][j] != 0:
                     rect = Rect(
                         x_offset + (j * config.MINIMAP_CELL_SIZE),
@@ -117,19 +114,30 @@ class MapGenerator:
                     self.visited.append(map[1])
                     map_x = map[1][0]
                     map_y = map[1][1]
-                    if map_x < len(self.grid) - 1 and self.grid[map_x+1][map_y] != 0:
-                        self.visited_adjacent.append((map_x+1, map_y))
-                    if map_x > 0 and self.grid[map_x-1][map_y] != 0:
-                        self.visited_adjacent.append((map_x-1, map_y))
-                    if map_y < len(self.grid[0])-1 and self.grid[map_x][map_y+1] != 0:
-                        self.visited_adjacent.append((map_x, map_y+1))
-                    if map_y > 0 and self.grid[map_x][map_y-1] != 0:
-                        self.visited_adjacent.append((map_x, map_y-1))
-            elif map[1] == self.boss_map and (map[1] in self.visited or map[1] in self.visited_adjacent):
+                    if map_x < len(self.grid) - 1 and self.grid[map_x + 1][map_y] != 0:
+                        self.visited_adjacent.append((map_x + 1, map_y))
+                    if map_x > 0 and self.grid[map_x - 1][map_y] != 0:
+                        self.visited_adjacent.append((map_x - 1, map_y))
+                    if (
+                        map_y < len(self.grid[0]) - 1
+                        and self.grid[map_x][map_y + 1] != 0
+                    ):
+                        self.visited_adjacent.append((map_x, map_y + 1))
+                    if map_y > 0 and self.grid[map_x][map_y - 1] != 0:
+                        self.visited_adjacent.append((map_x, map_y - 1))
+            elif map[1] == self.boss_map and (
+                map[1] in self.visited or map[1] in self.visited_adjacent
+            ):
                 pygame.draw.rect(screen, c.MAP_BOSS, map[0])
-            elif map[1] == self.treasure_map and (self.treasure_map in self.visited or self.treasure_map in self.visited_adjacent):
+            elif map[1] == self.treasure_map and (
+                self.treasure_map in self.visited
+                or self.treasure_map in self.visited_adjacent
+            ):
                 pygame.draw.rect(screen, c.MAP_TREASURE, map[0])
-            elif map[1] == self.settlement_map and (self.settlement_map in self.visited or self.settlement_map in self.visited_adjacent):
+            elif map[1] == self.settlement_map and (
+                self.settlement_map in self.visited
+                or self.settlement_map in self.visited_adjacent
+            ):
                 pygame.draw.rect(screen, c.MAP_SETTLEMENT, map[0])
             elif map[1] in self.visited:
                 pygame.draw.rect(screen, c.MAP_DISCOVERED, map[0])
@@ -196,26 +204,35 @@ class MapGenerator:
                     continue
                 if i == 3 and j == 0:
                     pass
-                n = i > 0 and self.grid[i-1][j] == 1
-                s = i < len(self.grid)-1 and self.grid[i+1][j] == 1
-                e = j < len(self.grid[0])-1 and self.grid[i][j+1] == 1
-                w = j > 0 and self.grid[i][j-1] == 1
-                if n+s+e+w == 1:
+                n = i > 0 and self.grid[i - 1][j] == 1
+                s = i < len(self.grid) - 1 and self.grid[i + 1][j] == 1
+                e = j < len(self.grid[0]) - 1 and self.grid[i][j + 1] == 1
+                w = j > 0 and self.grid[i][j - 1] == 1
+                if n + s + e + w == 1:
                     result.append((i, j))
         return result
-
-
 
     def generate_special_rooms(self):
         zone_ends = self.get_zone_ends()
 
         # Place Hotspring
-        self.hotspring_map = random.randrange(0, len(self.grid)), random.randrange(0, len(self.grid[0]))
-        while self.hotspring_map in zone_ends or self.grid[self.hotspring_map[0]][
-            self.hotspring_map[1]] == 0:
-            self.hotspring_map = random.randrange(0, len(self.grid)), random.randrange(0, len(self.grid[0]))
+        self.hotspring_map = (
+            random.randrange(0, len(self.grid)),
+            random.randrange(0, len(self.grid[0])),
+        )
+        while (
+            self.hotspring_map in zone_ends
+            or self.grid[self.hotspring_map[0]][self.hotspring_map[1]] == 0
+        ):
+            self.hotspring_map = (
+                random.randrange(0, len(self.grid)),
+                random.randrange(0, len(self.grid[0])),
+            )
         self.zone[self.hotspring_map[0]][self.hotspring_map[1]].add_entity(
-            HotSpring(self.player, self.zone[self.hotspring_map[0]][self.hotspring_map[1]]))
+            HotSpring(
+                self.player, self.zone[self.hotspring_map[0]][self.hotspring_map[1]]
+            )
+        )
 
         # Place Boss
         self.boss_map = zone_ends[random.randrange(0, len(zone_ends))]
@@ -223,24 +240,25 @@ class MapGenerator:
         by = self.boss_map[1]
         self.biome.generate_boss_map(self.zone[bx][by])
         if bx > 0 and self.grid[bx - 1][by] == 1:
-            self.biome.generate_boss_entrance(self.zone[bx - 1][by], 's')
+            self.biome.generate_boss_entrance(self.zone[bx - 1][by], "s")
         elif bx < len(self.grid) - 1 and self.grid[bx + 1][by] == 1:
-            self.biome.generate_boss_entrance(self.zone[bx + 1][by], 'n')
+            self.biome.generate_boss_entrance(self.zone[bx + 1][by], "n")
         elif by > 0 and self.grid[bx][by - 1] == 1:
-            self.biome.generate_boss_entrance(self.zone[bx][by - 1], 'e')
+            self.biome.generate_boss_entrance(self.zone[bx][by - 1], "e")
         elif by < len(self.grid[0]) - 1 and self.grid[bx][by + 1] == 1:
-            self.biome.generate_boss_entrance(self.zone[bx][by + 1], 'w')
+            self.biome.generate_boss_entrance(self.zone[bx][by + 1], "w")
         self.zone[8][1].entities = []
         zone_ends.remove(self.boss_map)
 
         # Place Treasure
         self.treasure_map = zone_ends[random.randrange(0, len(zone_ends))]
-        self.biome.generate_challenge_room(self.zone[self.treasure_map[0]][self.treasure_map[1]])
+        self.biome.generate_challenge_room(
+            self.zone[self.treasure_map[0]][self.treasure_map[1]]
+        )
         zone_ends.remove(self.treasure_map)
 
         self.settlement_map = zone_ends[random.randrange(0, len(zone_ends))]
-        print(f'settlement: {self.settlement_map}')
-        self.biome.generate_settlement(self.zone[self.settlement_map[0]][self.settlement_map[1]])
-
-
-
+        print(f"settlement: {self.settlement_map}")
+        self.biome.generate_settlement(
+            self.zone[self.settlement_map[0]][self.settlement_map[1]]
+        )

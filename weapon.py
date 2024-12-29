@@ -1,7 +1,9 @@
 import enemies
 import environment_objects
 import colors as c
-class Weapon():
+
+
+class Weapon:
     def __init__(self, player, name):
         self.player = player
         self.damage = self.player.damage

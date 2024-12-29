@@ -1,4 +1,3 @@
-
 from pygame import Rect
 import config_files.screen_size as ss
 import pygame
@@ -33,8 +32,6 @@ class Entity:
         self.light_source = False
         self.flicker = False
         self.flicker_radius = 75
-
-
 
     def set_entities(self, entities):
         self.entities = entities
@@ -72,7 +69,7 @@ class Entity:
             self.player.weapon.collide(self)
 
     def draw(self, screen):
-        if self.image is not None and self.state != 'dead':
+        if self.image is not None and self.state != "dead":
             screen.blit(self.image, self.rect)
         elif self.state != "dead" and self.visible:
             pygame.draw.rect(screen, self.color, self.rect)
@@ -90,9 +87,7 @@ class Entity:
         pygame.draw.rect(
             screen,
             c.RED,
-            Rect(
-                7, ss.SCREEN_HEIGHT - 48, (self.health / self.max_health) * 95, 15
-            ),
+            Rect(7, ss.SCREEN_HEIGHT - 48, (self.health / self.max_health) * 95, 15),
         )
 
     def move_towards_player(self):
@@ -124,7 +119,11 @@ class Entity:
             r = random.randrange(100)
             if drop[1] >= r:
                 entity = config.mob_registry.get(drop[0])
-                to_add = entity(self.player, self.map, position=(self.rect.centerx, self.rect.centery))
+                to_add = entity(
+                    self.player,
+                    self.map,
+                    position=(self.rect.centerx, self.rect.centery),
+                )
                 self.map.add_entity(to_add)
                 break
         self.player.update_xp(self.xp)
@@ -138,6 +137,7 @@ class Entity:
             min(self.player.y_pos - 40, 0),
             max(self.player.y_pos + 40, ss.SCREEN_WIDTH),
         )
+
     def point_in_polygon(self, point, polygon):
         """
         Check if a point is inside a polygon using the ray-casting method.
@@ -164,25 +164,36 @@ class Entity:
 
         return inside
 
-
     def block_path(self):
         if self.block_rect.colliderect(self.player.rect):
-            if self.player.rect.centery > self.rect.centery and abs(
-                    self.player.rect.centerx - self.rect.centerx) < self.rect.width / 2:
-                if 'N' not in self.player.blocked_directions:
-                    self.player.blocked_directions.append('N')
-            elif self.player.rect.centery < self.rect.centery and abs(
-                    self.player.rect.centerx - self.rect.centerx) < self.rect.width / 2:
-                if 'S' not in self.player.blocked_directions:
-                    self.player.blocked_directions.append('S')
-            elif self.player.rect.centerx < self.rect.centerx and abs(
-                    self.player.rect.centery - self.rect.centery) < self.rect.height / 2:
-                if 'E' not in self.player.blocked_directions:
-                    self.player.blocked_directions.append('E')
-            elif self.player.rect.centerx > self.rect.centerx and abs(
-                    self.player.rect.centery - self.rect.centery) < self.rect.height / 2:
-                if 'W' not in self.player.blocked_directions:
-                    self.player.blocked_directions.append('W')
+            if (
+                self.player.rect.centery > self.rect.centery
+                and abs(self.player.rect.centerx - self.rect.centerx)
+                < self.rect.width / 2
+            ):
+                if "N" not in self.player.blocked_directions:
+                    self.player.blocked_directions.append("N")
+            elif (
+                self.player.rect.centery < self.rect.centery
+                and abs(self.player.rect.centerx - self.rect.centerx)
+                < self.rect.width / 2
+            ):
+                if "S" not in self.player.blocked_directions:
+                    self.player.blocked_directions.append("S")
+            elif (
+                self.player.rect.centerx < self.rect.centerx
+                and abs(self.player.rect.centery - self.rect.centery)
+                < self.rect.height / 2
+            ):
+                if "E" not in self.player.blocked_directions:
+                    self.player.blocked_directions.append("E")
+            elif (
+                self.player.rect.centerx > self.rect.centerx
+                and abs(self.player.rect.centery - self.rect.centery)
+                < self.rect.height / 2
+            ):
+                if "W" not in self.player.blocked_directions:
+                    self.player.blocked_directions.append("W")
 
     def set_random_position(self):
         positioned = False
@@ -194,10 +205,9 @@ class Entity:
         while not positioned:
             for entity in self.map.entities:
                 if self.rect.colliderect(entity.rect):
-                    x = random.randrange(50, ss.SCREEN_WIDTH-50)
-                    y = random.randrange(ss.HUD_HEIGHT + 50, ss.SCREEN_HEIGHT-50)
+                    x = random.randrange(50, ss.SCREEN_WIDTH - 50)
+                    y = random.randrange(ss.HUD_HEIGHT + 50, ss.SCREEN_HEIGHT - 50)
                     self.rect.center = x, y
                     positioned = False
                     break
                 positioned = True
-

@@ -208,7 +208,9 @@ class Golem(Boss):
             if self.rect.colliderect(entity.rect):
                 if isinstance(entity, Rock):
                     self.map.entities.remove(entity)
-                    proj = Projectile(self.player, self.map, self.x_pos + 16, self.y_pos)
+                    proj = Projectile(
+                        self.player, self.map, self.x_pos + 16, self.y_pos
+                    )
                     proj.speed = 8
                     proj.reflectable = True
                     self.map.add_entity(proj)
@@ -228,17 +230,26 @@ class Golem(Boss):
                 for i in range(rock_spawn_count):
                     rock = Rock(self.player, self.map)
                     if vertical_wall:
-                        rock.rect.center = (first_rock_pos[0], first_rock_pos[1] + i * 30)
+                        rock.rect.center = (
+                            first_rock_pos[0],
+                            first_rock_pos[1] + i * 30,
+                        )
 
                     else:
-                        rock.rect.center = (first_rock_pos[0] + i * 30, first_rock_pos[1])
+                        rock.rect.center = (
+                            first_rock_pos[0] + i * 30,
+                            first_rock_pos[1],
+                        )
                     rock.health = random.randrange(1, 10)
                     rock.block_rect.center = rock.rect.center
                     rock.drops = []
                     self.map.add_entity(rock)
             for _ in range(hole_spawn_count):
                 hole = Hole(self.player, self.map)
-                if abs(hole.rect.x - self.player.x_pos) > 10 and abs(hole.rect.y - self.player.y_pos) > 10:
+                if (
+                    abs(hole.rect.x - self.player.x_pos) > 10
+                    and abs(hole.rect.y - self.player.y_pos) > 10
+                ):
                     self.map.add_entity(Hole(self.player, self.map))
             self.last_shot_time = pygame.time.get_ticks()
         self.check_damage_timeout(False)
@@ -251,9 +262,9 @@ class Golem(Boss):
             if self.rect.colliderect(self.player.rect):
                 self.player.update_health(-1)
             if (
-                    self.player.sword_active
-                    and self.rect.colliderect(self.player.sword_hitbox)
-                    and not self.invincible
+                self.player.sword_active
+                and self.rect.colliderect(self.player.sword_hitbox)
+                and not self.invincible
             ):
                 self.player.weapon.collide(self)
                 self.check_health()

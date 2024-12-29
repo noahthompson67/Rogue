@@ -46,8 +46,5 @@ mob_registry = {
     "medic": Medic,
     "merchant": Merchant,
     "badrock": BadRock,
-    "demonmerchant": DemonMerchant
+    "demonmerchant": DemonMerchant,
 }
-
-
-

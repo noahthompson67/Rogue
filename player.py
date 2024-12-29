@@ -8,6 +8,7 @@ import config
 from colors import BLUE, BLACK, GREEN, CLEAR_WHITE
 import colors as c
 import config_files.screen_size as ss
+
 SWORD_RANGE = 30
 SWORD_TIMEOUT = 0.5
 LEFT_IDLE = 0
@@ -25,7 +26,6 @@ class Player:
         self.radius = 1
         self.x_pos = ss.SCREEN_WIDTH / 2
         self.y_pos = ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2
-
 
         self.rect = Rect(0, 0, config.PLAYER_SIZE, config.PLAYER_SIZE)
         self.rect.center = self.x_pos, self.y_pos
@@ -66,7 +66,7 @@ class Player:
         self.default_controls = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d]
         self.controls = self.default_controls
         self.weapons = []
-        sword = Weapon(self, 'sword')
+        sword = Weapon(self, "sword")
         self.weapons.append(sword)
         self.weapon_idx = 0
         self.weapon = self.weapons[0]
@@ -75,7 +75,10 @@ class Player:
 
     def update(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SLASH] and pygame.time.get_ticks() - self.console_timeout > 120:
+        if (
+            keys[pygame.K_SLASH]
+            and pygame.time.get_ticks() - self.console_timeout > 120
+        ):
             self.console_timeout = pygame.time.get_ticks()
             self.console_state = not self.console_state
         if keys[pygame.K_RETURN] and pygame.time.get_ticks() - self.pause_timeout > 120:
@@ -88,7 +91,10 @@ class Player:
             self.shield_active = False
         if self.console_state or self.paused:
             return
-        if keys[pygame.K_SPACE] and pygame.time.get_ticks() - self.interaction_time > 250:
+        if (
+            keys[pygame.K_SPACE]
+            and pygame.time.get_ticks() - self.interaction_time > 250
+        ):
             self.interaction_time = pygame.time.get_ticks()
             self.interacting = not self.interacting
         if self.health <= 0:
@@ -99,22 +105,22 @@ class Player:
             self.speed_modifier = 2
         else:
             self.speed_modifier = 1
-        if keys[self.controls[0]] and 'N' not in self.blocked_directions:  # Move up
+        if keys[self.controls[0]] and "N" not in self.blocked_directions:  # Move up
             self.y_pos -= self.speed * self.speed_modifier
             self.sword_active = False
             if not self.shield_active:
                 self.last_direction = "N"
-        if keys[self.controls[1]] and 'S' not in self.blocked_directions:  # Move down
+        if keys[self.controls[1]] and "S" not in self.blocked_directions:  # Move down
             self.y_pos += self.speed * self.speed_modifier
             self.sword_active = False
             if not self.shield_active:
                 self.last_direction = "S"
-        if keys[self.controls[2]] and 'W' not in self.blocked_directions:  # Move left
+        if keys[self.controls[2]] and "W" not in self.blocked_directions:  # Move left
             self.x_pos -= self.speed * self.speed_modifier
             self.sword_active = False
             if not self.shield_active:
                 self.last_direction = "W"
-        if keys[self.controls[3]] and 'E' not in self.blocked_directions:  # Move right
+        if keys[self.controls[3]] and "E" not in self.blocked_directions:  # Move right
             self.x_pos += self.speed * self.speed_modifier
             self.sword_active = False
             if not self.shield_active:
@@ -123,7 +129,6 @@ class Player:
             self.switch_weapon(False)
         if keys[pygame.K_e]:
             self.switch_weapon(True)
-
 
         self.rect.center = self.x_pos, self.y_pos
         if keys[pygame.K_UP]:
@@ -158,7 +163,7 @@ class Player:
             self.color = self.default_color
 
         self.y_pos = max(
-            config.PLAYER_SIZE/2+ ss.HUD_HEIGHT,
+            config.PLAYER_SIZE / 2 + ss.HUD_HEIGHT,
             min(ss.SCREEN_HEIGHT - config.PLAYER_SIZE, self.y_pos),
         )
         self.x_pos = max(
@@ -168,6 +173,7 @@ class Player:
         self.rect.center = self.x_pos, self.y_pos
         self.frame_count += 1
         self.blocked_directions = []
+
     def draw(self, screen):
         self.handle_color()
         if self.visible:
@@ -196,14 +202,12 @@ class Player:
         if self.health <= 0:
             font = pygame.font.Font("freesansbold.ttf", 20)
             death_text = font.render("RIP :(", True, BLACK, CLEAR_WHITE)
-            death_text_rect = Rect(
-                ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2, 30, 30
-            )
+            death_text_rect = Rect(ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2, 30, 30)
             screen.blit(death_text, death_text_rect)
         pygame.draw.rect(screen, self.color, self.rect)
 
     def update_health(self, num, shield_override=False):
-        if num >0:
+        if num > 0:
             self.health += num
         if num < 0:
             if self.invincible:
@@ -228,9 +232,6 @@ class Player:
             self.health_max += 1
             self.health += 1
 
-
-
-
     def handle_status(self):
         for i in range(len(self.status)):
             if self.status[i][0] == "poison":
@@ -249,9 +250,9 @@ class Player:
                     self.status[i][1] = 599
             elif self.status[i][0] == "slow":
                 pass
-            elif self.status[i][0] == 'sleep':
+            elif self.status[i][0] == "sleep":
                 if self.status[i][1] > 0:
-                    self.blocked_directions = ['N', 'S', 'E', 'W']
+                    self.blocked_directions = ["N", "S", "E", "W"]
                 else:
                     self.blocked_directions = []
             elif self.status[i][0] == "confusion":
@@ -273,7 +274,6 @@ class Player:
                 s[1] = duration - 1
                 return
         self.status.append([status, duration])
-
 
     def set_color(self, color, duration):
         self.color = color
@@ -301,6 +301,3 @@ class Player:
                 else:
                     self.weapon_idx -= 1
             self.weapon = self.weapons[self.weapon_idx]
-
-
-

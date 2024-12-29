@@ -11,9 +11,12 @@ ZOMBIE_SIZE = 50
 ENEMY_HEALTH_TIMEOUT = 0.5
 ZOMBIE_SPEED = 0.75
 
+
 class Enemy:
     def __init__(self):
         pass
+
+
 class Zombie(Entity, Enemy):
     def __init__(self, player, map):
         super().__init__(player, map)
@@ -64,7 +67,7 @@ class Shooter(Entity, Enemy):
         self.rect.center = self.x_pos, self.y_pos
         self.action_rect.center = self.x_pos, self.y_pos
         self.color = c.SHOOTER_COLOR
-        self.state = 'undead'
+        self.state = "undead"
         self.image = pygame.transform.scale(
             resources.gargoyle, (self.rect.width, self.rect.height)
         )
@@ -81,6 +84,7 @@ class Shooter(Entity, Enemy):
             to_add.reflectable = True
             self.map.add_entity(to_add)
             self.last_shot_time = pygame.time.get_ticks()
+
 
 class Projectile(Entity, Enemy):
     def __init__(self, player, map, x_pos, y_pos):
@@ -182,7 +186,6 @@ class Projectile(Entity, Enemy):
                     self.direction_y /= distance
 
 
-
 class Ghost(Entity, Enemy):
     def __init__(self, player, map):
         super().__init__(player, map)
@@ -228,11 +231,12 @@ class Bat(Entity, Enemy):
         self.frame_count = random.randrange(0, 50)
         self.first_frame = True
         self.image = resources.bat_1
-        self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
-
+        self.image = pygame.transform.scale(
+            self.image, (self.rect.width, self.rect.height)
+        )
 
     def update(self):
-        if self.state == 'alive':
+        if self.state == "alive":
             self.move_towards_player()
             self.check_damage_timeout()
             self.frame_count += 1
@@ -243,34 +247,30 @@ class Bat(Entity, Enemy):
                 else:
                     self.image = resources.bat_1
                 self.first_frame = not self.first_frame
-                self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
-
+                self.image = pygame.transform.scale(
+                    self.image, (self.rect.width, self.rect.height)
+                )
 
         super().update()
 
-
-
     def collide(self):
-        if self.state == 'alive':
+        if self.state == "alive":
             if self.rect.colliderect(self.player.rect):
                 self.player.update_health(-2)
                 if random.random() < 0.75:
-                    self.player.add_status('poison', random.randrange(1, 10)*100)
+                    self.player.add_status("poison", random.randrange(1, 10) * 100)
             if self.player.sword_active and self.rect.colliderect(
-                    self.player.sword_hitbox
+                self.player.sword_hitbox
             ):
                 self.player.weapon.collide(self)
 
 
-
 class MobGenerator(Entity, Enemy):
-    def __init__(self, player, map, mob, freq, mob_count = -1):
+    def __init__(self, player, map, mob, freq, mob_count=-1):
         super().__init__(player, map)
         self.generate_nearby_location()
         self.mob_count = mob_count
-        self.action_rect = Rect(
-            self.x_pos, self.y_pos, 10, 10
-        )
+        self.action_rect = Rect(self.x_pos, self.y_pos, 10, 10)
         self.health = 1
         self.default_color = c.GOLD
         self.color = self.default_color
@@ -282,11 +282,16 @@ class MobGenerator(Entity, Enemy):
     def update(self):
         if pygame.time.get_ticks() - self.spawn_time > self.frequency:
             to_add = self.mob(self.player, self.map)
-            distance = ((self.player.rect.centerx - to_add.rect.centerx)**2 + (self.player.rect.centery - to_add.rect.centery)**2)**0.5
-            while(distance < 10):
+            distance = (
+                (self.player.rect.centerx - to_add.rect.centerx) ** 2
+                + (self.player.rect.centery - to_add.rect.centery) ** 2
+            ) ** 0.5
+            while distance < 10:
                 to_add = self.mob(self.player, self.map)
-                distance = ((self.player.rect.centerx - to_add.rect.centerx) ** 2 + (
-                            self.player.rect.centery - to_add.rect.centery) ** 2) ** 0.5
+                distance = (
+                    (self.player.rect.centerx - to_add.rect.centerx) ** 2
+                    + (self.player.rect.centery - to_add.rect.centery) ** 2
+                ) ** 0.5
 
             to_add.drops = []
             self.map.add_entity(to_add)
@@ -308,7 +313,9 @@ class BadRock(Entity, Enemy):
         )
         self.health = 100
         self.rect = Rect(0, 0, 50, 50)
-        self.image = pygame.transform.scale(resources.rock, (self.rect.width, self.rect.height))
+        self.image = pygame.transform.scale(
+            resources.rock, (self.rect.width, self.rect.height)
+        )
         self.default_color = c.ZOMBIE_RED
         self.color = self.default_color
         self.speed = 0.75
@@ -333,5 +340,3 @@ class BadRock(Entity, Enemy):
                 self.player.sword_hitbox
             ):
                 self.player.weapon.collide(self)
-
-
