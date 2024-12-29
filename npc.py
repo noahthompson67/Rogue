@@ -120,6 +120,7 @@ class NPC(Entity):
                 if self.prompt_cursor_index < 0:
                     self.prompt_cursor_index = len(self.prompt_options)-1
                 self.prompt_cursor.center = self.prompt_options_rects[self.prompt_cursor_index].center
+
     def draw(self, screen):
         pygame.draw.rect(screen, c.ZOMBIE_RED, self.action_rect)
         pygame.draw.rect(screen, c.BLACK, self.outer_rect)
@@ -142,9 +143,14 @@ class NPC(Entity):
                 )
                 screen.blit(self.prompt_font, self.console_text_rect)
                 for i in range(len(self.prompt_options)):
-                    temp = self.font.render(self.prompt_options[i], True, c.BLACK, c.CONSOLE_BACKGROUND)
+                    temp = self.font.render(
+                        self.prompt_options[i], True, c.BLACK, c.CONSOLE_BACKGROUND
+                    )
+                    # Draw the text
                     screen.blit(temp, self.prompt_options_rects[i])
-                pygame.draw.rect(screen, c.BLACK, self.prompt_cursor, 15, 15)
+
+                    if i == self.prompt_cursor_index:
+                        pygame.draw.rect(screen, c.BLACK, self.prompt_options_rects[i].move(0, -5).inflate(15,0), width=3)
             else:
                 screen.blit(self.message, self.console_text_rect)
 
