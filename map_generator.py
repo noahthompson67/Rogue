@@ -23,7 +23,7 @@ class MapGenerator:
         self.biome = CaveBiome(self.player)
         self.zone = self.generate_grid(self.grid_size[0], self.grid_size[1])
 
-        #self.zone[5][6].warps[1].lock()
+        self.zone[5][6].warps[1].lock()
 
         self.current_map = self.zone[self.origin_cell[0]][self.origin_cell[1]]
         self.current_map.set_active()
@@ -43,6 +43,9 @@ class MapGenerator:
                 warp.translate_player()
                 self.current_map.remove_dead_entities()
                 self.current_map.remove_temporary_entities()
+            elif self.current_map.warps[map_idx].locked and self.player.keys > 0:
+                self.player.keys -= 1
+                self.current_map.warps[map_idx].lock()
 
     def warp_animation(self):
         self.screen.fill(BLACK)
