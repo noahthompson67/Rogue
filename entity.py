@@ -4,7 +4,7 @@ import pygame
 import colors as c
 import random
 import config
-
+import math
 
 class Entity:
     def __init__(self, player, entity_map=None, position=None):
@@ -90,15 +90,16 @@ class Entity:
             Rect(7, ss.SCREEN_HEIGHT - 48, (self.health / self.max_health) * 95, 15),
         )
 
+
     def move_towards_player(self):
-        if self.player.x_pos > self.x_pos:
-            self.x_pos += self.speed
-        elif self.player.x_pos < self.x_pos:
-            self.x_pos -= self.speed
-        if self.player.y_pos > self.y_pos:
-            self.y_pos += self.speed
-        elif self.player.y_pos < self.y_pos:
-            self.y_pos -= self.speed
+        dx = self.player.x_pos - self.x_pos
+        dy = self.player.y_pos - self.y_pos
+        distance = math.hypot(dx, dy)
+        if distance > 0:  # Avoid division by zero
+            dx /= distance
+            dy /= distance
+            self.x_pos += dx * self.speed
+            self.y_pos += dy * self.speed
         self.rect.center = self.x_pos, self.y_pos
 
     def check_contact_damage(self, damage):
