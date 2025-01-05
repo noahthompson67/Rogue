@@ -34,7 +34,7 @@ class MainTask:
         self.time_of_day = 0
         self.time_last_update = 0
         self.fullscreen = False
-        self.map_generator = MapGenerator(self.screen, self.player)
+        self.map_generator = MapGenerator(self.screen, self.player, "cave")
         self.map = self.map_generator.get_current_map()
         self.light_sources = []
         self.light_sources.append((self.player.x_pos, self.player.y_pos, 75, False))
@@ -305,6 +305,9 @@ class MainTask:
                 self.player.status = []
             elif cmd[0] == "speed":
                 self.player.speed = int(cmd[1])
+            elif cmd[0] == "biome":
+                self.map.entities = []
+                self.map_generator = MapGenerator(self.screen, self.player, cmd[1])
             else:
                 print(f"unknown command: {cmd}")
         except UnicodeError as e:

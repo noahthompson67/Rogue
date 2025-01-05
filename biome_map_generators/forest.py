@@ -12,8 +12,8 @@ import config_files.screen_size as ss
 
 
 class ForestBiome(Biome):
-    def __init__(self, player):
-        super().__init__(player, "forest")
+    def __init__(self, player, *args, **kwargs):
+        super().__init__(player, "forest", *args, **kwargs)
 
     def generate_random_map(self, map):
         rock_wall_count = random.randrange(4, 10)
