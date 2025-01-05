@@ -14,12 +14,12 @@ import pygame
 
 
 class MapGenerator:
-    def __init__(self, screen, player):
+    def __init__(self, screen, player, name):
         self.screen = screen
         self.player = player
         self.origin_cell = 5, 5
         self.grid_size = 10, 10
-        self.biome_name = "cave"
+        self.biome_name = name
         self.biome = Biome(self.player, self.biome_name)
         self.zone = self.generate_grid(self.grid_size[0], self.grid_size[1])
 
