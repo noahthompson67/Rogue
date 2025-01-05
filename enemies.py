@@ -29,8 +29,12 @@ class Zombie(Entity, Enemy):
         self.color = self.default_color
         self.speed = 0.75
         self.rect = Rect(self.x_pos, self.y_pos, ZOMBIE_SIZE, ZOMBIE_SIZE)
+        self.action_rect.center = self.rect.center
+        self.sleeping = True
 
     def update(self):
+        if self.sleeping:
+            return
         if self.health <= 0:
             if self.state == "alive":
                 self.end()
@@ -43,6 +47,10 @@ class Zombie(Entity, Enemy):
         if self.state != "dead":
             self.check_contact_damage(1)
             if self.action_rect.colliderect(self.player.rect):
+                if self.sleeping:
+                    print('awake')
+                    self.sleeping = False
+                    return
                 self.speed = min(1.5, self.speed + 0.05)
             else:
                 self.speed = max(ZOMBIE_SPEED, self.speed - 0.05)
@@ -50,6 +58,10 @@ class Zombie(Entity, Enemy):
                 self.player.sword_hitbox
             ):
                 self.player.weapon.collide(self)
+
+    def draw(self, screen):
+        if not self.sleeping:
+            super().draw(screen)
 
 
 class Shooter(Entity, Enemy):
