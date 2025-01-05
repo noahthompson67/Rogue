@@ -31,7 +31,7 @@ class Zombie(Entity, Enemy):
         self.rect = Rect(self.x_pos, self.y_pos, ZOMBIE_SIZE, ZOMBIE_SIZE)
         self.action_rect.center = self.rect.center
         self.sleeping = True
-
+        self.generate_random_location()
     def update(self):
         if self.sleeping:
             return

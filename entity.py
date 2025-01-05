@@ -139,6 +139,11 @@ class Entity:
             max(self.player.y_pos + 40, ss.SCREEN_WIDTH),
         )
 
+    def generate_random_location(self):
+        self.x_pos = random.randrange(40, int(ss.SCREEN_WIDTH*0.95))
+        self.y_pos = random.randrange(ss.HUD_HEIGHT, int(ss.SCREEN_HEIGHT*0.95))
+
+
     def point_in_polygon(self, point, polygon):
         """
         Check if a point is inside a polygon using the ray-casting method.
