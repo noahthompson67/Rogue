@@ -1,3 +1,4 @@
+import config
 import resources
 from entity import Entity
 import random
@@ -205,11 +206,11 @@ class Ghost(Entity, Enemy):
         self.action_rect = Rect(
             self.x_pos, self.y_pos, ZOMBIE_SIZE * 5, ZOMBIE_SIZE * 5
         )
-        self.health = 3
+        self.health = 2
         self.default_color = c.GHOST_COLOR
         self.color = self.default_color
         self.speed = 0.75
-        self.rect = Rect(self.x_pos, self.y_pos, ss.PLAYER_SIZE, ss.PLAYER_SIZE)
+        self.rect = Rect(self.x_pos, self.y_pos, config.PLAYER_SIZE, config.PLAYER_SIZE)
         self.frame_count = random.randrange(0, 50)
 
     def update(self):
@@ -226,6 +227,12 @@ class Ghost(Entity, Enemy):
 
     def collide(self):
         self.check_contact_damage(1)
+        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
+            if "ghostblade" in self.player.weapon.name:
+                self.player.weapon.collide(self)
+        print(self.health)
+
+
 
 
 class Bat(Entity, Enemy):

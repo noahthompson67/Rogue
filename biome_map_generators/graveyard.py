@@ -3,7 +3,7 @@ import environment_objects
 import npc
 from environment_objects import Rock, Fire, Hole, MushroomPatch
 from items import TreasureChest
-from enemies import MobGenerator, Zombie
+from enemies import MobGenerator, Zombie, Ghost
 from boss import Golem
 from pygame import Rect
 import config_files.screen_size as ss
@@ -14,7 +14,11 @@ class GraveyardBiome(Biome):
         print('generating graveyard')
 
     def generate_map(self, map):
-        map.add_entity(MobGenerator(self.player, map, Zombie, 1000))
+        for _ in range(10):
+            map.add_entity(Zombie(self.player, map))
+        for _ in range(5):
+            map.add_entity(Ghost(self.player, map))
+
 
     def generate_boss_entrance(self, *args, **kwargs):
         print('override generate_boss_entrance')

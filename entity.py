@@ -57,6 +57,7 @@ class Entity:
 
     def update_health_override(self, num):
         self.health += num
+        self.check_health()
 
     def update(self):
         if self.health <= 0:

@@ -43,3 +43,17 @@ class CursedBlade(Weapon):
     def collide(self, entity):
         super().collide(entity)
         self.player.health = min(self.player.health, 1)
+
+
+class GhostBlade(Weapon):
+    def __init__(self, player, name):
+        super().__init__(player, name)
+        self.damage = 0
+        self.color = (120, 120, 120)
+
+    def collide(self, entity):
+        super().collide(entity)
+        if isinstance(entity, enemies.Ghost) and self.player.energy > 0:
+            entity.update_health_override(-1)
+            self.player.energy -= 1
+
