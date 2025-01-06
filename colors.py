@@ -30,7 +30,7 @@ SLOW_ICON = (0, 50, 120)
 HOTSPRING = (0, 80, 180)
 ENERGY = (71, 161, 213)
 
-BIOME_BACKGROUND_COLORS = {"cave": (163, 174, 184), "forest": (50, 250, 50)}
+BIOME_BACKGROUND_COLORS = {"cave": (163, 174, 184), "forest": (50, 250, 50), "void": (50, 100, 150), "graveyard": (110, 124, 145)}
 
 
 # MINIMAP COLORS
