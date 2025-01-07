@@ -1,5 +1,5 @@
 import random
-from weapon import Weapon
+from weapon import Weapon, GhostBlade, Pickaxe
 import pygame
 import pygame.time
 from pygame import Rect
@@ -67,7 +67,11 @@ class Player:
         self.controls = self.default_controls
         self.weapons = []
         sword = Weapon(self, "sword")
+        ghostblade = GhostBlade(self, "ghostblade")
+        pickaxe = Pickaxe(self, "pickaxe")
         self.weapons.append(sword)
+        self.weapons.append(ghostblade)
+        self.weapons.append(pickaxe)
         self.weapon_idx = 0
         self.weapon = self.weapons[0]
         self.keys = 0
@@ -286,7 +290,7 @@ class Player:
                 self.color = self.default_color
 
     def switch_weapon(self, forward):
-        if pygame.time.get_ticks() - self.weapon_switch_time < 45 or self.sword_active:
+        if pygame.time.get_ticks() - self.weapon_switch_time < 200 or self.sword_active:
             return
         else:
             self.weapon_switch_time = pygame.time.get_ticks()

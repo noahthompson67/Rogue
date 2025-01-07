@@ -34,7 +34,7 @@ class MainTask:
         self.time_of_day = 0
         self.time_last_update = 0
         self.fullscreen = False
-        self.map_generator = MapGenerator(self.screen, self.player, "cave")
+        self.map_generator = MapGenerator(self.screen, self.player, "void")
         self.map = self.map_generator.get_current_map()
         self.light_sources = []
         self.light_sources.append((self.player.x_pos, self.player.y_pos, 75, False))
@@ -366,9 +366,14 @@ class MainTask:
         )
         self.money_icon = Rect(x + 120, y, 10, 10)
         self.status_icons = []
+        self.weapon_icons = []
+        self.weapon_selection_rect = Rect(x + 200, y + 75, 50, 50)
         for i in range(10):
             status_rect = Rect(x + i * 50, y + 75, 50, 50)
             self.status_icons.append(status_rect)
+        for i in range(10):
+            weapon_rect = Rect(x + 250 + (i * 50), y + 75, 25, 25)
+            self.weapon_icons.append(weapon_rect)
 
         self.poison_icon_image = pygame.image.load(
             "assets/poison_icon.png"
@@ -478,6 +483,13 @@ class MainTask:
                     screen, c.SLOW_ICON, self.status_icons[status_icon_idx]
                 )
                 status_icon_idx += 1
+        for i in range(len(self.player.weapons)):
+            if self.player.weapon_idx == i:
+                pygame.draw.rect(self.screen, c.BLACK, self.weapon_icons[i].inflate(5,5))
+            pygame.draw.rect(self.screen, self.player.weapons[i].color, self.weapon_icons[i])
+        x = config.X_HUD_OFFSET
+        y = config.Y_HUD_OFFSET
+
 
         screen.blit(level_text, self.level_text_rect)
         screen.blit(money_text, self.money_text_rect)
