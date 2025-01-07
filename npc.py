@@ -20,11 +20,9 @@ class NPC(Entity):
         )
         self.message_text = ["NPC message..."]
         self.rect = Rect(self.x_pos, self.y_pos, self.size, self.size)
-        self.outer_rect = Rect(self.x_pos, self.y_pos, 30, 30)
         self.set_random_position()
         self.action_rect = Rect(0, 0, self.size * 3, self.size * 3)
         self.action_rect.center = self.rect.center
-        self.outer_rect.center = self.rect.center
         self.default_color = c.GREEN
         self.color = c.GREEN
         self.state = "alive"
@@ -131,7 +129,6 @@ class NPC(Entity):
     def set_pos(self, x, y):
         self.rect.center = x, y
         self.action_rect.center = x, y
-        self.outer_rect.center = x, y
 
     def update(self):
         if not self.action_rect.colliderect(self.player.rect):
@@ -163,7 +160,7 @@ class NPC(Entity):
 
     def draw(self, screen):
         pygame.draw.rect(screen, c.ZOMBIE_RED, self.action_rect)
-        pygame.draw.rect(screen, c.BLACK, self.outer_rect)
+        pygame.draw.rect(screen, c.BLACK, self.rect.inflate(2,2))
         super().draw(screen)
         if self.active:
             if self.inactive:
