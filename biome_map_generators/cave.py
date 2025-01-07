@@ -26,7 +26,6 @@ class CaveBiome(Biome):
                 rock = Rock(self.player, map)
                 if vertical_wall:
                     rock.rect.center = (first_rock_pos[0], first_rock_pos[1] + i * 30)
-
                 else:
                     rock.rect.center = (first_rock_pos[0] + i * 30, first_rock_pos[1])
                 rock.health = random.randrange(1, 5)
@@ -274,7 +273,7 @@ class CaveBiome(Biome):
         map.add_entity((Shooter(self.player, map, (0, 1))))
         map.add_entity((Shooter(self.player, map, (1, 0))))
         map.add_entity((Shooter(self.player, map, (1, 1))))
-        for _ in range(4):
+        for _ in range(1):
             map.add_entity(MobGenerator(self.player, map, Bat, 60, 8))
         map.add_entity(treasure_chest)
 

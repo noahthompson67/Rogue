@@ -49,7 +49,6 @@ class Zombie(Entity, Enemy):
             self.check_contact_damage(1)
             if self.action_rect.colliderect(self.player.rect):
                 if self.sleeping:
-                    print('awake')
                     self.sleeping = False
                     return
                 self.speed = min(1.5, self.speed + 0.05)

@@ -6,7 +6,6 @@ class Biome:
     def __new__(cls, player, name, *args, **kwargs):
         if name == "cave":
             from biome_map_generators.cave import CaveBiome
-            print('generated a cave')
             return super().__new__(CaveBiome)
         elif name == "forest":
             from biome_map_generators.forest import ForestBiome

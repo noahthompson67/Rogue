@@ -118,12 +118,11 @@ class TreasureChest(Entity):
     def interact(self, screen):
         if (
             self.block_rect.colliderect(self.player.rect)
-            and self.map.get_enemies_remaining() == 0
+            and self.map.get_enemies_remaining() == 0 and self.state != 'open'
         ):
             self.state = "open"
             if isinstance(self.treasure, weapon.Weapon):
                 self.player.weapons.append(self.treasure)
-
 
 class Key(Entity):
     def __init__(self, player, map, position=None):
