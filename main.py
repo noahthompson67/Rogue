@@ -308,6 +308,11 @@ class MainTask:
             elif cmd[0] == "biome":
                 self.map.entities = []
                 self.map_generator = MapGenerator(self.screen, self.player, cmd[1])
+            elif cmd[0] == "weapon":
+                weapon = config.weapon_registry.get(cmd[1])
+                wep = weapon(self.player, cmd[1])
+                self.player.weapons.append(wep)
+
             else:
                 print(f"unknown command: {cmd}")
         except UnicodeError as e:
