@@ -45,8 +45,7 @@ class Fire(Entity):
         )
         self.rect = Rect(0, 0, 30, 30)
         self.rect.center = self.x_pos, self.y_pos
-        self.action_rect = Rect(self.x_pos, self.y_pos, 15, 15)
-        self.action_rect.center = self.x_pos, self.y_pos
+        self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.state = "alive"
         self.color_index = 0
@@ -94,8 +93,7 @@ class Water(Entity):
         for i in range(len(self.points)):
             self.points[i] = (self.points[i][0], self.points[i][1] + 200)
         self.rect.center = self.x_pos, self.y_pos
-        self.action_rect = Rect(self.x_pos, self.y_pos, 15, 15)
-        self.action_rect.center = self.x_pos, self.y_pos
+        self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.state = "alive"
         self.color_index = 0
@@ -140,8 +138,7 @@ class Grass(Entity):
         )
         self.health = 1
         self.rect.center = self.x_pos, self.y_pos
-        self.action_rect = Rect(self.x_pos, self.y_pos, 15, 15)
-        self.action_rect.center = self.x_pos, self.y_pos
+        self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.state = "alive"
         self.xp = 0
@@ -200,8 +197,7 @@ class Rock(Entity):
         )
         self.rect.center = self.x_pos, self.y_pos
         self.block_rect.center = self.x_pos, self.y_pos
-        self.action_rect = Rect(self.x_pos, self.y_pos, 15, 15)
-        self.action_rect.center = self.x_pos, self.y_pos
+        self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.state = "alive"
         self.xp = 0
@@ -267,7 +263,7 @@ class MushroomPatch(Entity):
         )
         self.health = 1
         self.rect.center = self.x_pos, self.y_pos
-        self.action_rect = Rect(self.x_pos, self.y_pos, 15, 15)
+        self.action_rect = self.rect.inflate(15, 15)
         self.action_rect.center = self.x_pos, self.y_pos
         self.drops = [("healthpickup", 5), ("energy", 5), ("coin", 5)]
         self.frame_count = 0

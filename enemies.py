@@ -22,15 +22,12 @@ class Zombie(Entity, Enemy):
     def __init__(self, player, map):
         super().__init__(player, map)
         self.generate_nearby_location()
-        self.action_rect = Rect(
-            self.x_pos, self.y_pos, ZOMBIE_SIZE * 5, ZOMBIE_SIZE * 5
-        )
         self.health = 3
         self.default_color = c.ZOMBIE_RED
         self.color = self.default_color
         self.speed = 0.75
         self.rect = Rect(self.x_pos, self.y_pos, ZOMBIE_SIZE, ZOMBIE_SIZE)
-        self.action_rect.center = self.rect.center
+        self.action_rect = self.rect.inflate(ZOMBIE_SIZE * 5, ZOMBIE_SIZE * 5)
         self.sleeping = True
         self.generate_random_location()
     def update(self):
@@ -73,11 +70,10 @@ class Shooter(Entity, Enemy):
         if position != (-1, -1):
             self.x_pos = position[0] * ss.SCREEN_WIDTH / 4
             self.y_pos = position[1] * ss.SCREEN_HEIGHT / 4
-        self.rect = Rect(self.y_pos, self.x_pos, 50, 50)
-        self.last_shot_time = 0
-        self.action_rect = Rect(self.x_pos, self.y_pos, 500, 500)
+        self.rect = Rect(0, 0, 50, 50)
         self.rect.center = self.x_pos, self.y_pos
-        self.action_rect.center = self.x_pos, self.y_pos
+        self.last_shot_time = 0
+        self.action_rect = self.rect.inflate(500, 500)
         self.color = c.SHOOTER_COLOR
         self.state = "undead"
         self.image = pygame.transform.scale(
@@ -202,9 +198,6 @@ class Ghost(Entity, Enemy):
     def __init__(self, player, map):
         super().__init__(player, map)
         self.generate_nearby_location()
-        self.action_rect = Rect(
-            self.x_pos, self.y_pos, ZOMBIE_SIZE * 5, ZOMBIE_SIZE * 5
-        )
         self.health = 2
         self.default_color = c.GHOST_COLOR
         self.color = self.default_color
@@ -288,7 +281,6 @@ class MobGenerator(Entity, Enemy):
         super().__init__(player, map)
         self.generate_nearby_location()
         self.mob_count = mob_count
-        self.action_rect = Rect(self.x_pos, self.y_pos, 10, 10)
         self.health = 1
         self.default_color = c.GOLD
         self.color = self.default_color
@@ -326,11 +318,9 @@ class BadRock(Entity, Enemy):
     def __init__(self, player, map):
         super().__init__(player, map)
         self.generate_nearby_location()
-        self.action_rect = Rect(
-            self.x_pos, self.y_pos, ZOMBIE_SIZE * 5, ZOMBIE_SIZE * 5
-        )
         self.health = 100
         self.rect = Rect(0, 0, 50, 50)
+        self.action_rect = self.rect.inflate(250, 250)
         self.image = pygame.transform.scale(
             resources.rock, (self.rect.width, self.rect.height)
         )

@@ -21,8 +21,7 @@ class NPC(Entity):
         self.message_text = ["NPC message..."]
         self.rect = Rect(self.x_pos, self.y_pos, self.size, self.size)
         self.set_random_position()
-        self.action_rect = Rect(0, 0, self.size * 3, self.size * 3)
-        self.action_rect.center = self.rect.center
+        self.action_rect = self.rect.inflate(50, 50)
         self.default_color = c.GREEN
         self.color = c.GREEN
         self.state = "alive"

@@ -28,8 +28,7 @@ class Telekinetic(Boss):
         self.y_pos = ss.SCREEN_HEIGHT / 2
         self.rect = Rect(self.y_pos, self.x_pos, 50, 50)
         self.last_shot_time = 0
-        self.action_rect = Rect(self.x_pos, self.y_pos, 500, 500)
-        self.rect.center = self.x_pos, self.y_pos
+        self.action_rect = self.rect.inflate(500, 500)
         self.action_rect.center = self.x_pos, self.y_pos
         self.speed = 0.2
         self.default_color = c.SHOOTER_COLOR
