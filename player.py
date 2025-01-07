@@ -67,11 +67,7 @@ class Player:
         self.controls = self.default_controls
         self.weapons = []
         sword = Weapon(self, "sword")
-        ghostblade = GhostBlade(self, "ghostblade")
-        pickaxe = Pickaxe(self, "pickaxe")
         self.weapons.append(sword)
-        self.weapons.append(ghostblade)
-        self.weapons.append(pickaxe)
         self.weapon_idx = 0
         self.weapon = self.weapons[0]
         self.keys = 0

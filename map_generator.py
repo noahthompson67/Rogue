@@ -94,7 +94,6 @@ class MapGenerator:
         y_offset = minimap_y_offset + config.MINIMAP_CELL_SIZE * 2
         for i in range(0, len(self.grid)):
             for j in range(0, len(self.grid[i])):
-                print(f"{i, j}: {self.grid[i][j]}")
                 if self.grid[i][j] != 0:
                     rect = Rect(
                         x_offset + (j * config.MINIMAP_CELL_SIZE),
