@@ -53,7 +53,6 @@ class GhostBlade(Weapon):
 
     def collide(self, entity):
         super().collide(entity)
-        if isinstance(entity, enemies.Ghost) and self.player.energy > 0:
-            entity.update_health_override(-1)
-            self.player.energy -= 1
+        entity.update_health_override(-1)
+        self.player.energy -= 1
 

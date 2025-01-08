@@ -1,5 +1,6 @@
 import config
 import resources
+import weapon
 from entity import Entity
 import random
 import config_files.screen_size as ss
@@ -33,13 +34,9 @@ class Zombie(Entity, Enemy):
     def update(self):
         if self.sleeping:
             return
-        if self.health <= 0:
-            if self.state == "alive":
-                self.end()
-            return
         self.move_towards_player()
-
         self.check_damage_timeout()
+        super().update()
 
     def collide(self):
         if self.state != "dead":
@@ -220,9 +217,8 @@ class Ghost(Entity, Enemy):
     def collide(self):
         self.check_contact_damage(1)
         if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
-            if "ghostblade" in self.player.weapon.name:
+            if isinstance(self.player.weapon, weapon.GhostBlade):
                 self.player.weapon.collide(self)
-        print(self.health)
 
 
 
@@ -348,3 +344,37 @@ class BadRock(Entity, Enemy):
                 self.player.sword_hitbox
             ):
                 self.player.weapon.collide(self)
+
+class SpiritOrb(Entity):
+    def __init__(self, player, map):
+        super().__init__(player, map)
+        self.interacted = False
+        self.path_index = 0
+        self.health = 1
+        self.reverse = False
+        self.color = (215, 252, 253)
+        self.rect = Rect(0, 0, 10, 10)
+        self.light_source = True
+        self.update_time = 0
+        l = random.randrange(1000, 5000)
+        self.path = self.generate_loopy_path(length=l, step_range=(2, 10), loopiness=10, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
+    def update(self):
+        if pygame.time.get_ticks() - self.update_time > 10:
+            self.update_time = pygame.time.get_ticks()
+            if self.path_index == len(self.path)-1:
+                self.reverse = True
+            elif self.path_index == 0:
+                self.reverse = False
+            self.rect.center = self.path[self.path_index]
+            if self.reverse:
+                self.path_index -= 1
+            else:
+                self.path_index += 1
+        super().update()
+
+    def collide(self):
+        self.check_contact_damage(1)
+        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
+            if isinstance(self.player.weapon, weapon.GhostBlade):
+                self.player.weapon.collide(self)
+

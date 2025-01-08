@@ -275,3 +275,4 @@ class Golem(Boss):
         self.map.add_entity(to_add)
 
         self.player.update_xp(self.xp)
+

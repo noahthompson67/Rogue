@@ -158,7 +158,6 @@ class NPC(Entity):
                 ].center
 
     def draw(self, screen):
-        pygame.draw.rect(screen, c.ZOMBIE_RED, self.action_rect)
         pygame.draw.rect(screen, c.BLACK, self.rect.inflate(2,2))
         super().draw(screen)
         if self.active:
@@ -324,3 +323,4 @@ class DemonMerchant(NPC):
                 self.message_index = len(self.message_text) - 1
                 self.inactive = True
                 self.state = "dead"
+

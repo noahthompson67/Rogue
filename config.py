@@ -1,4 +1,4 @@
-from enemies import Zombie, Shooter, Ghost, Bat, BadRock
+from enemies import Zombie, Shooter, Ghost, Bat, BadRock, SpiritOrb
 from environment_objects import Hole, Fire, Water, Grass, Rock, MushroomPatch, HotSpring
 from boss import Telekinetic, Golem
 from npc import NPC, Medic, Merchant, DemonMerchant
@@ -48,6 +48,7 @@ mob_registry = {
     "merchant": Merchant,
     "badrock": BadRock,
     "demonmerchant": DemonMerchant,
+    "orb": SpiritOrb
 }
 
 weapon_registry = {
