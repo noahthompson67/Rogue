@@ -1,10 +1,7 @@
-import pygame.draw
-
 import enemies
 import environment_objects
 import colors as c
-from pygame import Rect
-import config
+
 
 class Weapon:
     def __init__(self, player, name):
@@ -12,19 +9,11 @@ class Weapon:
         self.damage = self.player.damage
         self.name = name
         self.color = c.GREEN
-        self.hitbox = Rect(
-            self.player.y_pos, self.player.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
-        )
 
     def collide(self, entity):
         entity.update_health(-self.damage)
         # TODO: handle knockback
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.hitbox)
-
-    def use(self, keys):
-        pass
 
 class Pickaxe(Weapon):
     def __init__(self, player, name):
@@ -66,10 +55,4 @@ class GhostBlade(Weapon):
         super().collide(entity)
         entity.update_health_override(-1)
         self.player.energy -= 1
-
-class Laser(Weapon):
-    def __init__(self,  player, name):
-        super().__init__(self, player, name)
-
-
 

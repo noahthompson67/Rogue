@@ -93,7 +93,7 @@ class Telekinetic(Boss):
                 self.player.update_health(-1)
             if (
                 self.player.sword_active
-                and self.rect.colliderect(self.player.weapon.hitbox)
+                and self.rect.colliderect(self.player.sword_hitbox)
                 and not self.invincible
             ):
                 self.player.weapon.collide(self)
@@ -164,7 +164,7 @@ class TelekineticShard(Entity):
             if self.rect.colliderect(self.player.rect):
                 self.player.update_health(-1)
             if self.player.sword_active and self.rect.colliderect(
-                self.player.weapon.hitbox
+                self.player.sword_hitbox
             ):
                 self.player.weapon.collide(self)
 
@@ -262,7 +262,7 @@ class Golem(Boss):
                 self.player.update_health(-1)
             if (
                 self.player.sword_active
-                and self.rect.colliderect(self.player.weapon.hitbox)
+                and self.rect.colliderect(self.player.sword_hitbox)
                 and not self.invincible
             ):
                 self.player.weapon.collide(self)

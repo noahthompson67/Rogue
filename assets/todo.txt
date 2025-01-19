@@ -4,17 +4,18 @@ Map
     - terrains
         - deep water: impassable without some ability
         - lava: impassable, deals fire damage
-    - Level end
-        - Spawns after boss
-        - Regenerates map
 
  NPCs
+    - signs/NPCs with dialog
     - shopkeeper
     - buildings/villages
 
  Pause menu
     - Options
+    - Pause everything
 
+ Console commands
+    -spawn items
 
 Player enhancements
     - player stats
@@ -24,13 +25,17 @@ Player enhancements
         - slow (slow speed)
         - sleep (no movement)
 
-
 ====================== MECHANICS ======================
-Achievements
-    - Kill counters per mob
+
 Items
     - Ammo for player projectiles
     - Stat boosts
+
+
+
+
+doors/keys
+    - Warps locked until key is acquired
 
 interactions between entities
     -NPCs hide from enemies

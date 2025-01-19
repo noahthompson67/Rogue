@@ -49,7 +49,7 @@ class Zombie(Entity, Enemy):
             else:
                 self.speed = max(ZOMBIE_SPEED, self.speed - 0.05)
             if self.player.sword_active and self.rect.colliderect(
-                self.player.weapon.hitbox
+                self.player.sword_hitbox
             ):
                 self.player.weapon.collide(self)
 
@@ -126,7 +126,7 @@ class Projectile(Entity, Enemy):
             if self.rect.colliderect(self.player.rect):
                 self.player.update_health(-1)
             elif (
-                self.rect.colliderect(self.player.weapon.hitbox)
+                self.rect.colliderect(self.player.sword_hitbox)
                 and self.reflectable
                 and self.player.sword_active
                 and not self.reflected
@@ -216,7 +216,7 @@ class Ghost(Entity, Enemy):
 
     def collide(self):
         self.check_contact_damage(1)
-        if self.player.sword_active and self.rect.colliderect(self.player.weapon.hitbox):
+        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
             if isinstance(self.player.weapon, weapon.GhostBlade):
                 self.player.weapon.collide(self)
 
@@ -267,7 +267,7 @@ class Bat(Entity, Enemy):
                 if random.random() < 0.75:
                     self.player.add_status("poison", random.randrange(1, 10) * 100)
             if self.player.sword_active and self.rect.colliderect(
-                self.player.weapon.hitbox
+                self.player.sword_hitbox
             ):
                 self.player.weapon.collide(self)
 
@@ -341,7 +341,7 @@ class BadRock(Entity, Enemy):
             else:
                 self.speed = max(ZOMBIE_SPEED, self.speed - 0.05)
             if self.player.sword_active and self.rect.colliderect(
-                self.player.weapon.hitbox
+                self.player.sword_hitbox
             ):
                 self.player.weapon.collide(self)
 
@@ -374,7 +374,7 @@ class SpiritOrb(Entity):
 
     def collide(self):
         self.check_contact_damage(1)
-        if self.player.sword_active and self.rect.colliderect(self.player.weapon.hitbox):
+        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
             if isinstance(self.player.weapon, weapon.GhostBlade):
                 self.player.weapon.collide(self)
 
