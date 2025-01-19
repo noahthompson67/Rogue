@@ -151,7 +151,7 @@ class Grass(Entity):
         else:
             self.player.speed_modifier = 1
 
-        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
+        if self.player.sword_active and self.rect.colliderect(self.player.weapon.hitbox):
             self.player.weapon.collide(self)
 
 
@@ -209,7 +209,7 @@ class Rock(Entity):
             return
         self.block_path()
 
-        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
+        if self.player.sword_active and self.rect.colliderect(self.player.weapon.hitbox):
             if "pickaxe" in self.player.weapon.name:
                 self.player.weapon.collide(self)
 
@@ -278,7 +278,7 @@ class MushroomPatch(Entity):
         else:
             self.player.speed_modifier = 1
 
-        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
+        if self.player.sword_active and self.rect.colliderect(self.player.weapon.hitbox):
             self.player.weapon.collide(self)
 
 
