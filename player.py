@@ -33,6 +33,7 @@ class Player:
         self.sword_hitbox = Rect(
             self.y_pos, self.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
         )
+        self.default_sword_hitbox = self.sword_hitbox
         self.shield_hitbox = Rect(
             self.y_pos, self.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
         )
@@ -132,21 +133,29 @@ class Player:
 
         self.rect.center = self.x_pos, self.y_pos
         if keys[pygame.K_UP]:
-            self.sword_active = True
             self.sword_time = pygame.time.get_ticks()
-            self.sword_hitbox.center = self.x_pos, self.y_pos - SWORD_RANGE
+            if not self.sword_active:
+                self.sword_hitbox = Rect(self.rect.left, self.rect.top-self.weapon.range, config.PLAYER_SIZE, self.weapon.range)
+                self.sword_hitbox.centerx = self.rect.centerx
+            self.sword_active = True
         elif keys[pygame.K_DOWN]:
-            self.sword_active = True
             self.sword_time = pygame.time.get_ticks()
-            self.sword_hitbox.center = self.x_pos, self.y_pos + SWORD_RANGE
+            if not self.sword_active:
+                self.sword_hitbox = Rect(self.rect.left, self.rect.bottom, config.PLAYER_SIZE, self.weapon.range)
+                self.sword_hitbox.centerx = self.rect.centerx
+            self.sword_active = True
         elif keys[pygame.K_LEFT]:
-            self.sword_active = True
             self.sword_time = pygame.time.get_ticks()
-            self.sword_hitbox.center = self.x_pos - SWORD_RANGE, self.y_pos
+            if not self.sword_active:
+                self.sword_hitbox = Rect(self.rect.left-self.weapon.range, self.rect.bottom, self.weapon.range, config.PLAYER_SIZE)
+                self.sword_hitbox.centery = self.rect.centery
+            self.sword_active = True
         elif keys[pygame.K_RIGHT]:
-            self.sword_active = True
             self.sword_time = pygame.time.get_ticks()
-            self.sword_hitbox.center = self.x_pos + SWORD_RANGE, self.y_pos
+            if not self.sword_active:
+                self.sword_hitbox = Rect(self.rect.right, self.rect.bottom, self.weapon.range,config.PLAYER_SIZE)
+                self.sword_hitbox.centery = self.rect.centery
+            self.sword_active = True
         elif keys[pygame.K_z]:
             self.shield_active = True
             if self.last_direction == "N":
@@ -180,6 +189,9 @@ class Player:
             if self.sword_active:
                 if pygame.time.get_ticks() - self.sword_time > SWORD_TIMEOUT:
                     self.sword_active = False
+                    self.shield_hitbox = Rect(
+                        self.y_pos, self.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
+                    )
                 pygame.draw.rect(screen, self.weapon.color, self.sword_hitbox)
             if self.shield_active:
                 shield_width = (

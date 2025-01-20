@@ -9,7 +9,7 @@ class Weapon:
         self.damage = self.player.damage
         self.name = name
         self.color = c.GREEN
-
+        self.range = 30
     def collide(self, entity):
         entity.update_health(-self.damage)
         # TODO: handle knockback
@@ -20,6 +20,7 @@ class Pickaxe(Weapon):
         super().__init__(player, name)
         self.damage = self.player.damage / 2
         self.color = (100, 100, 3)
+        self.range = 15
 
     def collide(self, entity):
         if isinstance(entity, environment_objects.Rock) and self.player.energy > 0:
