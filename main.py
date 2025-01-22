@@ -261,14 +261,20 @@ class MainTask:
             cmd = command.split(" ")
             if cmd[0] == "spawn":
                 try:
-                    mob = config.mob_registry.get(cmd[1])
-                    if len(cmd) > 2:
-                        spawn_count = int(cmd[2])
+                    if cmd[1] == 'all':
+                        for mob in config.mob_registry:
+                            print(mob)
+                            to_add = config.mob_registry.get(mob)(self.player, self.map)
+                            self.map_generator.current_map.add_entity(to_add)
                     else:
-                        spawn_count = 1
-                    for _ in range(spawn_count):
-                        to_add = mob(self.player, self.map)
-                        self.map_generator.current_map.add_entity(to_add)
+                        mob = config.mob_registry.get(cmd[1])
+                        if len(cmd) > 2:
+                            spawn_count = int(cmd[2])
+                        else:
+                            spawn_count = 1
+                        for _ in range(spawn_count):
+                            to_add = mob(self.player, self.map)
+                            self.map_generator.current_map.add_entity(to_add)
                 except UnicodeError as e:
                     print(f"No entity of type {cmd[1]}")
                     print(e)
@@ -309,9 +315,14 @@ class MainTask:
                 self.map.entities = []
                 self.map_generator = MapGenerator(self.screen, self.player, cmd[1])
             elif cmd[0] == "weapon":
-                weapon = config.weapon_registry.get(cmd[1])
-                wep = weapon(self.player, cmd[1])
-                self.player.weapons.append(wep)
+                if cmd[1] == "all":
+                    for weapon_name in config.weapon_registry:
+                        wep = config.weapon_registry.get(weapon_name)(self.player, weapon_name)
+                        self.player.weapons.append(wep)
+                else:
+                    weapon = config.weapon_registry.get(cmd[1])
+                    wep = weapon(self.player, cmd[1])
+                    self.player.weapons.append(wep)
 
             else:
                 print(f"unknown command: {cmd}")
