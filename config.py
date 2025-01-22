@@ -4,7 +4,7 @@ from boss import Telekinetic, Golem
 from npc import NPC, Medic, Merchant, DemonMerchant
 from items import Coin, HealthPickup, EnergyPickup, TreasureChest, Key
 import config_files.screen_size as ss
-from weapon import Pickaxe, GhostBlade, CursedBlade
+from weapon import Pickaxe, GhostBlade, CursedBlade, Laser
 
 
 WARP_SIZE = 30
@@ -54,5 +54,6 @@ mob_registry = {
 weapon_registry = {
     "pickaxe": Pickaxe,
     "ghost": GhostBlade,
-    "cursed": CursedBlade
+    "cursed": CursedBlade,
+    "laser": Laser
 }

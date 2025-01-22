@@ -46,13 +46,13 @@ class Entity:
             self.health += num
             self.health_time = pygame.time.get_ticks()
             if self.knockback:
-                if self.player.sword_hitbox.left > self.player.rect.left:
+                if self.player.weapon.hitbox.left > self.player.rect.left:
                     self.x_pos += 50
-                elif self.player.sword_hitbox.left < self.player.rect.left:
+                elif self.player.weapon.hitbox.left < self.player.rect.left:
                     self.x_pos -= 50
-                if self.player.sword_hitbox.top > self.player.rect.top:
+                if self.player.weapon.hitbox.top > self.player.rect.top:
                     self.y_pos += 50
-                elif self.player.sword_hitbox.top < self.player.rect.top:
+                elif self.player.weapon.hitbox.top < self.player.rect.top:
                     self.y_pos -= 50
 
     def update_health_override(self, num):
@@ -66,7 +66,7 @@ class Entity:
             return
 
     def collide(self):
-        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
+        if self.player.weapon.active and self.rect.colliderect(self.player.weapon.hitbox):
             self.player.weapon.collide(self)
 
     def draw(self, screen):

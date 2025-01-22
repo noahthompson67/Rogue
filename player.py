@@ -9,8 +9,6 @@ from colors import BLUE, BLACK, GREEN, CLEAR_WHITE
 import colors as c
 import config_files.screen_size as ss
 
-SWORD_RANGE = 30
-SWORD_TIMEOUT = 0.5
 LEFT_IDLE = 0
 RIGHT_IDLE = 1
 UP_IDLE = 2
@@ -30,14 +28,9 @@ class Player:
         self.rect = Rect(0, 0, config.PLAYER_SIZE, config.PLAYER_SIZE)
         self.rect.center = self.x_pos, self.y_pos
 
-        self.sword_hitbox = Rect(
-            self.y_pos, self.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
-        )
-        self.default_sword_hitbox = self.sword_hitbox
         self.shield_hitbox = Rect(
             self.y_pos, self.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
         )
-        self.sword_active = False
         self.shield_active = False
         self.invincible = False
         self.interacting = False
@@ -73,6 +66,7 @@ class Player:
         self.weapon = self.weapons[0]
         self.keys = 0
         self.weapon_switch_time = 0
+        self.move_keys = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -108,54 +102,28 @@ class Player:
             self.speed_modifier = 1
         if keys[self.controls[0]] and "N" not in self.blocked_directions:  # Move up
             self.y_pos -= self.speed * self.speed_modifier
-            self.sword_active = False
+            self.weapon.active = False
             if not self.shield_active:
                 self.last_direction = "N"
         if keys[self.controls[1]] and "S" not in self.blocked_directions:  # Move down
             self.y_pos += self.speed * self.speed_modifier
-            self.sword_active = False
+            self.weapon.active = False
             if not self.shield_active:
                 self.last_direction = "S"
         if keys[self.controls[2]] and "W" not in self.blocked_directions:  # Move left
             self.x_pos -= self.speed * self.speed_modifier
-            self.sword_active = False
+            self.weapon.active = False
             if not self.shield_active:
                 self.last_direction = "W"
         if keys[self.controls[3]] and "E" not in self.blocked_directions:  # Move right
             self.x_pos += self.speed * self.speed_modifier
-            self.sword_active = False
+            self.weapon.active = False
             if not self.shield_active:
                 self.last_direction = "E"
         if keys[pygame.K_q]:
             self.switch_weapon(False)
         if keys[pygame.K_e]:
             self.switch_weapon(True)
-
-        self.rect.center = self.x_pos, self.y_pos
-        if keys[pygame.K_UP]:
-            self.sword_time = pygame.time.get_ticks()
-            if not self.sword_active:
-                self.sword_hitbox = Rect(self.rect.left, self.rect.top-self.weapon.range, config.PLAYER_SIZE, self.weapon.range)
-                self.sword_hitbox.centerx = self.rect.centerx
-            self.sword_active = True
-        elif keys[pygame.K_DOWN]:
-            self.sword_time = pygame.time.get_ticks()
-            if not self.sword_active:
-                self.sword_hitbox = Rect(self.rect.left, self.rect.bottom, config.PLAYER_SIZE, self.weapon.range)
-                self.sword_hitbox.centerx = self.rect.centerx
-            self.sword_active = True
-        elif keys[pygame.K_LEFT]:
-            self.sword_time = pygame.time.get_ticks()
-            if not self.sword_active:
-                self.sword_hitbox = Rect(self.rect.left-self.weapon.range, self.rect.bottom, self.weapon.range, config.PLAYER_SIZE)
-                self.sword_hitbox.centery = self.rect.centery
-            self.sword_active = True
-        elif keys[pygame.K_RIGHT]:
-            self.sword_time = pygame.time.get_ticks()
-            if not self.sword_active:
-                self.sword_hitbox = Rect(self.rect.right, self.rect.bottom, self.weapon.range,config.PLAYER_SIZE)
-                self.sword_hitbox.centery = self.rect.centery
-            self.sword_active = True
         elif keys[pygame.K_z]:
             self.shield_active = True
             if self.last_direction == "N":
@@ -166,6 +134,14 @@ class Player:
                 self.shield_hitbox.center = self.x_pos, self.y_pos
             elif self.last_direction == "W":
                 self.shield_hitbox.center = self.x_pos, self.y_pos
+
+
+        self.rect.center = self.x_pos, self.y_pos
+
+        for i in self.move_keys:
+            if keys[i]:
+                self.weapon.use(keys)
+                break
 
         if self.color == c.RED and pygame.time.get_ticks() - self.health_time > 3:
             self.color = self.default_color
@@ -186,13 +162,8 @@ class Player:
     def draw(self, screen):
         self.handle_color()
         if self.visible:
-            if self.sword_active:
-                if pygame.time.get_ticks() - self.sword_time > SWORD_TIMEOUT:
-                    self.sword_active = False
-                    self.shield_hitbox = Rect(
-                        self.y_pos, self.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
-                    )
-                pygame.draw.rect(screen, self.weapon.color, self.sword_hitbox)
+            if self.weapon.active:
+                self.weapon.draw(screen)
             if self.shield_active:
                 shield_width = (
                     config.PLAYER_SIZE
@@ -298,7 +269,7 @@ class Player:
                 self.color = self.default_color
 
     def switch_weapon(self, forward):
-        if pygame.time.get_ticks() - self.weapon_switch_time < 200 or self.sword_active:
+        if pygame.time.get_ticks() - self.weapon_switch_time < 200 or self.weapon.active:
             return
         else:
             self.weapon_switch_time = pygame.time.get_ticks()

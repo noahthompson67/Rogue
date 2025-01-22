@@ -48,8 +48,8 @@ class Zombie(Entity, Enemy):
                 self.speed = min(1.5, self.speed + 0.05)
             else:
                 self.speed = max(ZOMBIE_SPEED, self.speed - 0.05)
-            if self.player.sword_active and self.rect.colliderect(
-                self.player.sword_hitbox
+            if self.player.weapon.active and self.rect.colliderect(
+                self.player.weapon.hitbox
             ):
                 self.player.weapon.collide(self)
 
@@ -126,9 +126,9 @@ class Projectile(Entity, Enemy):
             if self.rect.colliderect(self.player.rect):
                 self.player.update_health(-1)
             elif (
-                self.rect.colliderect(self.player.sword_hitbox)
+                self.rect.colliderect(self.player.weapon.hitbox)
                 and self.reflectable
-                and self.player.sword_active
+                and self.player.weapon.active
                 and not self.reflected
             ):
                 self.reflected = True
@@ -216,7 +216,7 @@ class Ghost(Entity, Enemy):
 
     def collide(self):
         self.check_contact_damage(1)
-        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
+        if self.player.weapon.active and self.rect.colliderect(self.player.weapon.hitbox):
             if isinstance(self.player.weapon, weapon.GhostBlade):
                 self.player.weapon.collide(self)
 
@@ -266,8 +266,8 @@ class Bat(Entity, Enemy):
                 self.player.update_health(-2)
                 if random.random() < 0.75:
                     self.player.add_status("poison", random.randrange(1, 10) * 100)
-            if self.player.sword_active and self.rect.colliderect(
-                self.player.sword_hitbox
+            if self.player.weapon.active and self.rect.colliderect(
+                self.player.weapon.hitbox
             ):
                 self.player.weapon.collide(self)
 
@@ -340,8 +340,8 @@ class BadRock(Entity, Enemy):
                 self.speed = min(1.5, self.speed + 0.05)
             else:
                 self.speed = max(ZOMBIE_SPEED, self.speed - 0.05)
-            if self.player.sword_active and self.rect.colliderect(
-                self.player.sword_hitbox
+            if self.player.weapon.active and self.rect.colliderect(
+                self.player.weapon.hitbox
             ):
                 self.player.weapon.collide(self)
 
@@ -374,7 +374,7 @@ class SpiritOrb(Entity):
 
     def collide(self):
         self.check_contact_damage(1)
-        if self.player.sword_active and self.rect.colliderect(self.player.sword_hitbox):
+        if self.player.weapon.active and self.rect.colliderect(self.player.weapon.hitbox):
             if isinstance(self.player.weapon, weapon.GhostBlade):
                 self.player.weapon.collide(self)
 
