@@ -55,7 +55,7 @@ class Pickaxe(Weapon):
     def collide(self, entity):
         if isinstance(entity, environment_objects.Rock) and self.player.energy > 0:
             entity.update_health(-100)
-        elif isinstance(entity, enemies.Rock) and self.player.energy > 0:
+        elif isinstance(entity, enemies.BadRock) and self.player.energy > 0:
             entity.update_health(-100)
         elif self.player.energy > 0:
             entity.update_health(-1)

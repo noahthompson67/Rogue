@@ -188,46 +188,42 @@ class MainTask:
             self.light_sources[0] = (self.player.x_pos, self.player.y_pos, 75, False)
             self.map.draw_map(self.screen)
             self.map_generator.draw_minimap(self.screen)
-            if self.player.paused or self.player.console_state:
-                for enemy in self.enemies:
-                    enemy.draw(self.screen)
-                self.player.draw(self.screen)
-                if self.player.console_state:
-                    self.screen.blit(
-                        self.console_right_end_image, self.console_right_end
-                    )
-                    self.screen.blit(self.console_left_end_image, self.console_left_end)
-                    self.screen.blit(self.console_mid_image, self.console_mid)
-                    command = self.font.render(
-                        self.console_command, True, BLACK, c.CONSOLE_BACKGROUND
-                    )
-                    self.screen.blit(command, self.console_text_rect)
-                elif self.player.paused:
-                    pygame.draw.rect(self.screen, BLACK, self.pause_rect_outer)
-                    pygame.draw.rect(self.screen, WHITE, self.pause_rect_inner)
-                    for options in self.option_rects:
-                        font = pygame.font.Font("freesansbold.ttf", 12)
-                        op = font.render(options[1], True, BLACK, WHITE)
-                        self.screen.blit(op, options[0])
 
-            else:
-                self.enemies = self.map.get_entities()
-                self.player_rect = self.player.rect
-                for entity in self.enemies:
+            update_entity = (not self.player.paused and not self.player.console_state)
+            for entity in self.enemies:
+                if update_entity:
+                    entity.update()
+                    entity.collide()
                     entity.interact(self.screen)
-                for enemy in self.enemies:
-                    enemy.update()
-                    enemy.collide()
-                    enemy.draw(self.screen)
-                self.player.draw(self.screen)
-                if loop_iterations % 100 == 0:
-                    self.map_generator.remove_dead_entities()
+                entity.draw(self.screen)
+            self.player.draw(self.screen)
 
-                t = self.player_rect.collidelist(self.map_generator.current_map.warps)
-                if t >= 0:
-                    self.warp(t)
-                    pygame.display.set_caption(str(self.map.name))
-                loop_iterations += 1
+            if self.player.console_state:
+                self.screen.blit(
+                    self.console_right_end_image, self.console_right_end
+                )
+                self.screen.blit(self.console_left_end_image, self.console_left_end)
+                self.screen.blit(self.console_mid_image, self.console_mid)
+                command = self.font.render(
+                    self.console_command, True, BLACK, c.CONSOLE_BACKGROUND
+                )
+                self.screen.blit(command, self.console_text_rect)
+            elif self.player.paused:
+                pygame.draw.rect(self.screen, BLACK, self.pause_rect_outer)
+                pygame.draw.rect(self.screen, WHITE, self.pause_rect_inner)
+                for options in self.option_rects:
+                    font = pygame.font.Font("freesansbold.ttf", 12)
+                    op = font.render(options[1], True, BLACK, WHITE)
+                    self.screen.blit(op, options[0])
+            self.enemies = self.map.get_entities()
+            self.player_rect = self.player.rect
+            if loop_iterations % 100 == 0:
+                self.map_generator.remove_dead_entities()
+            t = self.player_rect.collidelist(self.map_generator.current_map.warps)
+            if t >= 0:
+                self.warp(t)
+                pygame.display.set_caption(str(self.map.name))
+            loop_iterations += 1
 
             pygame.time.Clock().tick(60)
 
