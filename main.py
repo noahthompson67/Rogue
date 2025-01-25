@@ -12,7 +12,7 @@ from colors import WHITE, BLACK
 import cProfile
 import random
 import config_files.screen_size as ss
-import os
+
 # Initialize Pygame
 
 
@@ -499,9 +499,6 @@ class MainTask:
             if self.player.weapon_idx == i:
                 pygame.draw.rect(self.screen, c.BLACK, self.weapon_icons[i].inflate(5,5))
             pygame.draw.rect(self.screen, self.player.weapons[i].color, self.weapon_icons[i])
-        x = config.X_HUD_OFFSET
-        y = config.Y_HUD_OFFSET
-
 
         screen.blit(level_text, self.level_text_rect)
         screen.blit(money_text, self.money_text_rect)

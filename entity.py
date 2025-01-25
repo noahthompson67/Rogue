@@ -219,14 +219,6 @@ class Entity:
                     break
                 positioned = True
 
-    import random
-    import math
-
-    import random
-    import math
-
-    import random
-    import math
 
     def generate_loopy_path(self,
             length=100,

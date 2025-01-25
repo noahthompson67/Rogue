@@ -1,5 +1,5 @@
 import random
-from weapon import Weapon, GhostBlade, Pickaxe
+from weapon import Weapon
 import pygame
 import pygame.time
 from pygame import Rect

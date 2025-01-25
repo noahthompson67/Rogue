@@ -356,8 +356,8 @@ class SpiritOrb(Entity):
         self.rect = Rect(0, 0, 10, 10)
         self.light_source = True
         self.update_time = 0
-        l = random.randrange(1000, 5000)
-        self.path = self.generate_loopy_path(length=l, step_range=(2, 10), loopiness=10, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
+        path_length = random.randrange(1000, 5000)
+        self.path = self.generate_loopy_path(length=path_length, step_range=(2, 10), loopiness=10, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
     def update(self):
         if pygame.time.get_ticks() - self.update_time > 10:
             self.update_time = pygame.time.get_ticks()
