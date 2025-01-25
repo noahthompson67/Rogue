@@ -59,8 +59,6 @@ class Pickaxe(Weapon):
             entity.update_health(-100)
         elif self.player.energy > 0:
             entity.update_health(-1)
-        else:
-            entity.update_health(0)
         self.player.energy -= 1
         self.player.energy = max(0, self.player.energy)
 
