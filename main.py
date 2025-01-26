@@ -154,13 +154,14 @@ class MainTask:
     def run(self):
         loop_iterations = 0
         while True:
+            keys = pygame.key.get_pressed()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
                 if self.player.console_state:
+                    keys = pygame.key.get_pressed()
                     if event.type == pygame.KEYDOWN:
-                        keys = pygame.key.get_pressed()
                         if keys[pygame.K_RETURN]:
                             if self.player.console_state:
                                 self.command(self.console_command.lower())
@@ -169,8 +170,11 @@ class MainTask:
                             self.console_command = self.console_command[:-1]
                         else:
                             self.console_command += event.unicode
+                elif event.type == pygame.KEYDOWN:
+                    self.player.key_down(event.key)
+                elif event.type == pygame.KEYUP:
+                    self.player.key_up(event.key)
                 else:
-                    keys = pygame.key.get_pressed()
                     if keys[pygame.K_f]:
                         self.fullscreen = not self.fullscreen
                         if self.fullscreen:
@@ -183,12 +187,10 @@ class MainTask:
                             )
             self.update_time()
             self.screen.fill(c.BIOME_BACKGROUND_COLORS[self.map_generator.biome.name])
-
             self.player.update()
             self.light_sources[0] = (self.player.x_pos, self.player.y_pos, 75, False)
             self.map.draw_map(self.screen)
             self.map_generator.draw_minimap(self.screen)
-
             update_entity = (not self.player.paused and not self.player.console_state)
             for entity in self.enemies:
                 if update_entity:
@@ -498,7 +500,7 @@ class MainTask:
         for i in range(len(self.player.weapons)):
             if self.player.weapon_idx == i:
                 pygame.draw.rect(self.screen, c.BLACK, self.weapon_icons[i].inflate(5,5))
-            pygame.draw.rect(self.screen, self.player.weapons[i].color, self.weapon_icons[i])
+            pygame.draw.rect(self.screen, self.player.weapons[i].display_color, self.weapon_icons[i])
 
         screen.blit(level_text, self.level_text_rect)
         screen.blit(money_text, self.money_text_rect)

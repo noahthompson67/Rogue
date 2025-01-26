@@ -102,22 +102,18 @@ class Player:
             self.speed_modifier = 1
         if keys[self.controls[0]] and "N" not in self.blocked_directions:  # Move up
             self.y_pos -= self.speed * self.speed_modifier
-            self.weapon.active = False
             if not self.shield_active:
                 self.last_direction = "N"
         if keys[self.controls[1]] and "S" not in self.blocked_directions:  # Move down
             self.y_pos += self.speed * self.speed_modifier
-            self.weapon.active = False
             if not self.shield_active:
                 self.last_direction = "S"
         if keys[self.controls[2]] and "W" not in self.blocked_directions:  # Move left
             self.x_pos -= self.speed * self.speed_modifier
-            self.weapon.active = False
             if not self.shield_active:
                 self.last_direction = "W"
         if keys[self.controls[3]] and "E" not in self.blocked_directions:  # Move right
             self.x_pos += self.speed * self.speed_modifier
-            self.weapon.active = False
             if not self.shield_active:
                 self.last_direction = "E"
         if keys[pygame.K_q]:
@@ -138,10 +134,6 @@ class Player:
 
         self.rect.center = self.x_pos, self.y_pos
 
-        for i in self.move_keys:
-            if keys[i]:
-                self.weapon.use(keys)
-                break
 
         if self.color == c.RED and pygame.time.get_ticks() - self.health_time > 3:
             self.color = self.default_color
@@ -158,6 +150,7 @@ class Player:
         self.rect.center = self.x_pos, self.y_pos
         self.frame_count += 1
         self.blocked_directions = []
+        self.weapon.update()
 
     def draw(self, screen):
         self.handle_color()
@@ -284,3 +277,7 @@ class Player:
                 else:
                     self.weapon_idx -= 1
             self.weapon = self.weapons[self.weapon_idx]
+    def key_up(self, key):
+        self.weapon.key_up(key)
+    def key_down(self, key):
+        self.weapon.key_down(key)
