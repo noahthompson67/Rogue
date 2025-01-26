@@ -60,7 +60,7 @@ class Player:
         self.default_controls = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d]
         self.controls = self.default_controls
         self.weapons = []
-        sword = Weapon(self, "sword")
+        sword = Weapon(self)
         self.weapons.append(sword)
         self.weapon_idx = 0
         self.weapon = self.weapons[0]

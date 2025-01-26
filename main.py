@@ -315,11 +315,11 @@ class MainTask:
             elif cmd[0] == "weapon":
                 if cmd[1] == "all":
                     for weapon_name in config.weapon_registry:
-                        wep = config.weapon_registry.get(weapon_name)(self.player, weapon_name)
+                        wep = config.weapon_registry.get(weapon_name)(self.player)
                         self.player.weapons.append(wep)
                 else:
                     weapon = config.weapon_registry.get(cmd[1])
-                    wep = weapon(self.player, cmd[1])
+                    wep = weapon(self.player)
                     self.player.weapons.append(wep)
 
             else:
@@ -376,7 +376,11 @@ class MainTask:
         self.key_text_rect = Rect(x + 150, y, 0, 0)
 
         self.location_text_rect = Rect(
-            ss.SCREEN_WIDTH * 0.95, ss.HUD_HEIGHT * 0.85, 0, 0
+            ss.SCREEN_WIDTH * 0.93, ss.HUD_HEIGHT * 0.85, 0, 0
+        )
+
+        self.selected_weapon_text_rect = Rect(
+            ss.SCREEN_WIDTH * 0.15, ss.HUD_HEIGHT * 0.85, 0, 0
         )
         self.money_icon = Rect(x + 120, y, 10, 10)
         self.status_icons = []
@@ -464,7 +468,10 @@ class MainTask:
             str(self.player.money) + "¢", True, BLACK, c.CONSOLE_BACKGROUND
         )
         location_text = font.render(
-            str(self.map.location), True, BLACK, c.CONSOLE_BACKGROUND
+            str(f"{self.map_generator.biome_name} {self.map.location}"), True, BLACK, c.CONSOLE_BACKGROUND
+        )
+        weapon_text = font.render(
+            str(self.player.weapons[self.player.weapon_idx].name), True, BLACK, c.CONSOLE_BACKGROUND
         )
         keys_text = font.render(
             str(self.player.keys), True, BLACK, c.CONSOLE_BACKGROUND
@@ -506,6 +513,7 @@ class MainTask:
         screen.blit(money_text, self.money_text_rect)
         screen.blit(time_text, self.time_text_rect)
         screen.blit(location_text, self.location_text_rect)
+        screen.blit(weapon_text, self.selected_weapon_text_rect)
         screen.blit(keys_text, self.key_text_rect)
 
         self.map_generator.draw_minimap(self.screen)

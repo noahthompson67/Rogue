@@ -7,10 +7,10 @@ import enemies
 import environment_objects
 
 class Weapon:
-    def __init__(self, player, name):
+    def __init__(self, player):
         self.player = player
         self.damage = self.player.damage
-        self.name = name
+        self.name = "Sword"
         self.color = c.GREEN
         self.display_color = self.color
         self.range = 30
@@ -87,9 +87,10 @@ class Weapon:
 
 
 class Pickaxe(Weapon):
-    def __init__(self, player, name):
-        super().__init__(player, name)
+    def __init__(self, player):
+        super().__init__(player)
         self.damage = self.player.damage / 2
+        self.name = "Pickaxe"
         self.color = (100, 100, 3)
         self.display_color = self.color
         self.range = 15
@@ -106,19 +107,22 @@ class Pickaxe(Weapon):
 
 
 class CursedBlade(Weapon):
-    def __init__(self, player, name):
-        super().__init__(player, name)
+    def __init__(self, player):
+        super().__init__(player)
+        self.name = "Cursed Blade"
         self.damage = 1000
         self.color = (120, 0, 0)
         self.display_color = self.color
+
     def collide(self, entity):
         super().collide(entity)
         self.player.health = min(self.player.health, 1)
 
 
 class GhostBlade(Weapon):
-    def __init__(self, player, name):
-        super().__init__(player, name)
+    def __init__(self, player):
+        super().__init__(player)
+        self.name = "Ghost Blade"
         self.damage = 0
         self.color = (120, 120, 120)
         self.display_color = self.color
@@ -128,9 +132,10 @@ class GhostBlade(Weapon):
         entity.update_health_override(-1)
         self.player.energy -= 1
 
-class Laser(Weapon):
-    def __init__(self, player, name):
-        super().__init__(player, name)
+class LaserBeam(Weapon):
+    def __init__(self, player):
+        super().__init__(player)
+        self.name = "Laser Beam"
         self.damage = 0
         self.default_damage = 0
         self.color = (255, 20, 20)
@@ -175,8 +180,9 @@ class Laser(Weapon):
                 self.dir_down = None
 
 class Bow(Weapon):
-    def __init__(self, player, name):
-        super().__init__(player, name)
+    def __init__(self, player):
+        super().__init__(player)
+        self.name = "Bow"
         self.damage = 0
         self.default_damage = 0
         self.color = (120, 120, 0)
@@ -212,8 +218,6 @@ class Bow(Weapon):
             arrow.update()
 
 
-        
-
 class Projectile():
     def __init__(self, owner, direction):
         self.owner = owner
@@ -248,16 +252,8 @@ class Projectile():
         pygame.draw.rect(screen, self.color, self.rect)
 
     def collide(self, entity):
-        print('aaaa')
         if self.rect.colliderect(entity.rect):
             entity.update_health(-1)
             self.owner.projectiles.remove(self)
             return True
         return False
-           
-
-
-
-
-
-

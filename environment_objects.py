@@ -208,7 +208,7 @@ class Rock(Entity):
         self.block_path()
 
         if self.player.weapon.active and self.rect.colliderect(self.player.weapon.hitbox):
-            if "pickaxe" in self.player.weapon.name:
+            if "Pickaxe" in self.player.weapon.name:
                 self.player.weapon.collide(self)
 
 
