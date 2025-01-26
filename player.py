@@ -155,8 +155,7 @@ class Player:
     def draw(self, screen):
         self.handle_color()
         if self.visible:
-            if self.weapon.active:
-                self.weapon.draw(screen)
+            self.weapon.draw(screen)
             if self.shield_active:
                 shield_width = (
                     config.PLAYER_SIZE

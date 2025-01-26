@@ -13,7 +13,6 @@ ZOMBIE_SIZE = 50
 ENEMY_HEALTH_TIMEOUT = 0.5
 ZOMBIE_SPEED = 0.75
 
-
 class Enemy:
     def __init__(self):
         pass
@@ -48,10 +47,7 @@ class Zombie(Entity, Enemy):
                 self.speed = min(1.5, self.speed + 0.05)
             else:
                 self.speed = max(ZOMBIE_SPEED, self.speed - 0.05)
-            if self.player.weapon.active and self.rect.colliderect(
-                self.player.weapon.hitbox
-            ):
-                self.player.weapon.collide(self)
+            self.player.weapon.collide(self)
 
     def draw(self, screen):
         if not self.sleeping:
@@ -266,10 +262,7 @@ class Bat(Entity, Enemy):
                 self.player.update_health(-2)
                 if random.random() < 0.75:
                     self.player.add_status("poison", random.randrange(1, 10) * 100)
-            if self.player.weapon.active and self.rect.colliderect(
-                self.player.weapon.hitbox
-            ):
-                self.player.weapon.collide(self)
+            self.player.weapon.collide(self)
 
 
 class MobGenerator(Entity, Enemy):
@@ -340,10 +333,7 @@ class BadRock(Entity, Enemy):
                 self.speed = min(1.5, self.speed + 0.05)
             else:
                 self.speed = max(ZOMBIE_SPEED, self.speed - 0.05)
-            if self.player.weapon.active and self.rect.colliderect(
-                self.player.weapon.hitbox
-            ):
-                self.player.weapon.collide(self)
+            self.player.weapon.collide(self)
 
 class SpiritOrb(Entity):
     def __init__(self, player, map):

@@ -66,8 +66,7 @@ class Entity:
             return
 
     def collide(self):
-        if self.player.weapon.active and self.rect.colliderect(self.player.weapon.hitbox):
-            self.player.weapon.collide(self)
+        self.player.weapon.collide(self)
 
     def draw(self, screen):
         if self.image is not None and self.state != "dead":

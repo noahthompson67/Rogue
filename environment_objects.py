@@ -149,10 +149,8 @@ class Grass(Entity):
         if self.rect.colliderect(self.player.rect):
             self.player.speed_modifier = 0.8
         else:
-            self.player.speed_modifier = 1
-
-        if self.player.weapon.active and self.rect.colliderect(self.player.weapon.hitbox):
-            self.player.weapon.collide(self)
+            self.player.speed_modifier = 1    
+        self.player.weapon.collide(self)
 
 
 def generate_cartesian_outline(start=(200, 200), point_count=100, max_distance=50):
@@ -277,9 +275,7 @@ class MushroomPatch(Entity):
             self.player.speed_modifier = 0.8
         else:
             self.player.speed_modifier = 1
-
-        if self.player.weapon.active and self.rect.colliderect(self.player.weapon.hitbox):
-            self.player.weapon.collide(self)
+        self.player.weapon.collide(self)
 
 
 class HotSpring(Entity):
