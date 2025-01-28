@@ -25,10 +25,13 @@ class Weapon:
         self.projectiles = []
 
     def collide(self, entity):
-        if self.active and self.hitbox.colliderect(entity.rect):
+        collision = self.active and self.hitbox.colliderect(entity.rect)
+        if collision:
             entity.update_health(-self.damage)
         for projectile in self.projectiles:
             projectile.collide(entity)
+
+        return collision
 
     def update(self):
         if self.active:
@@ -128,9 +131,10 @@ class GhostBlade(Weapon):
         self.display_color = self.color
 
     def collide(self, entity):
-        super().collide(entity)
-        entity.update_health_override(-1)
-        self.player.energy -= 1
+        collision = super().collide(entity)
+        if collision and self.player.energy > 0:
+            entity.update_health_override(-1)
+            self.player.energy -= 1
 
 class LaserBeam(Weapon):
     def __init__(self, player):
