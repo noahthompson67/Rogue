@@ -154,7 +154,7 @@ class MapGenerator:
         self.grid = [[0 for _ in range(columns)] for _ in range(rows)]
         zone = [
             [
-                Map(f"{row}, {col}", self.screen, self.player, location=(row, col))
+                Map(f"{row}, {col}", self.screen, self.player, (row, col), self.biome)
                 for col in range(columns)
             ]
             for row in range(rows)

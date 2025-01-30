@@ -99,14 +99,15 @@ class Pickaxe(Weapon):
         self.range = 15
 
     def collide(self, entity):
-        if isinstance(entity, environment_objects.Rock) and self.player.energy > 0:
-            entity.update_health(-100)
-        elif isinstance(entity, enemies.BadRock) and self.player.energy > 0:
-            entity.update_health(-100)
-        elif self.player.energy > 0:
-            entity.update_health(-1)
-        self.player.energy -= 1
-        self.player.energy = max(0, self.player.energy)
+        if self.hitbox.colliderect(entity.rect):
+            if isinstance(entity, environment_objects.Rock) and self.player.energy > 0:
+                entity.update_health(-100)
+            elif isinstance(entity, enemies.BadRock) and self.player.energy > 0:
+                entity.update_health(-100)
+            elif self.player.energy > 0:
+                entity.update_health(-1)
+            self.player.energy -= 1
+            self.player.energy = max(0, self.player.energy)
 
 
 class CursedBlade(Weapon):
@@ -148,11 +149,14 @@ class LaserBeam(Weapon):
         self.charged = False
         self.range = 5
         self.default_range = self.range
+        self.start_time = 0
 
     def collide(self, entity):
-        super().collide(entity)
-        entity.update_health_override(-1)
-        self.player.energy -= 1
+        collision = self.active and self.hitbox.colliderect(entity.rect)
+        if collision:
+            entity.update_health_override(-1)
+            self.player.energy -= 0.01
+  
  
 
     def update(self):

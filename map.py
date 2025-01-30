@@ -31,7 +31,8 @@ class MapName(Enum):
 
 
 class Map:
-    def __init__(self, name, screen, player, location=(0, 0)):
+    def __init__(self, name, screen, player, location=(0, 0), biome='void'):
+        self.biome = biome
         self.screen = screen
         self.player = player
         self.name = name

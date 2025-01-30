@@ -224,7 +224,7 @@ class Entity:
             step_range=(1, 5),
             loopiness=2,
             x_bounds=(-100, 100),
-            y_bounds=(-100, 100)
+            y_bounds=(-100, 100), start=None
     ):
         """
         Generate a fixed-length loopy path with a random starting point.
@@ -240,8 +240,12 @@ class Entity:
             list: A list of (x, y) tuples representing the path.
         """
         # Randomly determine the starting point within the bounds
-        start_x = random.uniform(*x_bounds)
-        start_y = random.uniform(*y_bounds)
+        if start is None:
+            start_x = random.uniform(*x_bounds)
+            start_y = random.uniform(*y_bounds)
+        else:
+            start_x = start[0]
+            start_y = start[1]
         path = [(start_x, start_y)]
 
         angle = random.uniform(0, 2 * math.pi)  # Initial random direction

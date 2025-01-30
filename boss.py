@@ -10,8 +10,8 @@ from pygame import Rect
 import config_files.screen_size as ss
 import numpy as np
 from items import Coin
-
-
+from enemies import BoomerangProjectile
+import config
 class Boss(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
@@ -276,3 +276,85 @@ class Golem(Boss):
 
         self.player.update_xp(self.xp)
 
+
+class Reaper(Boss):
+    def __init__(self, player, map):
+        super().__init__(player, map)
+        self.max_health = 50
+        self.health = 50
+        self.rect = Rect(0, 0, 50, 50)
+        self.path = self.generate_loopy_path(length=100, step_range=(1, 1), loopiness=1, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
+        self.rect.center = self.path[0]
+        self.path_index = 0
+        self.lunge_frames = 0
+        self.default_color = (0, 0, 0)
+        self.frame_count = 0
+        self.speed = 4
+        self.action = 'idle'
+        self.projectiles = []
+        self.projectile = None
+
+    def update(self):
+        if self.health <= 0:
+            if self.state == "alive":
+                self.end()
+        self.x_pos = self.rect.centerx
+        self.y_pos = self.rect.centery
+        if self.frame_count % 10 == 0:
+            random_color = random.randrange(10, 50)
+            self.color = (random_color, random_color, random_color)
+        self.frame_count += 1
+        if self.frame_count > 2000:
+            self.frame_count = 0
+        if self.action == 'idle' and random.random() < 0.05:
+                self.action = random.choice(['throw', 'throw', 'lunge', 'lunge', 'spawn', 'spawn', 'idle', 'idle', 'teleport'])
+                if self.action == 'lunge':
+                    self.lunge_frames = 80
+        elif self.action == 'idle':
+            if self.path_index == len(self.path) - 1:
+                self.reverse = True
+            elif self.path_index == 0:
+                self.reverse = False
+            self.rect.center = self.path[self.path_index]
+            if self.reverse:
+                self.path_index -= 1
+            else:
+                self.path_index += 1
+        elif self.action == 'teleport':
+            self.color = (250, 250, 250)
+            self.invincible = True
+            if self.frame_count % 100 == 0:
+                self.path = self.generate_loopy_path(length=100, step_range=(1, 1), loopiness=1, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
+                self.path_index = 0
+                self.action = 'idle'
+                self.invincible = False
+        elif self.action == 'throw':   
+            if len(self.projectiles) > 0:
+                self.action = 'idle'
+                return
+            proj = BoomerangProjectile(self.player, self.map, self.rect.centerx, self.rect.centery)
+            proj.speed = 0.2
+            self.map.add_entity(proj)
+            self.projectiles.append(proj)
+            self.action = 'idle'
+        elif self.action == 'spawn':
+            spawn_count = random.randrange(1, 5)
+            for i in range(spawn_count):
+                spawn_type = random.choice(['zombie', 'ghost', 'orb'])
+                mob = config.mob_registry.get(spawn_type)(self.player, self.map)
+                mob.drops = []
+                self.map.add_entity(mob)
+            self.action = 'idle'
+        elif self.action == 'lunge':
+            self.move_towards_player()
+            self.lunge_frames -= 1
+            if self.lunge_frames == 0:
+                self.action = 'teleport'
+
+        for proj in self.projectiles:
+            if proj.state == 'dead':
+                self.projectiles.remove(proj)
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.default_color, self.rect.inflate(5, 5))
+        super().draw(screen)

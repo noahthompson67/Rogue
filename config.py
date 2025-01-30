@@ -1,6 +1,6 @@
 from enemies import Zombie, Shooter, Ghost, Bat, BadRock, SpiritOrb
 from environment_objects import Hole, Fire, Water, Grass, Rock, MushroomPatch, HotSpring
-from boss import Telekinetic, Golem, Death
+from boss import Telekinetic, Golem, Reaper
 from npc import NPC, Medic, Merchant, DemonMerchant
 from items import Coin, HealthPickup, EnergyPickup, TreasureChest, Key
 import config_files.screen_size as ss
@@ -49,7 +49,7 @@ mob_registry = {
     "badrock": BadRock,
     "demonmerchant": DemonMerchant,
     "orb": SpiritOrb,
-    "death": Death
+    "reaper": Reaper
 }
 
 weapon_registry = {

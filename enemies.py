@@ -9,6 +9,7 @@ import colors as c
 from pygame import Rect
 import math
 
+
 ZOMBIE_SIZE = 50
 ENEMY_HEALTH_TIMEOUT = 0.5
 ZOMBIE_SPEED = 0.75
@@ -85,6 +86,8 @@ class Shooter(Entity, Enemy):
             to_add.reflectable = True
             self.map.add_entity(to_add)
             self.last_shot_time = pygame.time.get_ticks()
+
+
 
 
 class Projectile(Entity, Enemy):
@@ -186,6 +189,67 @@ class Projectile(Entity, Enemy):
                     self.direction_x /= distance
                     self.direction_y /= distance
 
+class BoomerangProjectile(Entity, Enemy):
+    def __init__(self, player, map, x_pos, y_pos):
+        super().__init__(player, map)
+        self.rect = Rect(10, 10, 10, 10)
+        self.rect.center = x_pos, y_pos
+        self.color = (100, 50, 30)
+        center1, center2, radius = self.find_circle_center_and_radius(self.rect.center, player.rect.center)
+        self.path = self.generate_circle_points(center2, radius, self.rect.center)
+        self.arc_index = 0
+        self.state = "alive"
+
+    def update(self):
+        if self.state != "dead":
+            self.rect.center = self.path[self.arc_index]
+            self.arc_index += 1
+            if self.arc_index == len(self.path):
+                self.state = "dead"
+
+
+
+    def find_circle_center_and_radius(self, p1, p2):
+        # Midpoint between p1 and p2
+        midpoint = ((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
+
+        # Distance between p1 and p2
+        dist = math.dist(p1, p2)
+
+        # We assume a default radius (r > dist/2)
+        radius = dist / 2 + 5  # You can modify the offset to adjust circle size
+
+        # Distance from midpoint to the circle center
+        offset = math.sqrt(radius ** 2 - (dist / 2) ** 2)
+
+        # Unit vector perpendicular to the line p1->p2
+        dx, dy = p2[0] - p1[0], p2[1] - p1[1]
+        perp_unit = (-dy / dist, dx / dist)
+
+        # Two possible circle centers
+        center1 = (midpoint[0] + perp_unit[0] * offset, midpoint[1] + perp_unit[1] * offset)
+        center2 = (midpoint[0] - perp_unit[0] * offset, midpoint[1] - perp_unit[1] * offset)
+
+        return center1, center2, radius
+
+
+    def angle_of_point(self, center, point):
+        cx, cy = center
+        px, py = point
+        return math.atan2(py - cy, px - cx)
+
+
+    def generate_circle_points(self, center, radius, start_point, num_points=100):
+        cx, cy = center
+        # Calculate the starting angle based on p1
+        start_angle = self.angle_of_point(center, start_point)
+        points = [
+            (cx + radius * math.cos(start_angle + 2 * math.pi * t / num_points),
+            cy + radius * math.sin(start_angle + 2 * math.pi * t / num_points))
+            for t in range(num_points)
+        ]
+        return points
+
 
 class Ghost(Entity, Enemy):
     def __init__(self, player, map):
@@ -196,6 +260,7 @@ class Ghost(Entity, Enemy):
         self.color = self.default_color
         self.speed = 0.75
         self.rect = Rect(self.x_pos, self.y_pos, config.PLAYER_SIZE, config.PLAYER_SIZE)
+        self.outline_color = tuple(x + 3 for x in c.BIOME_BACKGROUND_COLORS[self.map.biome.name])
         self.frame_count = random.randrange(0, 50)
 
     def update(self):
@@ -216,6 +281,9 @@ class Ghost(Entity, Enemy):
             if isinstance(self.player.weapon, weapon.GhostBlade):
                 self.player.weapon.collide(self)
 
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.outline_color, self.rect.inflate(5, 5))
+        super().draw(screen)
 
 
 
