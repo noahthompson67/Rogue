@@ -22,14 +22,12 @@ class Player:
         self.speed = 5
         self.speed_modifier = 1
         self.radius = 1
-        self.x_pos = ss.SCREEN_WIDTH / 2
-        self.y_pos = ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2
 
         self.rect = Rect(0, 0, config.PLAYER_SIZE, config.PLAYER_SIZE)
-        self.rect.center = self.x_pos, self.y_pos
+        self.rect.center = ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2
 
         self.shield_hitbox = Rect(
-            self.y_pos, self.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
+            self.rect.centerx, self.rect.centery, config.PLAYER_SIZE, config.PLAYER_SIZE
         )
         self.shield_active = False
         self.invincible = False
@@ -101,19 +99,19 @@ class Player:
         else:
             self.speed_modifier = 1
         if keys[self.controls[0]] and "N" not in self.blocked_directions:  # Move up
-            self.y_pos -= self.speed * self.speed_modifier
+            self.rect.centery -= self.speed * self.speed_modifier
             if not self.shield_active:
                 self.last_direction = "N"
         if keys[self.controls[1]] and "S" not in self.blocked_directions:  # Move down
-            self.y_pos += self.speed * self.speed_modifier
+            self.rect.centery += self.speed * self.speed_modifier
             if not self.shield_active:
                 self.last_direction = "S"
         if keys[self.controls[2]] and "W" not in self.blocked_directions:  # Move left
-            self.x_pos -= self.speed * self.speed_modifier
+            self.rect.centerx -= self.speed * self.speed_modifier
             if not self.shield_active:
                 self.last_direction = "W"
         if keys[self.controls[3]] and "E" not in self.blocked_directions:  # Move right
-            self.x_pos += self.speed * self.speed_modifier
+            self.rect.centerx += self.speed * self.speed_modifier
             if not self.shield_active:
                 self.last_direction = "E"
         if keys[pygame.K_q]:
@@ -122,32 +120,19 @@ class Player:
             self.switch_weapon(True)
         elif keys[pygame.K_z]:
             self.shield_active = True
-            if self.last_direction == "N":
-                self.shield_hitbox.center = self.y_pos, self.x_pos
-            elif self.last_direction == "S":
-                self.shield_hitbox.center = self.x_pos, self.y_pos
-            elif self.last_direction == "E":
-                self.shield_hitbox.center = self.x_pos, self.y_pos
-            elif self.last_direction == "W":
-                self.shield_hitbox.center = self.x_pos, self.y_pos
-
-
-        self.rect.center = self.x_pos, self.y_pos
-
 
         if self.color == c.RED and pygame.time.get_ticks() - self.health_time > 3:
             self.color = self.default_color
             self.color = self.default_color
 
-        self.y_pos = max(
+        self.rect.centery = max(
             config.PLAYER_SIZE / 2 + ss.HUD_HEIGHT,
-            min(ss.SCREEN_HEIGHT - config.PLAYER_SIZE, self.y_pos),
+            min(ss.SCREEN_HEIGHT - config.PLAYER_SIZE, self.rect.centery),
         )
-        self.x_pos = max(
+        self.rect.centerx = max(
             config.PLAYER_SIZE,
-            min(ss.SCREEN_WIDTH - config.PLAYER_SIZE, self.x_pos),
+            min(ss.SCREEN_WIDTH - config.PLAYER_SIZE, self.rect.centerx),
         )
-        self.rect.center = self.x_pos, self.y_pos
         self.frame_count += 1
         self.blocked_directions = []
         self.weapon.update()
@@ -168,8 +153,8 @@ class Player:
                     else config.SHIELD_SIZE
                 )
                 self.shield_hitbox.update(
-                    self.x_pos + config.SHIElD_OFFSETS[self.last_direction][0],
-                    self.y_pos + config.SHIElD_OFFSETS[self.last_direction][1],
+                    self.rect.centerx + config.SHIElD_OFFSETS[self.last_direction][0],
+                    self.rect.centery + config.SHIElD_OFFSETS[self.last_direction][1],
                     shield_width,
                     shield_length,
                 )

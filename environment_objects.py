@@ -11,16 +11,15 @@ import config_files.screen_size as ss
 class Hole(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
-        self.x_pos = random.randrange(
-            min(player.x_pos - 40, 0), max(player.x_pos + 40, ss.SCREEN_HEIGHT)
+        x = random.randrange(
+            min(player.rect.centerx - 40, 0), max(player.rect.centery + 40, ss.SCREEN_HEIGHT)
         )
-        self.y_pos = random.randrange(
-            min(player.y_pos - 40, 0), max(player.y_pos + 40, ss.SCREEN_WIDTH)
+        y = random.randrange(
+            min(player.rect.centery - 40, 0), max(player.rect.centery + 40, ss.SCREEN_WIDTH)
         )
-        self.rect = Rect(0, 0, 45, 45)
         self.block_rect = Rect(0, 0, 30, 30)
-        self.rect.center = self.x_pos, self.y_pos
-        self.block_rect.center = self.x_pos, self.y_pos
+        self.rect.center = x, y
+        self.block_rect.center = x, y
 
         self.color = c.BLACK
         self.state = "alive"
@@ -37,14 +36,13 @@ class Hole(Entity):
 class Fire(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
-        self.x_pos = random.randrange(
-            min(player.x_pos - 40, 0), max(player.x_pos + 40, ss.SCREEN_HEIGHT)
+        x = random.randrange(
+            min(player.rect.centerx - 40, 0), max(player.rect.centerx + 40, ss.SCREEN_HEIGHT)
         )
-        self.y_pos = random.randrange(
-            min(player.y_pos - 40, 0), max(player.y_pos + 40, ss.SCREEN_WIDTH)
+        y = random.randrange(
+            min(player.rect.centery - 40, 0), max(player.rect.centery + 40, ss.SCREEN_WIDTH)
         )
-        self.rect = Rect(0, 0, 30, 30)
-        self.rect.center = self.x_pos, self.y_pos
+        self.rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.state = "alive"
@@ -73,16 +71,13 @@ class Fire(Entity):
 
 
 class Water(Entity):
-    def __init__(self, player, map, x_pos=200, y_pos=200):
+    def __init__(self, player, map):
         super().__init__(player, map)
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-        self.rect = Rect(0, 0, 100, 100)
         self.points = []
         size = 150
         for i in range(100):
-            x = random.randrange(self.x_pos - size, self.x_pos + size)
-            y = random.randrange(self.y_pos - size, self.y_pos + size)
+            x = random.randrange(200 - size, 200 + size)
+            y = random.randrange(200 - size, 200 + size)
             if len(self.points) == 0:
                 self.points.append((x, y))
             elif abs(self.points[-1][0] - x) > 25 and abs(self.points[-1][1] - y) > 25:
@@ -92,7 +87,7 @@ class Water(Entity):
 
         for i in range(len(self.points)):
             self.points[i] = (self.points[i][0], self.points[i][1] + 200)
-        self.rect.center = self.x_pos, self.y_pos
+        self.rect.center = 200, 200
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.state = "alive"
@@ -124,20 +119,19 @@ class Water(Entity):
 
 
 class Grass(Entity):
-    def __init__(self, player, map, x_pos=100, y_pos=100):
+    def __init__(self, player, map):
         super().__init__(player, map)
-        self.x_pos = random.randrange(
-            min(player.x_pos - 40, 0), max(player.x_pos + 40, ss.SCREEN_HEIGHT)
+        x = random.randrange(
+            min(player.rect.centerx - 40, 0), max(player.rect.centery + 40, ss.SCREEN_HEIGHT)
         )
-        self.y_pos = random.randrange(
-            min(player.y_pos - 40, 0), max(player.y_pos + 40, ss.SCREEN_WIDTH)
+        y = random.randrange(
+            min(player.rect.centery - 40, 0), max(player.rect.centery + 40, ss.SCREEN_WIDTH)
         )
-        self.rect = Rect(0, 0, 30, 30)
         self.image = pygame.transform.scale(
             resources.grass, (self.rect.width, self.rect.height)
         )
         self.health = 1
-        self.rect.center = self.x_pos, self.y_pos
+        self.rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.state = "alive"
@@ -178,14 +172,14 @@ def generate_cartesian_outline(start=(200, 200), point_count=100, max_distance=5
 
 
 class Rock(Entity):
-    def __init__(self, player, map, x_pos=100, y_pos=100):
+    def __init__(self, player, map):
         super().__init__(player, map)
 
-        self.x_pos = random.randrange(
-            min(player.x_pos - 40, 75), max(player.x_pos + 40, ss.SCREEN_HEIGHT - 75)
+        x = random.randrange(
+            min(player.rect.centerx - 40, 75), max(player.rect.centery + 40, ss.SCREEN_HEIGHT - 75)
         )
-        self.y_pos = random.randrange(
-            min(player.y_pos - 40, 75), max(player.y_pos + 40, ss.SCREEN_WIDTH - 75)
+        y = random.randrange(
+            min(player.rect.centery - 40, 75), max(player.rect.centery + 40, ss.SCREEN_WIDTH - 75)
         )
         self.rect = Rect(0, 0, 50, 50)
         self.block_rect = Rect(0, 0, 60, 60)
@@ -193,8 +187,8 @@ class Rock(Entity):
         self.image = pygame.transform.scale(
             resources.rock, (self.rect.width, self.rect.height)
         )
-        self.rect.center = self.x_pos, self.y_pos
-        self.block_rect.center = self.x_pos, self.y_pos
+        self.rect.center = x, y
+        self.block_rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.state = "alive"
@@ -251,18 +245,17 @@ def nearest_neighbor_path(points):
 
 
 class MushroomPatch(Entity):
-    def __init__(self, player, map, x_pos=100, y_pos=100):
+    def __init__(self, player, map):
         super().__init__(player, map)
-        self.x_pos = random.randrange(30, ss.SCREEN_WIDTH - 30)
-        self.y_pos = random.randrange(ss.HUD_HEIGHT + 30, ss.SCREEN_HEIGHT - 30)
-        self.rect = Rect(0, 0, 30, 30)
+        x = random.randrange(30, ss.SCREEN_WIDTH - 30)
+        y = random.randrange(ss.HUD_HEIGHT + 30, ss.SCREEN_HEIGHT - 30)
         self.image = pygame.transform.scale(
             resources.mushroom, (self.rect.width, self.rect.height)
         )
         self.health = 1
-        self.rect.center = self.x_pos, self.y_pos
+        self.rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
-        self.action_rect.center = self.x_pos, self.y_pos
+        self.action_rect.center = x, y
         self.drops = [("healthpickup", 5), ("energy", 5), ("coin", 5)]
         self.frame_count = 0
         self.state = "alive"

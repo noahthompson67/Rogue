@@ -243,8 +243,8 @@ class Warp:
             print(f"no map for warp: {self.location}\n{self.position}")
 
     def translate_player(self):
-        self.player.x_pos = self.player_pos[0]
-        self.player.y_pos = self.player_pos[1]
+        self.player.rect.centerx = self.player_pos[0]
+        self.player.rect.centery = self.player_pos[1]
 
     def lock(self):
         if self.locked:

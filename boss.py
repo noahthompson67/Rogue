@@ -24,12 +24,10 @@ class Boss(Entity):
 class Telekinetic(Boss):
     def __init__(self, player, entity_map):
         super().__init__(player, entity_map)
-        self.x_pos = ss.SCREEN_WIDTH / 2
-        self.y_pos = ss.SCREEN_HEIGHT / 2
-        self.rect = Rect(self.y_pos, self.x_pos, 50, 50)
+        self.rect = Rect(0, 0, 50, 50)
         self.last_shot_time = 0
         self.action_rect = self.rect.inflate(500, 500)
-        self.action_rect.center = self.x_pos, self.y_pos
+        self.action_rect.center = ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2
         self.speed = 0.2
         self.default_color = c.SHOOTER_COLOR
         self.color = c.SHOOTER_COLOR
@@ -72,16 +70,15 @@ class Telekinetic(Boss):
                 ss.SCREEN_HEIGHT / 2 - 10, ss.SCREEN_HEIGHT / 2 + 10
             )
             self.frame_count = 1
-        if self.target_x > self.x_pos:
-            self.x_pos += self.speed
+        if self.target_x > self.rect.centerx:
+            self.rect.centerx += self.speed
         else:
-            self.x_pos -= self.speed
-        if self.target_y > self.y_pos:
-            self.y_pos += self.speed
+            self.rect.centerx -= self.speed
+        if self.target_y > self.rect.centery:
+            self.rect.centery += self.speed
         else:
-            self.y_pos -= self.speed
+            self.rect.centery -= self.speed
         self.frame_count += 1
-        self.rect.center = self.x_pos, self.y_pos
 
     def set_not_invincible(self):
         self.invincible = False
@@ -114,38 +111,34 @@ class OrbitalProjectile(Entity):
         if layer & 1 == 1:
             self.x_values = self.x_values[::-1]
             self.y_values = self.y_values[::-1]
-        self.x_pos = self.x_values[0]
-        self.y_pos = self.y_values[0]
+        self.rect.center = self.x_values[0], self.y_values[0]
         self.arc_index = 1
-        self.rect = Rect(self.x_pos, self.y_pos, 10, 10)
         self.speed = 0.5
         self.color = c.RED
         self.state = "alive"
 
     def update(self):
         if self.map.is_active() and self.owner.state != "dead":
-            self.x_pos = self.x_values[self.arc_index]
-            self.y_pos = self.y_values[self.arc_index]
             self.arc_index += 1
             if self.arc_index > 360:
                 self.arc_index = 0
         elif self.owner.state == "dead" and self.state == "alive":
             self.player.update_xp(1)
             self.state = "dead"
-        self.rect.center = self.x_pos + self.owner.x_pos, self.y_pos + self.owner.y_pos
+        self.rect.center = self.x_values[self.arc_index] + self.owner.rect.centerx, self.y_values[self.arc_index] + self.owner.rect.centery
 
     def collide(self):
         if self.state != "dead":
             if self.rect.colliderect(self.player.rect):
                 self.player.update_health(-1)
                 if self.player.last_direction == "N":
-                    self.player.y_pos += 100
+                    self.player.rect.centery += 100
                 elif self.player.last_direction == "S":
-                    self.player.y_pos -= 100
+                    self.player.rect.centery -= 100
                 elif self.player.last_direction == "E":
-                    self.player.x_pos += 100
+                    self.player.rect.centerx += 100
                 elif self.player.last_direction == "W":
-                    self.player.x_pos -= 100
+                    self.player.rect.centerx -= 100
 
 
 class TelekineticShard(Entity):
@@ -155,9 +148,9 @@ class TelekineticShard(Entity):
         self.health = 1
 
         self.state = "alive"
-        self.x_pos = random.randrange(0, ss.SCREEN_WIDTH - 50)
-        self.y_pos = random.randrange(0, ss.SCREEN_HEIGHT - 50)
-        self.rect = Rect(self.x_pos, self.y_pos, 10, 10)
+        x = random.randrange(0, ss.SCREEN_WIDTH - 50)
+        y = random.randrange(0, ss.SCREEN_HEIGHT - 50)
+        self.rect = Rect(x, y, 10, 10)
 
     def collide(self):
         if self.state != "dead":
@@ -178,9 +171,8 @@ class TelekineticShard(Entity):
 class Golem(Boss):
     def __init__(self, player, entity_map):
         super().__init__(player, entity_map)
-        self.x_pos = random.randrange(100, ss.SCREEN_WIDTH - 100)
-        self.y_pos = random.randrange(100, ss.SCREEN_HEIGHT - 100)
-        self.rect = Rect(self.y_pos, self.x_pos, 50, 50)
+        self.rect = Rect(0, 0, 50, 50)
+        self.rect.center = random.randrange(100, ss.SCREEN_WIDTH - 100), random.randrange(100, ss.SCREEN_HEIGHT - 100)
         self.default_color = (120, 120, 120)
         self.color = self.default_color
         self.speed = 0.75
@@ -208,7 +200,7 @@ class Golem(Boss):
                 if isinstance(entity, Rock):
                     self.map.entities.remove(entity)
                     proj = Projectile(
-                        self.player, self.map, self.x_pos + 16, self.y_pos
+                        self.player, self.map, self.rect.centerx + 16, self.rect.centery
                     )
                     proj.speed = 8
                     proj.reflectable = True
@@ -246,8 +238,8 @@ class Golem(Boss):
             for _ in range(hole_spawn_count):
                 hole = Hole(self.player, self.map)
                 if (
-                    abs(hole.rect.x - self.player.x_pos) > 10
-                    and abs(hole.rect.y - self.player.y_pos) > 10
+                    abs(hole.rect.x - self.player.rect.centerx) > 10
+                    and abs(hole.rect.y - self.player.rect.centery) > 10
                 ):
                     self.map.add_entity(Hole(self.player, self.map))
             self.last_shot_time = pygame.time.get_ticks()
@@ -271,7 +263,7 @@ class Golem(Boss):
 
     def end(self):
         self.state = "dead"
-        to_add = Coin(self.player, self.map, (self.x_pos, self.y_pos), 10)
+        to_add = Coin(self.player, self.map, (self.rect.centerx, self.rect.centery), 10)
         self.map.add_entity(to_add)
 
         self.player.update_xp(self.xp)
@@ -298,13 +290,7 @@ class Reaper(Boss):
         if self.health <= 0:
             if self.state == "alive":
                 self.end()
-        self.x_pos = self.rect.centerx
-        self.y_pos = self.rect.centery
         if self.frame_count % 10 == 0:
-            random_color = random.randrange(10, 50)
-            self.color = (random_color, random_color, random_color)
-        self.frame_count += 1
-        if self.frame_count > 2000:
             self.frame_count = 0
         if self.action == 'idle' and random.random() < 0.05:
                 self.action = random.choice(['throw', 'throw', 'lunge', 'lunge', 'spawn', 'spawn', 'idle', 'idle', 'teleport'])

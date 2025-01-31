@@ -15,8 +15,6 @@ class Entity:
         self.color = self.default_color
         self.invincible = False
         self.visible = True
-        self.x_pos = 0
-        self.y_pos = 0
         self.state = "alive"
         self.entities = []
         self.map = entity_map
@@ -47,13 +45,13 @@ class Entity:
             self.health_time = pygame.time.get_ticks()
             if self.knockback:
                 if self.player.weapon.hitbox.left > self.player.rect.left:
-                    self.x_pos += 50
+                    self.rect.centerx += 50
                 elif self.player.weapon.hitbox.left < self.player.rect.left:
-                    self.x_pos -= 50
+                    self.rect.centerx -= 50
                 if self.player.weapon.hitbox.top > self.player.rect.top:
-                    self.y_pos += 50
+                    self.rect.centery += 50
                 elif self.player.weapon.hitbox.top < self.player.rect.top:
-                    self.y_pos -= 50
+                    self.rect.centery -= 50
 
     def update_health_override(self, num):
         self.health += num
@@ -92,15 +90,15 @@ class Entity:
 
 
     def move_towards_player(self):
-        dx = self.player.x_pos - self.x_pos
-        dy = self.player.y_pos - self.y_pos
+        dx = self.player.rect.centerx - self.rect.centerx
+        dy = self.player.rect.centery - self.rect.centery
         distance = math.hypot(dx, dy)
         if distance > 0:  # Avoid division by zero
             dx /= distance
             dy /= distance
-            self.x_pos += dx * self.speed
-            self.y_pos += dy * self.speed
-        self.rect.center = self.x_pos, self.y_pos
+            self.rect.centerx += dx * self.speed
+            self.rect.centery += dy * self.speed
+
 
     def check_contact_damage(self, damage):
         if self.rect.colliderect(self.player.rect):
@@ -130,18 +128,20 @@ class Entity:
         self.player.update_xp(self.xp)
 
     def generate_nearby_location(self):
-        self.x_pos = random.randrange(
-            min(self.player.x_pos - 40, 0),
-            max(self.player.x_pos + 40, ss.SCREEN_HEIGHT),
+        x = random.randrange(
+            min(self.player.rect.centerx - 40, 0),
+            max(self.player.rect.centerx + 40, ss.SCREEN_HEIGHT),
         )
-        self.y_pos = random.randrange(
-            min(self.player.y_pos - 40, 0),
-            max(self.player.y_pos + 40, ss.SCREEN_WIDTH),
+        y = random.randrange(
+            min(self.player.rect.centery - 40, 0),
+            max(self.player.rect.centery + 40, ss.SCREEN_WIDTH),
         )
+        self.rect.center = x, y
 
     def generate_random_location(self):
-        self.x_pos = random.randrange(40, int(ss.SCREEN_WIDTH*0.95))
-        self.y_pos = random.randrange(ss.HUD_HEIGHT, int(ss.SCREEN_HEIGHT*0.95))
+        x = random.randrange(40, int(ss.SCREEN_WIDTH*0.95))
+        y = random.randrange(ss.HUD_HEIGHT, int(ss.SCREEN_HEIGHT*0.95))
+        self.rect.center = x, y
 
 
     def point_in_polygon(self, point, polygon):

@@ -22,12 +22,11 @@ class Enemy:
 class Zombie(Entity, Enemy):
     def __init__(self, player, map):
         super().__init__(player, map)
-        self.generate_nearby_location()
+        self.rect = Rect(0, 0, ZOMBIE_SIZE, ZOMBIE_SIZE)
         self.health = 3
         self.default_color = c.ZOMBIE_RED
         self.color = self.default_color
         self.speed = 0.75
-        self.rect = Rect(self.x_pos, self.y_pos, ZOMBIE_SIZE, ZOMBIE_SIZE)
         self.action_rect = self.rect.inflate(ZOMBIE_SIZE * 5, ZOMBIE_SIZE * 5)
         self.sleeping = True
         self.generate_random_location()
@@ -58,14 +57,7 @@ class Zombie(Entity, Enemy):
 class Shooter(Entity, Enemy):
     def __init__(self, player, map, position=(-1, -1)):
         super().__init__(player, map)
-
-        self.x_pos = random.choice([1, 3]) * ss.SCREEN_WIDTH / 4
-        self.y_pos = random.choice([1, 3]) * ss.SCREEN_HEIGHT / 4
-        if position != (-1, -1):
-            self.x_pos = position[0] * ss.SCREEN_WIDTH / 4
-            self.y_pos = position[1] * ss.SCREEN_HEIGHT / 4
-        self.rect = Rect(0, 0, 50, 50)
-        self.rect.center = self.x_pos, self.y_pos
+        self.rect.center = random.choice([1, 3]) * ss.SCREEN_WIDTH / 4, random.choice([1, 3]) * ss.SCREEN_HEIGHT / 4
         self.last_shot_time = 0
         self.action_rect = self.rect.inflate(500, 500)
         self.color = c.SHOOTER_COLOR
@@ -82,7 +74,7 @@ class Shooter(Entity, Enemy):
             and self.map.is_active()
         ):
             self.shot = True
-            to_add = Projectile(self.player, self.map, self.x_pos + 16, self.y_pos)
+            to_add = Projectile(self.player, self.map, self.rect.centerx + 16, self.rect.centery)
             to_add.reflectable = True
             self.map.add_entity(to_add)
             self.last_shot_time = pygame.time.get_ticks()
@@ -91,17 +83,15 @@ class Shooter(Entity, Enemy):
 
 
 class Projectile(Entity, Enemy):
-    def __init__(self, player, map, x_pos, y_pos):
+    def __init__(self, player, map, x, y):
         super().__init__(player, map)
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-        self.rect = Rect(self.x_pos, self.y_pos, 20, 20)
         target_pos = player.rect.center
+        self.rect.center = x, y
         self.speed = 1
         self.color = c.RED
         self.creation_time = pygame.time.get_ticks()
-        self.direction_x = target_pos[0] - self.x_pos
-        self.direction_y = target_pos[1] - self.y_pos
+        self.direction_x = target_pos[0] - x
+        self.direction_y = target_pos[1] - y
         self.reflectable = False
         self.reflected = False
         distance = math.sqrt(self.direction_x**2 + self.direction_y**2)
@@ -139,51 +129,51 @@ class Projectile(Entity, Enemy):
                 y = ss.SCREEN_HEIGHT - self.rect.centery
                 if middle_x and upper:
                     print(12)
-                    target_x = self.x_pos
+                    target_x = self.rect.centerx
                     target_y = 0
                 elif middle_x and not upper:
                     print(6)
-                    target_x = self.x_pos
+                    target_x = self.rect.centerx
                     target_y = ss.SCREEN_HEIGHT
                 elif middle_y and left:
                     print(9)
                     target_x = 0
-                    target_y = self.y_pos
+                    target_y = self.rect.centery
                 elif middle_y and not left:
                     print(3)
                     target_x = ss.SCREEN_WIDTH
-                    target_y = self.y_pos
+                    target_y = self.rect.centery
                 elif upper and left and not middle_y and not middle_x:
                     if -x > y:
                         print(10)
                     else:
                         print(11)
                     target_x = 0
-                    target_y = self.y_pos / self.x_pos
+                    target_y = self.rect.centery / self.rect.centerx
                 elif not upper and left and not middle_y and not middle_x:
                     if x < y:
                         print(8)
                     else:
                         print(7)
                     target_x = 0
-                    target_y = self.x_pos * self.y_pos
+                    target_y = self * self.rect.centery
                 elif upper and not left and not middle_y and not middle_x:
                     if x < y:
                         print(1)
                     else:
                         print(2)
                     target_x = ss.SCREEN_WIDTH
-                    target_y = self.y_pos / self.x_pos
+                    target_y = self.rect.centery/ self.rect.centerx
                 elif not upper and not left and not middle_y and not middle_x:
                     if -x > y:
                         print(4)
                     else:
                         print(5)
                     target_x = ss.SCREEN_WIDTH
-                    target_y = self.x_pos * self.y_pos
+                    target_y = self.rect.centerx * self.rect.centery
 
-                self.direction_x = target_x - self.x_pos
-                self.direction_y = target_y - self.y_pos
+                self.direction_x = target_x - self.rect.centerx
+                self.direction_y = target_y - self.rect.centery
                 distance = math.sqrt(self.direction_x**2 + self.direction_y**2)
                 if distance != 0:
                     self.direction_x /= distance
@@ -259,7 +249,6 @@ class Ghost(Entity, Enemy):
         self.default_color = c.GHOST_COLOR
         self.color = self.default_color
         self.speed = 0.75
-        self.rect = Rect(self.x_pos, self.y_pos, config.PLAYER_SIZE, config.PLAYER_SIZE)
         self.outline_color = tuple(x + 3 for x in c.BIOME_BACKGROUND_COLORS[self.map.biome.name])
         self.frame_count = random.randrange(0, 50)
 
@@ -291,14 +280,12 @@ class Bat(Entity, Enemy):
     def __init__(self, player, map):
         super().__init__(player, map)
         self.generate_nearby_location()
-        self.x_pos = random.randrange(0, ss.SCREEN_WIDTH)
-        self.y_pos = random.randrange(0, ss.SCREEN_HEIGHT)
         self.health = 1
         self.default_color = c.BLACK
         self.color = self.default_color
         self.speed = 1.75
 
-        self.rect = Rect(self.x_pos, self.y_pos, 25, 25)
+        
         self.frame_count = random.randrange(0, 50)
         self.first_frame = True
         self.image = resources.bat_1
@@ -341,7 +328,7 @@ class MobGenerator(Entity, Enemy):
         self.health = 1
         self.default_color = c.GOLD
         self.color = self.default_color
-        self.rect = Rect(self.x_pos, self.y_pos, 10, 10)
+        self.rect = Rect(0, 0, 10, 10)
         self.spawn_time = pygame.time.get_ticks()
         self.mob = mob
         self.frequency = freq
@@ -435,4 +422,46 @@ class SpiritOrb(Entity):
         if self.player.weapon.active and self.rect.colliderect(self.player.weapon.hitbox):
             if isinstance(self.player.weapon, weapon.GhostBlade):
                 self.player.weapon.collide(self)
+
+class Slime(Entity):
+    def __init__(self, player, map):
+        super().__init__(player, map)
+        self.color = (20, 100, 50)
+        self.default_color = self.color
+        self.speed = 10
+        self.health = 3
+        self.generate_random_location()
+        self.rect.width = 50
+        self.rect.height = 50
+        self.action = 'idle'
+        self.drops = []
+    def __set_size(self, size):
+        self.rect.width = size
+        self.rect.height = size
+    
+    def update(self):
+        if self.action == 'lunge':
+            self.move_towards_player()
+            self.lunge_frames -= 1
+            if self.lunge_frames == 0:
+                self.action = 'idle'
+        else:
+            if random.random() < .05:
+                self.action = 'lunge'
+                self.lunge_frames = 50
+        self.check_damage_timeout()
+        super().update()
+
+    def end(self):
+            if self.rect.width > 25:
+                rects = []
+                rects.append(Rect(self.rect.left, self.rect.top, 0, 0))
+                rects.append(Rect(self.rect.right, self.rect.top, 0, 0))
+                for rect in rects:
+                    to_add = Slime(self.player, self.map)
+                    to_add.rect = rect
+                    to_add.__set_size(self.rect.width-5)
+                    self.map.add_entity(to_add)
+            super().end()
+
 

@@ -20,7 +20,7 @@ class Weapon:
         self.dir_down = None
         self.dir_up = None
         self.hitbox = Rect(
-            self.player.y_pos, self.player.x_pos, config.PLAYER_SIZE, config.PLAYER_SIZE
+            self.player.rect.centery, self.player.rect.centerx, config.PLAYER_SIZE, config.PLAYER_SIZE
         )
         self.projectiles = []
 

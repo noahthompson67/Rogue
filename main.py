@@ -37,10 +37,8 @@ class MainTask:
         self.map_generator = MapGenerator(self.screen, self.player, "void")
         self.map = self.map_generator.get_current_map()
         self.light_sources = []
-        self.light_sources.append((self.player.x_pos, self.player.y_pos, 75, False))
-        self.player_rect = Rect(
-            self.player.y_pos, self.player.x_pos, self.player.radius, self.player.radius
-        )
+        self.light_sources.append((self.player.rect.centerx, self.player.rect.centery, 75, False))
+    
         self.console_state = False
         self.console_command = ""
         self.font = pygame.font.Font("freesansbold.ttf", 20)
@@ -188,7 +186,7 @@ class MainTask:
             self.update_time()
             self.screen.fill(c.BIOME_BACKGROUND_COLORS[self.map_generator.biome.name])
             self.player.update()
-            self.light_sources[0] = (self.player.x_pos, self.player.y_pos, 75, False)
+            self.light_sources[0] = (self.player.rect.centerx, self.player.rect.centery, 75, False)
             self.map.draw_map(self.screen)
             self.map_generator.draw_minimap(self.screen)
             update_entity = (not self.player.paused and not self.player.console_state)
@@ -218,10 +216,9 @@ class MainTask:
                     op = font.render(options[1], True, BLACK, WHITE)
                     self.screen.blit(op, options[0])
             self.enemies = self.map.get_entities()
-            self.player_rect = self.player.rect
             if loop_iterations % 100 == 0:
                 self.map_generator.remove_dead_entities()
-            t = self.player_rect.collidelist(self.map_generator.current_map.warps)
+            t = self.player.rect.collidelist(self.map_generator.current_map.warps)
             if t >= 0:
                 self.warp(t)
                 pygame.display.set_caption(str(self.map.name))
@@ -236,7 +233,7 @@ class MainTask:
 
     def warp(self, num):
         self.warp_timeout = time.time()
-        self.map_generator.warp(self.player_rect, num)
+        self.map_generator.warp(self.player.rect, num)
         self.map = self.map_generator.get_current_map()
         self.light_sources = self.light_sources[:1]
         for entity in self.map.get_entities():
