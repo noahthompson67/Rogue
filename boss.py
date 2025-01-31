@@ -13,8 +13,8 @@ from items import Coin
 from enemies import BoomerangProjectile
 import config
 class Boss(Entity):
-    def __init__(self, player, map):
-        super().__init__(player, map)
+    def __init__(self, player, map, size=75, position=None):
+        super().__init__(player, map, position, size=size)
 
     def draw(self, screen):
         super().draw(screen)
@@ -23,18 +23,15 @@ class Boss(Entity):
 
 class Telekinetic(Boss):
     def __init__(self, player, entity_map):
-        super().__init__(player, entity_map)
-        self.rect = Rect(0, 0, 50, 50)
+        super().__init__(player, entity_map, size=50)
         self.last_shot_time = 0
         self.action_rect = self.rect.inflate(500, 500)
-        self.action_rect.center = ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2
         self.speed = 0.2
         self.default_color = c.SHOOTER_COLOR
         self.color = c.SHOOTER_COLOR
         self.projectile_count = 0
         self.radius = 100
         self.projectile_layer = 0
-        self.state = "alive"
         self.max_health = 4
         self.health = 4
         self.frame_count = 0
@@ -115,7 +112,6 @@ class OrbitalProjectile(Entity):
         self.arc_index = 1
         self.speed = 0.5
         self.color = c.RED
-        self.state = "alive"
 
     def update(self):
         if self.map.is_active() and self.owner.state != "dead":
@@ -143,14 +139,11 @@ class OrbitalProjectile(Entity):
 
 class TelekineticShard(Entity):
     def __init__(self, player, map, owner):
-        super().__init__(player, map)
+        x = random.randrange(0, ss.SCREEN_WIDTH - 50)
+        y = random.randrange(ss.HUD_HEIGHT + 50, ss.SCREEN_HEIGHT - 50)
+        super().__init__(player, map, size=75, position=(x,y))
         self.owner = owner
         self.health = 1
-
-        self.state = "alive"
-        x = random.randrange(0, ss.SCREEN_WIDTH - 50)
-        y = random.randrange(0, ss.SCREEN_HEIGHT - 50)
-        self.rect = Rect(x, y, 10, 10)
 
     def collide(self):
         if self.state != "dead":
@@ -170,9 +163,9 @@ class TelekineticShard(Entity):
 
 class Golem(Boss):
     def __init__(self, player, entity_map):
-        super().__init__(player, entity_map)
-        self.rect = Rect(0, 0, 50, 50)
-        self.rect.center = random.randrange(100, ss.SCREEN_WIDTH - 100), random.randrange(100, ss.SCREEN_HEIGHT - 100)
+        x = random.randrange(100, ss.SCREEN_WIDTH - 100)
+        y = random.randrange(100, ss.SCREEN_HEIGHT - 100)
+        super().__init__(player, entity_map, position=(x,y), size=50)
         self.default_color = (120, 120, 120)
         self.color = self.default_color
         self.speed = 0.75
@@ -271,10 +264,9 @@ class Golem(Boss):
 
 class Reaper(Boss):
     def __init__(self, player, map):
-        super().__init__(player, map)
+        super().__init__(player, map, size=50)
         self.max_health = 50
         self.health = 50
-        self.rect = Rect(0, 0, 50, 50)
         self.path = self.generate_loopy_path(length=100, step_range=(1, 1), loopiness=1, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
         self.rect.center = self.path[0]
         self.path_index = 0
@@ -290,7 +282,10 @@ class Reaper(Boss):
         if self.health <= 0:
             if self.state == "alive":
                 self.end()
-        if self.frame_count % 10 == 0:
+        if self.frame_count % 100 == 0:
+            r = random.randrange(10, 200)
+            self.color = (r, r, r)
+        if self.frame_count > 1000:
             self.frame_count = 0
         if self.action == 'idle' and random.random() < 0.05:
                 self.action = random.choice(['throw', 'throw', 'lunge', 'lunge', 'spawn', 'spawn', 'idle', 'idle', 'teleport'])
@@ -309,7 +304,7 @@ class Reaper(Boss):
         elif self.action == 'teleport':
             self.color = (250, 250, 250)
             self.invincible = True
-            if self.frame_count % 100 == 0:
+            if self.frame_count % 500 == 0:
                 self.path = self.generate_loopy_path(length=100, step_range=(1, 1), loopiness=1, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
                 self.path_index = 0
                 self.action = 'idle'
@@ -340,7 +335,7 @@ class Reaper(Boss):
         for proj in self.projectiles:
             if proj.state == 'dead':
                 self.projectiles.remove(proj)
-
+        self.frame_count += 1
     def draw(self, screen):
         pygame.draw.rect(screen, self.default_color, self.rect.inflate(5, 5))
         super().draw(screen)

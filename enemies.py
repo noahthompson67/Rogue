@@ -21,8 +21,7 @@ class Enemy:
 
 class Zombie(Entity, Enemy):
     def __init__(self, player, map):
-        super().__init__(player, map)
-        self.rect = Rect(0, 0, ZOMBIE_SIZE, ZOMBIE_SIZE)
+        super().__init__(player, map, size=30)
         self.health = 3
         self.default_color = c.ZOMBIE_RED
         self.color = self.default_color
@@ -56,8 +55,8 @@ class Zombie(Entity, Enemy):
 
 class Shooter(Entity, Enemy):
     def __init__(self, player, map, position=(-1, -1)):
-        super().__init__(player, map)
-        self.rect.center = random.choice([1, 3]) * ss.SCREEN_WIDTH / 4, random.choice([1, 3]) * ss.SCREEN_HEIGHT / 4
+        pos = (random.choice([1, 3]) * ss.SCREEN_WIDTH / 4, random.choice([1, 3]) * ss.SCREEN_HEIGHT / 4)
+        super().__init__(player, map, position = pos, size=50)
         self.last_shot_time = 0
         self.action_rect = self.rect.inflate(500, 500)
         self.color = c.SHOOTER_COLOR
@@ -84,7 +83,7 @@ class Shooter(Entity, Enemy):
 
 class Projectile(Entity, Enemy):
     def __init__(self, player, map, x, y):
-        super().__init__(player, map)
+        super().__init__(player, map, size=20)
         target_pos = player.rect.center
         self.rect.center = x, y
         self.speed = 1
@@ -181,14 +180,13 @@ class Projectile(Entity, Enemy):
 
 class BoomerangProjectile(Entity, Enemy):
     def __init__(self, player, map, x_pos, y_pos):
-        super().__init__(player, map)
-        self.rect = Rect(10, 10, 10, 10)
+        super().__init__(player, map, size=10)
         self.rect.center = x_pos, y_pos
         self.color = (100, 50, 30)
         center1, center2, radius = self.find_circle_center_and_radius(self.rect.center, player.rect.center)
         self.path = self.generate_circle_points(center2, radius, self.rect.center)
         self.arc_index = 0
-        self.state = "alive"
+
 
     def update(self):
         if self.state != "dead":
@@ -243,7 +241,7 @@ class BoomerangProjectile(Entity, Enemy):
 
 class Ghost(Entity, Enemy):
     def __init__(self, player, map):
-        super().__init__(player, map)
+        super().__init__(player, map, size=30)
         self.generate_nearby_location()
         self.health = 2
         self.default_color = c.GHOST_COLOR
@@ -278,7 +276,7 @@ class Ghost(Entity, Enemy):
 
 class Bat(Entity, Enemy):
     def __init__(self, player, map):
-        super().__init__(player, map)
+        super().__init__(player, map, size=20)
         self.generate_nearby_location()
         self.health = 1
         self.default_color = c.BLACK
@@ -319,7 +317,6 @@ class Bat(Entity, Enemy):
                     self.player.add_status("poison", random.randrange(1, 10) * 100)
             self.player.weapon.collide(self)
 
-
 class MobGenerator(Entity, Enemy):
     def __init__(self, player, map, mob, freq, mob_count=-1):
         super().__init__(player, map)
@@ -328,7 +325,6 @@ class MobGenerator(Entity, Enemy):
         self.health = 1
         self.default_color = c.GOLD
         self.color = self.default_color
-        self.rect = Rect(0, 0, 10, 10)
         self.spawn_time = pygame.time.get_ticks()
         self.mob = mob
         self.frequency = freq
@@ -360,10 +356,9 @@ class MobGenerator(Entity, Enemy):
 
 class BadRock(Entity, Enemy):
     def __init__(self, player, map):
-        super().__init__(player, map)
+        super().__init__(player, map, size=50)
         self.generate_nearby_location()
         self.health = 100
-        self.rect = Rect(0, 0, 50, 50)
         self.action_rect = self.rect.inflate(250, 250)
         self.image = pygame.transform.scale(
             resources.rock, (self.rect.width, self.rect.height)
@@ -398,7 +393,6 @@ class SpiritOrb(Entity):
         self.health = 1
         self.reverse = False
         self.color = (215, 252, 253)
-        self.rect = Rect(0, 0, 10, 10)
         self.light_source = True
         self.update_time = 0
         path_length = random.randrange(1000, 5000)
@@ -435,6 +429,7 @@ class Slime(Entity):
         self.rect.height = 50
         self.action = 'idle'
         self.drops = []
+
     def __set_size(self, size):
         self.rect.width = size
         self.rect.height = size
@@ -463,5 +458,3 @@ class Slime(Entity):
                     to_add.__set_size(self.rect.width-5)
                     self.map.add_entity(to_add)
             super().end()
-
-

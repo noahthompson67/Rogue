@@ -22,7 +22,6 @@ class Hole(Entity):
         self.block_rect.center = x, y
 
         self.color = c.BLACK
-        self.state = "alive"
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect, border_radius=15)
@@ -45,7 +44,6 @@ class Fire(Entity):
         self.rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
-        self.state = "alive"
         self.color_index = 0
         self.light_source = True
         self.colors = [
@@ -90,7 +88,6 @@ class Water(Entity):
         self.rect.center = 200, 200
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
-        self.state = "alive"
         self.color_index = 0
         self.colors = [
             (0, 0, 50),
@@ -120,7 +117,7 @@ class Water(Entity):
 
 class Grass(Entity):
     def __init__(self, player, map):
-        super().__init__(player, map)
+        super().__init__(player, map, size=30)
         x = random.randrange(
             min(player.rect.centerx - 40, 0), max(player.rect.centery + 40, ss.SCREEN_HEIGHT)
         )
@@ -134,7 +131,6 @@ class Grass(Entity):
         self.rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
-        self.state = "alive"
         self.xp = 0
         self.color_index = 0
         self.color = (0, 250, 0)
@@ -173,25 +169,23 @@ def generate_cartesian_outline(start=(200, 200), point_count=100, max_distance=5
 
 class Rock(Entity):
     def __init__(self, player, map):
-        super().__init__(player, map)
-
         x = random.randrange(
             min(player.rect.centerx - 40, 75), max(player.rect.centery + 40, ss.SCREEN_HEIGHT - 75)
         )
         y = random.randrange(
             min(player.rect.centery - 40, 75), max(player.rect.centery + 40, ss.SCREEN_WIDTH - 75)
         )
-        self.rect = Rect(0, 0, 50, 50)
+        super().__init__(player, map, position=(x,y), size=50)
+
+        
         self.block_rect = Rect(0, 0, 60, 60)
         self.health = 1
         self.image = pygame.transform.scale(
             resources.rock, (self.rect.width, self.rect.height)
         )
-        self.rect.center = x, y
         self.block_rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
-        self.state = "alive"
         self.xp = 0
         self.color_index = 0
         self.color = (100, 100, 100)
@@ -258,7 +252,6 @@ class MushroomPatch(Entity):
         self.action_rect.center = x, y
         self.drops = [("healthpickup", 5), ("energy", 5), ("coin", 5)]
         self.frame_count = 0
-        self.state = "alive"
         self.xp = 0
         self.color_index = 0
         self.color = (0, 250, 0)
@@ -273,11 +266,9 @@ class MushroomPatch(Entity):
 
 class HotSpring(Entity):
     def __init__(self, player, map):
-        super().__init__(player, map)
-        self.rect = Rect(0, 0, 50, 50)
-        self.rect.center = ss.SCREEN_WIDTH / 2, (ss.SCREEN_HEIGHT + ss.HUD_HEIGHT) / 2
+        pos = (ss.SCREEN_WIDTH / 2, (ss.SCREEN_HEIGHT + ss.HUD_HEIGHT) / 2)
+        super().__init__(player, map, position=pos, size=50)
         self.frame_count = 0
-        self.state = "alive"
         self.color = c.HOTSPRING
 
     def collide(self):

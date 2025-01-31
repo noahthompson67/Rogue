@@ -15,13 +15,8 @@ class HealthPickup(Entity):
     def __init__(self, player, map, health_amount=10, position=None):
         if position is None:
             position = (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2)
-        super().__init__(player, map, position=position)
+        super().__init__(player, map, position=position, size=30)
         self.health_amount = health_amount
-        self.state = "alive"
-        self.rect = Rect(
-            position[0], position[1], HEALTH_PICKUP_SIZE, HEALTH_PICKUP_SIZE
-        )
-        self.rect.center = position
         self.image = pygame.transform.scale(
             resources.medkit, (self.rect.width, self.rect.height)
         )
@@ -37,9 +32,8 @@ class HealthPickup(Entity):
 
 class Coin(Entity):
     def __init__(self, player, map, position=None, value=None):
-        super().__init__(player, map)
-        if position is None:
-            position = (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2)
+        super().__init__(player, map, size=HEALTH_PICKUP_SIZE, position=position)
+       
         self.value = value
         if self.value is None:
             self.value = random.choice([1, 5, 10])
@@ -49,10 +43,6 @@ class Coin(Entity):
             self.color = (120, 125, 130)
         else:
             self.color = (196, 201, 207)
-
-        self.state = "alive"
-        self.rect = Rect(0, 0, HEALTH_PICKUP_SIZE, HEALTH_PICKUP_SIZE)
-        self.rect.center = position
 
     def draw(self, screen):
         if self.state == "alive":
@@ -67,15 +57,8 @@ class Coin(Entity):
 
 class EnergyPickup(Entity):
     def __init__(self, player, map, energy_amount=10, position=None):
-        if position is None:
-            position = (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2)
-        super().__init__(player, map, position=position)
+        super().__init__(player, map, position=position, size=HEALTH_PICKUP_SIZE)
         self.energy_amount = energy_amount
-        self.state = "alive"
-        self.rect = Rect(
-            position[0], position[1], HEALTH_PICKUP_SIZE, HEALTH_PICKUP_SIZE
-        )
-        self.rect.center = position
         self.image = pygame.transform.scale(
             resources.energy, (self.rect.width, self.rect.height)
         )
@@ -91,11 +74,10 @@ class EnergyPickup(Entity):
 
 class TreasureChest(Entity):
     def __init__(self, player, map, position=None):
-        super().__init__(player, map)
+        super().__init__(player, map, size=30)
         if position is None:
             position = (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2)
         self.state = "closed"
-        self.rect = Rect(0, 0, 30, 30)
         self.rect.center = position
         self.color = (110, 110, 80)
         self.block_rect = Rect(0, 0, 30, 30)
@@ -126,14 +108,7 @@ class TreasureChest(Entity):
 
 class Key(Entity):
     def __init__(self, player, map, position=None):
-        if position is None:
-            position = (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2)
-        super().__init__(player, map, position=position)
-        self.state = "alive"
-        self.rect = Rect(
-            position[0], position[1], HEALTH_PICKUP_SIZE, HEALTH_PICKUP_SIZE
-        )
-        self.rect.center = position
+        super().__init__(player, map, position=position, size=HEALTH_PICKUP_SIZE)
         self.image = pygame.transform.scale(
             resources.key, (self.rect.width, self.rect.height)
         )

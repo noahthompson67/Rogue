@@ -7,7 +7,7 @@ import config
 import math
 
 class Entity:
-    def __init__(self, player, entity_map=None, position=None):
+    def __init__(self, player, entity_map=None, position=None, size=10):
         self.player = player
         self.health_time = 0
         self.health = 10
@@ -19,9 +19,11 @@ class Entity:
         self.entities = []
         self.map = entity_map
         self.image = None
-        self.rect = Rect(0, 0, 10, 10)
+        self.rect = Rect(0, 0, size, size)
         if position is not None:
             self.rect.center = position
+        else:
+            self.rect.center = (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2)
         self.drops = [("coin", 5), ("healthpickup", 5)]
         self.xp = 1
         self.knockback = True

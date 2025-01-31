@@ -25,7 +25,6 @@ class NPC(Entity):
         self.action_rect = self.rect.inflate(50, 50)
         self.default_color = c.GREEN
         self.color = c.GREEN
-        self.state = "alive"
         self.active = False
         self.message_index = 0
         self.prompt_cursor = Rect(0, 0, 30, 30)
