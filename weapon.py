@@ -265,3 +265,19 @@ class Projectile():
             self.owner.projectiles.remove(self)
             return True
         return False
+    
+
+class Axe(Weapon):
+    def __init__(self, player):
+        super().__init__(player)
+        self.damage = self.player.damage / 2
+        self.name = "Axe"
+        self.color = (50, 50, 75)
+        self.display_color = self.color
+        self.range = 40
+
+    def collide(self, entity):
+         if self.active and self.hitbox.colliderect(entity.rect):
+            self.active = False
+            if self.player.update_energy(-1):
+                entity.update_health(-1)

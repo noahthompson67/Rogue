@@ -276,3 +276,28 @@ class HotSpring(Entity):
                 self.player.update_health(1)
                 self.player.energy = min(self.player.energy_max, self.player.energy + 1)
                 self.frame_count = 0
+
+class Tree(Entity):
+    def __init__(self, player, map, pos=None):
+        super().__init__(player, map, position=pos, size=50)
+        self.color = (0, 120, 0)
+        self.health = 5
+        self.block_rect = self.rect.inflate(10, 10)
+        self.knockback = False
+        self.update_health_color = (0, 120, 0)
+
+    def end(self):
+        self.rect = self.rect.inflate(-5, -5)
+        self.state = "undead"
+        self.color = (120, 120, 0)
+        self.update_health_color = (120, 120, 0)
+
+    def collide(self):
+        if self.player.weapon.name == "Axe":
+            self.player.weapon.collide(self)
+        if self.state == "alive":
+            self.block_path()
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect, self.rect.width, 15, 15)
+        

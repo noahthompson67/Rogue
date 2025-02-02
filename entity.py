@@ -19,6 +19,7 @@ class Entity:
         self.entities = []
         self.map = entity_map
         self.image = None
+        self.update_health_color = c.RED
         self.rect = Rect(0, 0, size, size)
         if position is not None:
             self.rect.center = position
@@ -42,7 +43,7 @@ class Entity:
     def update_health(self, num):
         if pygame.time.get_ticks() - self.health_time > self.health_timeout:
             self.invincible = True
-            self.color = c.RED
+            self.color = self.update_health_color
             self.health += num
             self.health_time = pygame.time.get_ticks()
             if self.knockback:
