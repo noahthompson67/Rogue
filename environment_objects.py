@@ -240,16 +240,14 @@ def nearest_neighbor_path(points):
 
 class MushroomPatch(Entity):
     def __init__(self, player, map):
-        super().__init__(player, map)
         x = random.randrange(30, ss.SCREEN_WIDTH - 30)
         y = random.randrange(ss.HUD_HEIGHT + 30, ss.SCREEN_HEIGHT - 30)
+        super().__init__(player, map, position=(x, y), size=30)
         self.image = pygame.transform.scale(
             resources.mushroom, (self.rect.width, self.rect.height)
         )
         self.health = 1
-        self.rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
-        self.action_rect.center = x, y
         self.drops = [("healthpickup", 5), ("energy", 5), ("coin", 5)]
         self.frame_count = 0
         self.xp = 0

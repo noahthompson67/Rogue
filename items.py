@@ -73,16 +73,15 @@ class EnergyPickup(Entity):
 
 
 class TreasureChest(Entity):
-    def __init__(self, player, map, position=None):
-        super().__init__(player, map, size=30)
-        if position is None:
-            position = (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2)
+    def __init__(self, player, map, position=None, item=None):
+        super().__init__(player, map, position=position, size=30)
         self.state = "closed"
-        self.rect.center = position
         self.color = (110, 110, 80)
-        self.block_rect = Rect(0, 0, 30, 30)
-        self.block_rect.center = position
-        self.treasure = weapon.Pickaxe(self.player, "pickaxe")
+        self.block_rect = self.rect.inflate(10, 10)
+        if item is None:
+            self.treasure = Coin(self.player, self.map, value=5)
+        else:
+            self.treasure = item
 
     def draw(self, screen):
         if self.state == "closed":
@@ -105,6 +104,8 @@ class TreasureChest(Entity):
             self.state = "open"
             if isinstance(self.treasure, weapon.Weapon):
                 self.player.weapons.append(self.treasure)
+            elif isinstance(self.treasure, Entity):
+                self.map.add_entity(self.treasure)
 
 class Key(Entity):
     def __init__(self, player, map, position=None):
