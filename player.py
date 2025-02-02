@@ -166,6 +166,13 @@ class Player:
             screen.blit(death_text, death_text_rect)
         pygame.draw.rect(screen, self.color, self.rect)
 
+    def update_energy(self, num):
+        if self.energy + num < 0:
+            return False
+        else:
+            self.energy += num
+            return True
+
     def update_health(self, num, shield_override=False):
         if num > 0:
             self.health += num
