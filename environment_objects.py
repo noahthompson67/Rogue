@@ -300,4 +300,24 @@ class Tree(Entity):
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect, self.rect.width, 15, 15)
-        
+
+class MovableObject(Entity):
+    def __init__(self, player, map, pos=None, size=40):
+        super().__init__(player, map, position=pos, size=size)
+        self.size = size
+    
+    def collide(self):
+        p_x = self.player.rect.centerx
+        p_y = self.player.rect.centery
+        x = self.rect.centerx
+        y = self.rect.centery
+
+        if abs(p_x - x) <= self.player.rect.width and abs(p_y - y) <= self.player.rect.width:
+            if self.player.rect.centery < self.rect.centery and abs(p_x - x) <= self.size/2:
+                    self.rect.centery += self.player.speed
+            elif self.player.rect.centery > self.rect.centery and abs(p_x - x) <= self.size/2:
+                    self.rect.centery -= self.player.speed
+            elif self.player.rect.centerx < self.rect.centerx and abs(p_y - y) <= self.size/2:
+                self.rect.centerx += self.player.speed
+            elif self.player.rect.centerx > self.rect.centerx and abs(p_y - y) <= self.size/2:
+                self.rect.centerx -= self.player.speed
