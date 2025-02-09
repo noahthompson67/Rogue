@@ -53,10 +53,4 @@ mob_registry = {
     "slime": Slime
 }
 
-weapon_registry = {
-    "pickaxe": Pickaxe,
-    "ghost": GhostBlade,
-    "cursed": CursedBlade,
-    "laser": LaserBeam,
-    "bow": Bow
-}
+

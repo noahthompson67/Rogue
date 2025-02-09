@@ -281,3 +281,14 @@ class Axe(Weapon):
             self.active = False
             if self.player.update_energy(-1):
                 entity.update_health(-1)
+
+
+
+
+weapon_registry = {
+    "pickaxe": Pickaxe,
+    "ghost": GhostBlade,
+    "cursed": CursedBlade,
+    "laser": LaserBeam,
+    "bow": Bow
+}

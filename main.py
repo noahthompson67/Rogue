@@ -12,6 +12,7 @@ from colors import WHITE, BLACK
 import cProfile
 import random
 import config_files.screen_size as ss
+from weapon import weapon_registry
 
 # Initialize Pygame
 
@@ -311,11 +312,11 @@ class MainTask:
                 self.map_generator = MapGenerator(self.screen, self.player, cmd[1])
             elif cmd[0] == "weapon":
                 if cmd[1] == "all":
-                    for weapon_name in config.weapon_registry:
-                        wep = config.weapon_registry.get(weapon_name)(self.player)
+                    for weapon_name in weapon_registry:
+                        wep = weapon_registry.get(weapon_name)(self.player)
                         self.player.weapons.append(wep)
                 else:
-                    weapon = config.weapon_registry.get(cmd[1])
+                    weapon = weapon_registry.get(cmd[1])
                     wep = weapon(self.player)
                     self.player.weapons.append(wep)
 
