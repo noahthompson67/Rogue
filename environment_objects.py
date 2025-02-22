@@ -321,3 +321,39 @@ class MovableObject(Entity):
                 self.rect.centerx += self.player.speed
             elif self.player.rect.centerx > self.rect.centerx and abs(p_y - y) <= self.size/2:
                 self.rect.centerx -= self.player.speed
+
+class Bomb(Entity):
+    def __init__(self, player, map, pos=None):
+        super().__init__(player, map, position=pos, size=15)
+        self.name = "Bomb"
+        self.color = (10, 10, 10)
+        self.display_color = self.color
+        self.charge_frames_max = 200
+        self.explode_frames_max = self.charge_frames_max + 5
+        self.placed = False
+        self.frame_count = 0
+        self.drops = []
+        self.xp = 0
+        self.damage = 10
+        self.knockback = False
+
+    def update(self):
+        self.frame_count += 1
+        if self.frame_count < self.charge_frames_max:
+            print(self.frame_count)
+            if self.frame_count % 10 == 0:
+                red_amount = min((self.frame_count/self.charge_frames_max) * 250, 200)
+                self.color = (red_amount, 10, 10)
+        elif self.frame_count < self.explode_frames_max:
+            self.rect.inflate_ip(10,10)
+            self.check_contact_damage(1)
+            for entity in self.map.entities:
+                if self.rect.colliderect(entity.rect):
+                    entity.update_health(-self.damage)
+        else:
+            self.end()
+
+    def draw(self, screen):
+        if self.state == 'alive':
+            pygame.draw.rect(screen, self.color, self.rect, border_radius=15)
+
