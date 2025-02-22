@@ -3,7 +3,7 @@ from weapon import Weapon
 import pygame
 import pygame.time
 from pygame import Rect
-
+import utils
 import config
 from colors import BLUE, BLACK, GREEN, CLEAR_WHITE
 import colors as c
@@ -17,15 +17,29 @@ DOWN_LEFT_STEP = 4
 DOWN_RIGHT_STEP = 5
 
 
+
 class Player:
     def __init__(self):
         self.speed = 5
         self.speed_modifier = 1
         self.radius = 1
+        self.spritesheet = pygame.image.load("assets/player-spritesheet.png").convert_alpha()
+        print('hereeee')
+        print(self.spritesheet.get_flags())  # Should include SRCALPHA if it's truly transparent
+        print(self.spritesheet.get_at((0, 0)))  # Check the top-left pixel RGBA values
+        self.frames = [
+                        [(6,3),   (25, 3),  (44, 3)],
+                        [(5, 30), (25, 30), (47, 30)],
+                        [(5, 60), (24, 60), (47, 60)],
+                        [(5, 87), (25, 87), (47, 87)]
+                    ]
+        self.frame_number = (0, 1)
+        self.frame = self.frames[self.frame_number[0]][self.frame_number[1]]
 
-        self.rect = Rect(0, 0, config.PLAYER_SIZE, config.PLAYER_SIZE)
-        self.rect.center = ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2
-
+        self.sprite_height = 25
+        self.sprite_width = 19
+        self.image = utils.get_sprite(self.spritesheet, self.frame, self.sprite_width, self.sprite_height, 2)
+        self.rect = self.image.get_rect(center= (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2))
         self.shield_hitbox = Rect(
             self.rect.centerx, self.rect.centery, config.PLAYER_SIZE, config.PLAYER_SIZE
         )
@@ -65,6 +79,7 @@ class Player:
         self.keys = 0
         self.weapon_switch_time = 0
         self.move_keys = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
+        
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -99,18 +114,22 @@ class Player:
         else:
             self.speed_modifier = 1
         if keys[self.controls[0]] and "N" not in self.blocked_directions:  # Move up
+            self.update_frame_number('N')
             self.rect.centery -= self.speed * self.speed_modifier
             if not self.shield_active:
                 self.last_direction = "N"
         if keys[self.controls[1]] and "S" not in self.blocked_directions:  # Move down
+            self.update_frame_number('S')
             self.rect.centery += self.speed * self.speed_modifier
             if not self.shield_active:
                 self.last_direction = "S"
         if keys[self.controls[2]] and "W" not in self.blocked_directions:  # Move left
+            self.update_frame_number('W')
             self.rect.centerx -= self.speed * self.speed_modifier
             if not self.shield_active:
                 self.last_direction = "W"
         if keys[self.controls[3]] and "E" not in self.blocked_directions:  # Move right
+            self.update_frame_number('E')
             self.rect.centerx += self.speed * self.speed_modifier
             if not self.shield_active:
                 self.last_direction = "E"
@@ -124,6 +143,7 @@ class Player:
         if self.color == c.RED and pygame.time.get_ticks() - self.health_time > 3:
             self.color = self.default_color
             self.color = self.default_color
+            self.image = utils.get_sprite(self.spritesheet, self.frame, self.sprite_width, self.sprite_height, 2, False)
 
         self.rect.centery = max(
             config.PLAYER_SIZE / 2 + ss.HUD_HEIGHT,
@@ -141,30 +161,13 @@ class Player:
         self.handle_color()
         if self.visible:
             self.weapon.draw(screen)
-            if self.shield_active:
-                shield_width = (
-                    config.PLAYER_SIZE
-                    if self.last_direction in ["N", "S"]
-                    else config.SHIELD_SIZE
-                )
-                shield_length = (
-                    config.PLAYER_SIZE
-                    if self.last_direction in ["E", "W"]
-                    else config.SHIELD_SIZE
-                )
-                self.shield_hitbox.update(
-                    self.rect.centerx + config.SHIElD_OFFSETS[self.last_direction][0],
-                    self.rect.centery + config.SHIElD_OFFSETS[self.last_direction][1],
-                    shield_width,
-                    shield_length,
-                )
-                pygame.draw.rect(screen, GREEN, self.shield_hitbox)
         if self.health <= 0:
             font = pygame.font.Font("freesansbold.ttf", 20)
             death_text = font.render("RIP :(", True, BLACK, CLEAR_WHITE)
             death_text_rect = Rect(ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2, 30, 30)
             screen.blit(death_text, death_text_rect)
-        pygame.draw.rect(screen, self.color, self.rect)
+        #pygame.draw.rect(screen, c.RED, self.rect)
+        screen.blit(self.image, self.rect)
 
     def update_energy(self, num):
         if self.energy + num < 0:
@@ -179,12 +182,13 @@ class Player:
         if num < 0:
             if self.invincible:
                 return
-            if pygame.time.get_ticks() - self.health_time > 3:
+            if pygame.time.get_ticks() - self.health_time > 200:
                 if self.shield_active and not shield_override:
                     return
                 self.health += num
                 self.health_time = pygame.time.get_ticks()
                 self.color = c.RED
+                self.image = utils.tint(self.image, c.RED)
         self.health = max(self.health, 0)
         self.health = min(self.health, self.health_max)
         if self.health <= 0:
@@ -272,3 +276,28 @@ class Player:
         self.weapon.key_up(key)
     def key_down(self, key):
         self.weapon.key_down(key)
+
+
+    def update_frame_number(self, dir):
+        flip = False
+        if self.frame_count % 5 == 0:
+            if dir == 'S':
+                if self.frame_number == (0, 0):
+                    self.frame_number = (0, 2)
+                else:
+                    self.frame_number = (0, 0)
+            elif dir == 'N':
+                if self.frame_number == (2, 0):
+                    self.frame_number = (2, 2)
+                else:
+                    self.frame_number = (2, 0)
+            elif dir == 'E' or dir == 'W':
+                if self.frame_number == (1, 0):
+                    self.frame_number = (1, 2)
+                else:
+                    self.frame_number = (1, 0)
+                if dir == 'E':
+                    flip = True
+            self.frame = self.frames[self.frame_number[0]][self.frame_number[1]]
+            self.image = utils.get_sprite(self.spritesheet, self.frame, self.sprite_width, self.sprite_height, 2, flip)
+
