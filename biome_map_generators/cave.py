@@ -159,8 +159,8 @@ class CaveBiome(Biome):
 
     def build_wall(self, x, y, count, map, horizontal=0, vertical=0):
         for i in range(count):
-            one = Rock(self.player, map, 0, 0)
-            one.rect.center = (x + (i * 30 * horizontal), y + (i * 30 * vertical))
+            one = Rock(self.player, map, (0, 0))
+            one.rect.center = (x + (i * one.rect.width * horizontal), y + (i * one.rect.height * vertical))
             one.block_rect.center = one.rect.center
             map.add_entity(one)
 
