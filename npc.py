@@ -6,6 +6,7 @@ import random
 import config_files.screen_size as ss
 import resources
 from weapon import CursedBlade
+import utils
 
 
 class NPC(Entity):
@@ -124,10 +125,15 @@ class NPC(Entity):
             ss.SCREEN_WIDTH * 0.15 - 10,
             ss.PAUSE_HEIGHT - 10,
         )
+        #self.spritesheet = pygame.image.load("assets/cave-npc.png").convert_alpha()
+       # self.image = utils.get_sprite(self.spritesheet, 0, 32, 32, 2, False)
+       # self.image_rect = self.image.get_rect(center=self.rect.center)
 
+        self.block_rect = self.rect
     def set_pos(self, x, y):
         self.rect.center = x, y
         self.action_rect.center = x, y
+        self.block_rect = self.rect.inflate(15,15)
 
     def update(self):
         if not self.action_rect.colliderect(self.player.rect):
@@ -158,6 +164,7 @@ class NPC(Entity):
                 ].center
 
     def draw(self, screen):
+        pygame.draw.rect(screen, c.BLACK, self.block_rect)
         pygame.draw.rect(screen, c.BLACK, self.rect.inflate(2,2))
         super().draw(screen)
         if self.active:
@@ -235,6 +242,8 @@ class NPC(Entity):
             self.prompt_options_rects.append(
                 Rect(current_pos[0] + (i * 50), current_pos[1], 30, 30)
             )
+    def collide(self):
+        self.block_path()
 
 
 class Medic(NPC):
