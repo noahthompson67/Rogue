@@ -124,6 +124,7 @@ class MainTask:
         self.option_rects = []
         self.light_source_counter = 0
         self.cached_radii = {}
+        self.light = False
 
         for i in range(len(config.OPTIONS)):
             option_rect = Rect(
@@ -227,8 +228,8 @@ class MainTask:
 
             pygame.time.Clock().tick(60)
 
-            self.draw_dimmer_overlay()
-            self.draw_light_sources()
+            #self.draw_dimmer_overlay()
+            #self.draw_light_sources()
             self.draw_hud(self.screen)
             pygame.display.flip()
 
@@ -310,6 +311,8 @@ class MainTask:
             elif cmd[0] == "biome":
                 self.map.entities = []
                 self.map_generator = MapGenerator(self.screen, self.player, cmd[1])
+            elif cmd[0] == "light":
+                self.light = not self.light
             elif cmd[0] == "weapon":
                 if cmd[1] == "all":
                     for weapon_name in weapon_registry:
@@ -326,8 +329,6 @@ class MainTask:
             print(e)
         except IndexError as e:
             print(f"Incorrect usage of a valid command: {e}")
-        except TypeError as e:
-            print(e)
 
     def update_time(self):
         if (
@@ -343,6 +344,8 @@ class MainTask:
         return f"{str(hours).zfill(2)}:{str(minutes).zfill(2)}"
 
     def draw_dimmer_overlay(self):
+        if self.light:
+            return
         if self.map_generator.biome_name == "cave":
             dim_alpha = 220
         elif self.time_of_day < config.MAX_TIME // 2:  # daytime
@@ -516,7 +519,7 @@ class MainTask:
 
         self.map_generator.draw_minimap(self.screen)
 
-    def generate_light_source(self, radius, color=(100, 100, 80)):
+    def generate_light_source(self, radius, color=(200, 200, 200)):
         light = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
         for r in range(radius, 0, -1):
             alpha = int(255 * (r / radius) ** 0.5)
@@ -526,6 +529,8 @@ class MainTask:
     import random
 
     def draw_light_sources(self):
+        if self.light:
+            return
         if (
             self.time_of_day < config.MAX_TIME // 2
             and self.map_generator.biome_name != "cave"
