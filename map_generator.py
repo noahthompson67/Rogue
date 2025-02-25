@@ -151,10 +151,16 @@ class MapGenerator:
                 self.visited.append(map[1])
 
     def generate_grid(self, rows, columns):
+        if self.biome_name == "cave":
+            spritesheet = pygame.image.load("assets/gfx/cave.png").convert()
+        elif self.biome_name == "forest":
+            spritesheet = pygame.image.load("assets/gfx/Overworld.png").convert()
+        else:
+            spritesheet = None
         self.grid = [[0 for _ in range(columns)] for _ in range(rows)]
         zone = [
             [
-                Map(f"{row}, {col}", self.screen, self.player, (row, col), self.biome)
+                Map(f"{row}, {col}", self.screen, self.player, (row, col), self.biome, spritesheet=spritesheet)
                 for col in range(columns)
             ]
             for row in range(rows)

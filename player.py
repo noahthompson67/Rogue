@@ -24,9 +24,6 @@ class Player:
         self.speed_modifier = 1
         self.radius = 1
         self.spritesheet = pygame.image.load("assets/player-spritesheet.png").convert_alpha()
-        print('hereeee')
-        print(self.spritesheet.get_flags())  # Should include SRCALPHA if it's truly transparent
-        print(self.spritesheet.get_at((0, 0)))  # Check the top-left pixel RGBA values
         self.frames = [
                         [(6,3),   (25, 3),  (44, 3)],
                         [(5, 30), (25, 30), (47, 30)],
@@ -300,4 +297,3 @@ class Player:
                     flip = True
             self.frame = self.frames[self.frame_number[0]][self.frame_number[1]]
             self.image = utils.get_sprite(self.spritesheet, self.frame, self.sprite_width, self.sprite_height, 2, flip)
-

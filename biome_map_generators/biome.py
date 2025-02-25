@@ -29,7 +29,6 @@ class Biome:
         pass
 
     def generate_map(self, *args, **kwargs):
-        print('override generate_map')
         pass
 
     def generate_boss_entrance(self, *args, **kwargs):

@@ -7,6 +7,7 @@ import pygame
 from pygame import Rect
 import colors as c
 import weapon
+import utils
 
 HEALTH_PICKUP_SIZE = 30
 
@@ -43,16 +44,35 @@ class Coin(Entity):
             self.color = (120, 125, 130)
         else:
             self.color = (196, 201, 207)
-
-    def draw(self, screen):
-        if self.state == "alive":
-            pygame.draw.rect(screen, self.color, self.rect, 15, 15, 15, 15)
+        self.images = []
+        self.images.append(utils.get_sprite(resources.objects, (0, 64), 16, 16, 2))
+        self.images.append(utils.get_sprite(resources.objects, (16, 64), 16, 16, 2))
+        self.images.append(utils.get_sprite(resources.objects, (32, 64), 16, 16, 2))
+        self.image_frame = 0
+        self.image = self.images[self.image_frame]
+        self.frame_count = 0
+    
 
     def collide(self):
         if self.state != "dead":
             if self.rect.colliderect(self.player.rect):
                 self.state = "dead"
                 self.player.money += self.value
+
+    def update(self):
+        super().update()
+        if self.frame_count % 8 == 0:
+            self.image_frame += 1
+            if self.image_frame > 2:
+                self.image_frame = 0
+            self.image = self.images[self.image_frame]
+        self.frame_count += 1
+        if self.frame_count > 1000000:
+            self.frame_count = 0
+
+
+    
+    
 
 
 class EnergyPickup(Entity):

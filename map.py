@@ -6,8 +6,10 @@ from pygame import Rect
 import colors as c
 import config
 import config_files.screen_size as ss
+from environment_objects import Path
 from enemies import Enemy
-
+import utils
+import math
 WHITE = (255, 255, 255)
 WARP_COLOR = (150, 0, 255)
 
@@ -31,7 +33,7 @@ class MapName(Enum):
 
 
 class Map:
-    def __init__(self, name, screen, player, location=(0, 0), biome='void'):
+    def __init__(self, name, screen, player, location=(0, 0), biome='void', spritesheet=None):
         self.biome = biome
         self.screen = screen
         self.player = player
@@ -45,7 +47,7 @@ class Map:
             self.set_directions(int(name))
 
         self.north, self.south, self.east, self.west = False, False, False, False
-
+        self.spritesheet = spritesheet
         self.north_warp = None
         self.south_warp = None
         self.east_warp = None
@@ -59,6 +61,7 @@ class Map:
         self.warps = []
         self.entities = []
         self.generate_random_enemies()
+        self.generate_background()
 
     def generate_warps(self):
         if self.north:
@@ -99,6 +102,7 @@ class Map:
             )
 
     def draw_map(self, screen):
+        screen.blit(self.background, self.background.get_rect())
         for warp in self.warps:
             warp.draw(self.screen)
 
@@ -189,6 +193,8 @@ class Map:
                 continue
 
     def init_warp_pos(self, config):
+        player_width = self.player.rect.width
+        player_height = self.player.rect.height
         self.NORTH_WARP_POS = ss.SCREEN_WIDTH / 2, config.WARP_SIZE / 2 + ss.HUD_HEIGHT
         self.SOUTH_WARP_POS = (
             ss.SCREEN_WIDTH / 2,
@@ -205,18 +211,18 @@ class Map:
 
         self.NORTH_WARP_PLAYER_POS = (
             self.SOUTH_WARP_POS[0],
-            self.SOUTH_WARP_POS[1] - config.PLAYER_SIZE,
+            self.SOUTH_WARP_POS[1] - player_height,
         )
         self.SOUTH_WARP_PLAYER_POS = (
             self.NORTH_WARP_POS[0],
-            self.NORTH_WARP_POS[1] + config.PLAYER_SIZE * 1.5,
+            self.NORTH_WARP_POS[1] + player_height * 1.5,
         )
         self.EAST_WARP_PLAYER_POS = (
-            self.WEST_WARP_POS[0] + config.PLAYER_SIZE * 1.5,
+            self.WEST_WARP_POS[0] + player_width * 1.5,
             self.WEST_WARP_POS[1],
         )
         self.WEST_WARP_PLAYER_POS = (
-            self.EAST_WARP_POS[0] - config.PLAYER_SIZE * 1.5,
+            self.EAST_WARP_POS[0] - player_height * 1.5,
             self.EAST_WARP_POS[1],
         )
 
@@ -226,6 +232,21 @@ class Map:
             if isinstance(entity, Enemy) and entity.state == "alive":
                 count += 1
         return count
+    
+    def generate_background(self):
+        tile_size = 16
+        background = pygame.Surface((ss.SCREEN_WIDTH, ss.SCREEN_HEIGHT), pygame.SRCALPHA)
+        image = utils.get_sprite(self.spritesheet, (0, 0), tile_size, tile_size, 1)
+        rect = image.get_rect()
+        rect.center = (0, ss.HUD_HEIGHT)
+        for i in range(math.ceil(ss.HUD_HEIGHT+ss.SCREEN_HEIGHT / tile_size)):
+            for j in range(math.ceil(ss.SCREEN_WIDTH / tile_size)):
+                background.blit(image, rect)
+                rect.centerx += tile_size
+            rect.centery += tile_size
+            rect.centerx = 0
+        self.background = background
+
 
 
 class Warp:
@@ -256,3 +277,5 @@ class Warp:
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
+
+

@@ -6,6 +6,7 @@ import colors as c
 import math
 import resources
 import config_files.screen_size as ss
+import config
 
 
 class Hole(Entity):
@@ -168,13 +169,17 @@ def generate_cartesian_outline(start=(200, 200), point_count=100, max_distance=5
 
 
 class Rock(Entity):
-    def __init__(self, player, map):
-        x = random.randrange(
-            min(player.rect.centerx - 40, 75), max(player.rect.centery + 40, ss.SCREEN_HEIGHT - 75)
-        )
-        y = random.randrange(
-            min(player.rect.centery - 40, 75), max(player.rect.centery + 40, ss.SCREEN_WIDTH - 75)
-        )
+    def __init__(self, player, map, location=(0, 0)):
+        if location == (0, 0):
+            x = random.randrange(
+                min(player.rect.centerx - 40, 75), max(player.rect.centery + 40, ss.SCREEN_HEIGHT - 75)
+            )
+            y = random.randrange(
+                min(player.rect.centery - 40, 75), max(player.rect.centery + 40, ss.SCREEN_WIDTH - 75)
+            )
+        else:
+            x = location[0]
+            y = location[1]
         super().__init__(player, map, position=(x,y), size=50)
 
         
@@ -356,4 +361,39 @@ class Bomb(Entity):
     def draw(self, screen):
         if self.state == 'alive':
             pygame.draw.rect(screen, self.color, self.rect, border_radius=15)
+
+class Path(Entity):
+    def __init__(self, player, map, pos=None):
+        super().__init__(player, map, position=pos, size=15)
+        self.rects = []
+        self.color = (255, 255, 255)
+        if self.map.north:
+            pos = self.map.SOUTH_WARP_PLAYER_POS
+            rect = Rect(pos[0], pos[1], 30, ss.SCREEN_HEIGHT/2)
+            rect.centerx = ss.SCREEN_WIDTH / 2
+            self.rects.append(rect)
+        if self.map.south:
+            pos = self.map.NORTH_WARP_PLAYER_POS
+            rect = Rect(pos[0], pos[1]-ss.SCREEN_HEIGHT/2, 30, ss.SCREEN_HEIGHT/2)
+            rect.centerx = ss.SCREEN_WIDTH / 2
+            self.rects.append(rect)
+        if self.map.east:
+             pos = self.map.WEST_WARP_PLAYER_POS
+             rect = Rect(pos[0]-ss.SCREEN_WIDTH/2+config.WARP_SIZE*2, pos[1], ss.SCREEN_WIDTH/2-config.WARP_SIZE, 30)
+             rect.centery = ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2
+             self.rects.append(rect)
+             
+        if self.map.west:
+            pos = self.map.EAST_WARP_PLAYER_POS
+            rect = Rect(pos[0], pos[1], ss.SCREEN_WIDTH/2+config.WARP_SIZE, 30)
+            rect.centery = ss.SCREEN_HEIGHT / 2 + ss.HUD_HEIGHT / 2
+            self.rects.append(rect)
+                              
+
+    def draw(self, screen):
+        for rect in self.rects:
+            pygame.draw.rect(screen, self.color, rect)
+
+    def update(self):
+        pass
 
