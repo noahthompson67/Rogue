@@ -304,10 +304,12 @@ class Reaper(Boss):
         elif self.action == 'teleport':
             self.color = (250, 250, 250)
             self.invincible = True
-            if self.frame_count % 500 == 0:
+            if self.frame_count % 200 == 0:
                 self.path = self.generate_loopy_path(length=100, step_range=(1, 1), loopiness=1, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
                 self.path_index = 0
                 self.action = 'idle'
+                r = random.randrange(10, 200)
+                self.color = (r, r, r)
                 self.invincible = False
         elif self.action == 'throw':   
             if len(self.projectiles) > 0:
