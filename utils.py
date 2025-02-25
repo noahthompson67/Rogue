@@ -11,7 +11,8 @@ def tint(surf, tint_color):
 
 def get_sprite(sheet, location, width, height, scale, flip=False):
     img = pygame.Surface((width, height), pygame.SRCALPHA)
-    img.blit(sheet, (0, 0), (location[0], location[1], width, height))
+    if sheet is not None:
+        img.blit(sheet, (0, 0), (location[0], location[1], width, height))
     if flip:
         img = pygame.transform.flip(img, True, False)
     img = pygame.transform.scale(img, (width * scale, height * scale))
