@@ -110,52 +110,21 @@ class CaveBiome(Biome):
         map.add_entity(right_fire)
 
     def build_hallways(self, n, s, e, w, map):
-        vert_count = 10
-        horiz_count = 15
+        vert_count = 6
+        horiz_count = 10
+
         if n:
-            self.build_wall(ss.SCREEN_WIDTH * 0.45, ss.HUD_HEIGHT, 10, map, 0, 1)
-            self.build_wall(ss.SCREEN_WIDTH * 0.55, ss.HUD_HEIGHT, 10, map, 0, 1)
+            self.build_wall(ss.SCREEN_WIDTH * 0.45, ss.HUD_HEIGHT, vert_count, map, 0, 1)
+            self.build_wall(ss.SCREEN_WIDTH * 0.55, ss.HUD_HEIGHT, vert_count, map, 0, 1)
         if s:
-            self.build_wall(
-                ss.SCREEN_WIDTH * 0.45,
-                ss.SCREEN_HEIGHT - vert_count * 30,
-                10,
-                map,
-                0,
-                1,
-            )
-            self.build_wall(
-                ss.SCREEN_WIDTH * 0.55,
-                ss.SCREEN_HEIGHT - vert_count * 30,
-                10,
-                map,
-                0,
-                1,
-            )
+            self.build_wall(ss.SCREEN_WIDTH * 0.45, ss.SCREEN_HEIGHT - vert_count * 50,6,map,0,1)
+            self.build_wall(ss.SCREEN_WIDTH * 0.55,ss.SCREEN_HEIGHT - vert_count * 50,6,map,0,1)
         if e:
-            self.build_wall(
-                ss.SCREEN_WIDTH - horiz_count * 30,
-                ss.SCREEN_HEIGHT * 0.56 + ss.HUD_HEIGHT / 2,
-                15,
-                map,
-                1,
-                0,
-            )
-            self.build_wall(
-                ss.SCREEN_WIDTH - horiz_count * 30,
-                ss.SCREEN_HEIGHT * 0.44 + ss.HUD_HEIGHT / 2,
-                15,
-                map,
-                1,
-                0,
-            )
+            self.build_wall(ss.SCREEN_WIDTH - horiz_count * 50,ss.SCREEN_HEIGHT * 0.56 + ss.HUD_HEIGHT / 2,horiz_count,map,1,0)
+            self.build_wall(ss.SCREEN_WIDTH - horiz_count * 50,ss.SCREEN_HEIGHT * 0.44 + ss.HUD_HEIGHT / 2,horiz_count,map,1,0)
         if w:
-            self.build_wall(
-                30, ss.SCREEN_HEIGHT * 0.56 + ss.HUD_HEIGHT / 2, horiz_count, map, 1, 0
-            )
-            self.build_wall(
-                30, ss.SCREEN_HEIGHT * 0.44 + ss.HUD_HEIGHT / 2, horiz_count, map, 1, 0
-            )
+            self.build_wall(30, ss.SCREEN_HEIGHT * 0.56 + ss.HUD_HEIGHT / 2, horiz_count, map, 1, 0)
+            self.build_wall(30, ss.SCREEN_HEIGHT * 0.44 + ss.HUD_HEIGHT / 2, horiz_count, map, 1, 0)
 
     def build_wall(self, x, y, count, map, horizontal=0, vertical=0):
         for i in range(count):
