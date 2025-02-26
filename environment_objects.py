@@ -194,6 +194,7 @@ class Rock(Entity):
         self.xp = 0
         self.color_index = 0
         self.color = (100, 100, 100)
+        self.knockback = False
 
     def collide(self):
         if self.state == "dead":
