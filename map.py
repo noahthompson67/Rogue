@@ -65,12 +65,14 @@ class Map:
 
     def generate_warps(self):
         if self.north:
+            sprite = utils.get_sprite(self.spritesheet, (0, 16), 16, 16, 2, flip_v=True)
             self.warps.append(
                 Warp(
                     self.get_north_map(),
                     self.NORTH_WARP_POS,
                     self.player,
                     self.NORTH_WARP_PLAYER_POS,
+                    image=sprite
                 )
             )
         if self.south:
@@ -83,21 +85,25 @@ class Map:
                 )
             )
         if self.east:
+            sprite = utils.get_sprite(self.spritesheet, (0, 32), 16, 16, 2)
             self.warps.append(
                 Warp(
                     self.get_east_map(),
                     self.EAST_WARP_POS,
                     self.player,
                     self.EAST_WARP_PLAYER_POS,
+                    image=sprite
                 )
             )
         if self.west:
+            sprite = utils.get_sprite(self.spritesheet, (0, 48), 16, 16, 2)
             self.warps.append(
                 Warp(
                     self.get_west_map(),
                     self.WEST_WARP_POS,
                     self.player,
                     self.WEST_WARP_PLAYER_POS,
+                    image=sprite
                 )
             )
 
@@ -240,7 +246,7 @@ class Map:
         rect = image.get_rect()
         rect.center = (0, ss.HUD_HEIGHT)
         for i in range(math.ceil(ss.HUD_HEIGHT+ss.SCREEN_HEIGHT / tile_size)):
-            for j in range(math.ceil(ss.SCREEN_WIDTH / tile_size)):
+            for j in range(math.ceil(ss.SCREEN_WIDTH / tile_size)+1):
                 background.blit(image, rect)
                 rect.centerx += tile_size
             rect.centery += tile_size
@@ -250,7 +256,7 @@ class Map:
 
 
 class Warp:
-    def __init__(self, map, position, player, player_pos, location=(-1, -1)):
+    def __init__(self, map, position, player, player_pos, location=(-1, -1), image=None):
         self.map = map  # What map this warps towards
         self.player = player
         self.player_pos = player_pos
@@ -258,6 +264,7 @@ class Warp:
         self.position = position  # Where its drawn
         self.locked = False
         self.color = c.WARP
+        self.image = image
         self.rect = Rect(position[0], position[1], config.WARP_SIZE, config.WARP_SIZE)
         self.rect.center = position[0], position[1]
         if self.map is None:
@@ -276,6 +283,10 @@ class Warp:
             self.color = c.LOCKED_WARP
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+        if self.image is not None:
+            print('aedf')
+            screen.blit(self.image, self.rect)
+        else:
+            pygame.draw.rect(screen, self.color, self.rect)
 
 
