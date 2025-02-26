@@ -284,7 +284,6 @@ class Warp:
 
     def draw(self, screen):
         if self.image is not None:
-            print('aedf')
             screen.blit(self.image, self.rect)
         else:
             pygame.draw.rect(screen, self.color, self.rect)
