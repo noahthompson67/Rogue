@@ -252,6 +252,7 @@ class MainTask:
 
     def draw_background(self):
         self.screen.blit(self.background_image, self.background_rect)
+        
 
     def command(self, command):
         try:
@@ -278,6 +279,8 @@ class MainTask:
             elif cmd[0] == "health":
                 self.player.update_health(int(cmd[1]))
                 self.player.visible = True
+            elif cmd[0] == "energy":
+                self.player.update_energy(int(cmd[1]))
             elif cmd[0] == "xp":
                 self.player.update_xp(int(cmd[1]))
             elif cmd[0] == "killall":
