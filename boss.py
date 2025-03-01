@@ -325,6 +325,9 @@ class Reaper(Boss):
         self.action = 'idle'
         self.projectiles = []
         self.projectile = None
+        self.spritesheet = pygame.image.load("assets/reaper.png")
+        self.animation_complete = False
+        self.frame_index = 0
 
     def update(self):
         if self.health <= 0:
@@ -352,7 +355,8 @@ class Reaper(Boss):
         elif self.action == 'teleport':
             self.color = (250, 250, 250)
             self.invincible = True
-            if self.frame_count % 200 == 0:
+            if self.animation_complete:
+                self.animation_complete = False
                 self.path = self.generate_loopy_path(length=100, step_range=(1, 1), loopiness=1, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
                 self.path_index = 0
                 self.action = 'idle'
@@ -386,6 +390,49 @@ class Reaper(Boss):
             if proj.state == 'dead':
                 self.projectiles.remove(proj)
         self.frame_count += 1
+        self.__handle_sprites()
+
     def draw(self, screen):
-        pygame.draw.rect(screen, self.default_color, self.rect.inflate(5, 5))
         super().draw(screen)
+
+    def __handle_sprites(self):
+        if self.frame_count % 10 == 0:
+            looking_up = self.rect.centery > self.player.rect.centery
+            flip_h = self.rect.centerx > self.player.rect.centerx
+            if self.action == "idle":
+                if self.frame_index == 0:
+                    if looking_up:
+                        self.image = utils.get_sprite(self.spritesheet, (0,64), 32,  32, 2, flip_h=flip_h)
+                    else:
+                        self.image = utils.get_sprite(self.spritesheet, (0,0), 32,  32, 2, flip_h=flip_h)
+                    self.frame_index = 1
+                else:
+                    if looking_up:
+                        self.image = utils.get_sprite(self.spritesheet, (32,64), 32,  32, 2, flip_h=flip_h)
+                    else:
+                        self.image = utils.get_sprite(self.spritesheet, (32,0), 32,  32, 2, flip_h=flip_h)
+                    self.frame_index = 0
+            elif self.action == "teleport":
+                if self.frame_index == 11:
+                    self.image = utils.get_sprite(self.spritesheet, (32,128), 32,  32, 2)
+                    self.frame_index = 12
+                elif self.frame_index == 12:
+                    self.image = utils.get_sprite(self.spritesheet, (64,128), 32,  32, 2)
+                    self.frame_index = 0
+                    self.animation_complete = True
+                else:
+                    self.image = utils.get_sprite(self.spritesheet, (0,128), 32,  32, 2)
+                    self.frame_index = 11
+            elif self.action == "lunge":
+                if self.frame_index == 4:
+                    if looking_up:
+                        self.image = utils.get_sprite(self.spritesheet, (96,32), 32,  32, 2, flip_h=flip_h)
+                    else:
+                        self.image = utils.get_sprite(self.spritesheet, (32,32), 32,  32, 2, flip_h=flip_h)
+                    self.frame_index = 0
+                else:
+                    if looking_up:
+                        self.image = utils.get_sprite(self.spritesheet, (96,32), 32,  32, 2, flip_h=flip_h)
+                    else:
+                        self.image = utils.get_sprite(self.spritesheet, (0,32), 32,  32, 2, flip_h=flip_h)
+                    self.frame_index = 4
