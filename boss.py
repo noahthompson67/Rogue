@@ -12,6 +12,7 @@ import numpy as np
 from items import Coin
 from enemies import BoomerangProjectile
 import config
+import utils
 class Boss(Entity):
     def __init__(self, player, map, size=75, position=None):
         super().__init__(player, map, position, size=size)
@@ -166,12 +167,18 @@ class Golem(Boss):
         x = random.randrange(100, ss.SCREEN_WIDTH - 100)
         y = random.randrange(100, ss.SCREEN_HEIGHT - 100)
         super().__init__(player, entity_map, position=(x,y), size=50)
+        self.spritesheet = pygame.image.load("assets/golem.png")
+        self.image = utils.get_sprite(self.spritesheet, (0, 0), 32, 32, 2)
+        self.frame_index = 0
+        self.ability_active = False
+        self.animation_complete = False
         self.default_color = (120, 120, 120)
         self.color = self.default_color
         self.speed = 0.75
         self.last_shot_time = 0
         self.max_health = 10
         self.health = 10
+        self.frame_count = 0
         self.health_timeout = 3
         self.knockback = False
         self.projectiles = []
@@ -183,63 +190,28 @@ class Golem(Boss):
             if self.state == "alive":
                 self.end()
             return
-        if self.invincible:
+        if self.invincible and not self.ability_active:
             self.move_towards_player()
+            self.__check_rock_collisions()
         else:
             if random.random() < 0.003:
                 self.invincible = True
-        for entity in self.map.entities:
-            if self.rect.colliderect(entity.rect):
-                if isinstance(entity, Rock):
-                    self.map.entities.remove(entity)
-                    proj = Projectile(
-                        self.player, self.map, self.rect.centerx + 16, self.rect.centery
-                    )
-                    proj.speed = 8
-                    proj.reflectable = True
-                    self.map.add_entity(proj)
-                    self.projectiles.append(proj)
         if (
             pygame.time.get_ticks() - self.last_shot_time > 10000
             and self.map.is_active()
         ):
-            rock_wall_count = random.randrange(1, 5)
-
-            hole_spawn_count = random.randrange(1, 5)
-            for _ in range(rock_wall_count):
-                first_rock = Rock(self.player, self.map)
-                first_rock_pos = first_rock.rect.center
-                rock_spawn_count = random.randrange(1, 10)
-                vertical_wall = random.choice([True, False])
-                for i in range(rock_spawn_count):
-                    rock = Rock(self.player, self.map)
-                    if vertical_wall:
-                        rock.rect.center = (
-                            first_rock_pos[0],
-                            first_rock_pos[1] + i * 30,
-                        )
-
-                    else:
-                        rock.rect.center = (
-                            first_rock_pos[0] + i * 30,
-                            first_rock_pos[1],
-                        )
-                    rock.health = random.randrange(1, 10)
-                    rock.block_rect.center = rock.rect.center
-                    rock.drops = []
-                    self.map.add_entity(rock)
-            for _ in range(hole_spawn_count):
-                hole = Hole(self.player, self.map)
-                if (
-                    abs(hole.rect.x - self.player.rect.centerx) > 10
-                    and abs(hole.rect.y - self.player.rect.centery) > 10
-                ):
-                    self.map.add_entity(Hole(self.player, self.map))
-            self.last_shot_time = pygame.time.get_ticks()
+            if not self.ability_active:
+                self.ability_active = True
+            if self.ability_active and self.animation_complete:
+                self.ability_active = False
+                self.animation_complete = False
+                self.__spawn_environment_objects()
         self.check_damage_timeout(False)
         for proj in self.projectiles:
             if proj.rect.colliderect(self.rect) and proj.reflected:
                 self.invincible = False
+        self.__handle_sprites()
+
 
     def collide(self):
         if self.state != "dead":
@@ -261,6 +233,82 @@ class Golem(Boss):
 
         self.player.update_xp(self.xp)
 
+    def __spawn_environment_objects(self):
+        rock_wall_count = random.randrange(1, 5)
+        hole_spawn_count = random.randrange(1, 5)
+        for _ in range(rock_wall_count):
+            first_rock = Rock(self.player, self.map)
+            first_rock_pos = first_rock.rect.center
+            rock_spawn_count = random.randrange(1, 10)
+            vertical_wall = random.choice([True, False])
+            for i in range(rock_spawn_count):
+                rock = Rock(self.player, self.map)
+                if vertical_wall:
+                    rock.rect.center = (
+                        first_rock_pos[0],
+                        first_rock_pos[1] + i * 30,
+                    )
+
+                else:
+                    rock.rect.center = (
+                        first_rock_pos[0] + i * 30,
+                        first_rock_pos[1],
+                    )
+                rock.health = random.randrange(1, 10)
+                rock.block_rect.center = rock.rect.center
+                rock.drops = []
+                self.map.add_entity(rock)
+        for _ in range(hole_spawn_count):
+            hole = Hole(self.player, self.map)
+            if (
+                abs(hole.rect.x - self.player.rect.centerx) > 10
+                and abs(hole.rect.y - self.player.rect.centery) > 10
+            ):
+                self.map.add_entity(Hole(self.player, self.map))
+        self.last_shot_time = pygame.time.get_ticks()
+
+    def __check_rock_collisions(self):
+        for entity in self.map.entities:
+            if self.rect.colliderect(entity.rect):
+                if isinstance(entity, Rock):
+                    self.map.entities.remove(entity)
+                    proj = Projectile(
+                        self.player, self.map, self.rect.centerx + 16, self.rect.centery
+                    )
+                    proj.speed = 8
+                    proj.reflectable = True
+                    self.map.add_entity(proj)
+                    self.projectiles.append(proj)
+
+    def __handle_sprites(self):
+        flip_h = self.rect.centerx > self.player.rect.centerx
+        if self.ability_active and not self.animation_complete:
+             if self.frame_count % 5 == 0:
+                if self.frame_index == 4:
+                    self.image = utils.get_sprite(self.spritesheet, (32,32), 32, 32, 2, flip_h=flip_h)
+                    self.frame_index = 5
+                elif self.frame_index == 5:
+                    self.image = utils.get_sprite(self.spritesheet, (32,32), 32, 32, 2, flip_h=flip_h)
+                    self.frame_index = 6
+                elif self.frame_index == 6:
+                    self.image = utils.get_sprite(self.spritesheet, (64,32), 32, 32, 2, flip_h=flip_h)
+                    self.frame_index = 0
+                    self.animation_complete = True
+                    self.ability_active = False
+                else:
+                    self.image = utils.get_sprite(self.spritesheet, (0,32), 32, 32, 2, flip_h=flip_h)
+                    self.frame_index = 4
+        else:
+            if self.frame_count % 5 == 0:
+                if self.frame_index == 0:
+                    self.frame_index = 1
+                    self.image = utils.get_sprite(self.spritesheet, (32,0), 32, 32, 2, flip_h=flip_h)
+                elif self.frame_index == 1:
+                    self.image = utils.get_sprite(self.spritesheet, (64,0), 32,  32, 2, flip_h=flip_h)
+                    self.frame_index = 0
+        self.frame_count += 1
+        if self.frame_count > 99999:
+            self.frame_count = 0
 
 class Reaper(Boss):
     def __init__(self, player, map):
