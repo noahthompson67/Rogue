@@ -5,11 +5,16 @@ import colors as c
 import random
 import config
 import math
+import utils
 
 class Entity:
     def __init__(self, player, entity_map=None, position=None, size=10):
         self.player = player
+        self.action = "idle"
+        self.spritesheet = None
         self.health_time = 0
+        self.frame_count = 0
+        self.frame_index = 0
         self.health = 10
         self.default_color = c.BLACK
         self.color = self.default_color
@@ -70,10 +75,13 @@ class Entity:
         self.player.weapon.collide(self)
 
     def draw(self, screen):
+        if not self.visible: 
+            return
         if self.image is not None and self.state != "dead":
             screen.blit(self.image, self.rect)
-        elif self.state != "dead" and self.visible:
-            pygame.draw.rect(screen, self.color, self.rect)
+        else:
+            if self.state != "dead" and self.visible:
+                pygame.draw.rect(screen, self.color, self.rect)
 
     def check_damage_timeout(self, remove_invincibility=True):
         if self.invincible:
@@ -272,4 +280,26 @@ class Entity:
             path.append((new_x, new_y))
 
         return path
+    
+    def handle_sprites(self, tile_size, scale):
+        if self.action is None or self.spritesheet == None:
+            return
+        if self.frame_count % 5 != 0:
+            return
+        flip_h = self.rect.centerx > self.player.rect.centerx
+        looking_up = self.rect.centery < self.player.rect.centery and abs(self.rect.centerx - self.player.rect.centerx) < 200
+        if self.action == "idle" or self.action == 'lunge':
+            if self.frame_index == 1:
+                if looking_up:
+                    self.image = utils.get_sprite(self.spritesheet, (tile_size ,0), tile_size, tile_size, scale, flip_h=flip_h)
+                else:
+                    self.image = utils.get_sprite(self.spritesheet, (tile_size,tile_size), tile_size, tile_size, scale, flip_h=flip_h)
+                self.frame_index = 0
+            else:
+                if looking_up:
+                    self.image = utils.get_sprite(self.spritesheet, (0,0), tile_size, tile_size, scale, flip_h=flip_h)
+                else:
+                    self.image = utils.get_sprite(self.spritesheet, (0,tile_size), tile_size, tile_size, scale, flip_h=flip_h)
+                self.frame_index = 1
+
 

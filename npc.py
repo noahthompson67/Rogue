@@ -13,15 +13,8 @@ class NPC(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
         self.size = 28
-        x = random.randrange(
-            int(self.size * 1.5), ss.SCREEN_WIDTH - int(self.size * 1.5)
-        )
-        y = random.randrange(
-            int(self.size * 1.5), ss.SCREEN_HEIGHT - int(self.size * 1.5)
-        )
         self.message_text = ["NPC message..."]
         self.rect = Rect(0, 0, self.size, self.size)
-        self.rect.center = x, y
         self.set_random_position()
         self.action_rect = self.rect.inflate(50, 50)
         self.default_color = c.GREEN
@@ -332,4 +325,15 @@ class DemonMerchant(NPC):
                 self.message_index = len(self.message_text) - 1
                 self.inactive = True
                 self.state = "dead"
+
+class Dog(NPC):
+    def __init__(self, player, map):
+        super().__init__(player, map)
+        self.speed = 3
+
+    # def update(self):
+    #     if not self.rect.colliderect(self.player.rect.inflate(100,100)):
+    #         self.move_towards_player()
+    #     super().update()
+
 

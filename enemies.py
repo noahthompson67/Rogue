@@ -1,3 +1,4 @@
+import pygame.locals
 import config
 import resources
 import weapon
@@ -8,7 +9,7 @@ import pygame
 import colors as c
 from pygame import Rect
 import math
-
+import utils
 
 ZOMBIE_SIZE = 50
 ENEMY_HEALTH_TIMEOUT = 0.5
@@ -249,8 +250,12 @@ class Ghost(Entity, Enemy):
         self.speed = 0.75
         self.outline_color = tuple(x + 3 for x in c.BIOME_BACKGROUND_COLORS[self.map.biome.name])
         self.frame_count = random.randrange(0, 50)
+        self.spritesheet = pygame.image.load("assets/ghost.png")
+        self.frame_index = 0
+        self.visible = True
 
     def update(self):
+        self.handle_sprites(32, 1)
         self.frame_count += 1
         if self.frame_count == 100:
             self.visible = False
@@ -268,9 +273,8 @@ class Ghost(Entity, Enemy):
             if isinstance(self.player.weapon, weapon.GhostBlade):
                 self.player.weapon.collide(self)
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.outline_color, self.rect.inflate(5, 5))
-        super().draw(screen)
+
+
 
 
 
@@ -396,6 +400,9 @@ class SpiritOrb(Entity):
         self.light_source = True
         self.update_time = 0
         path_length = random.randrange(1000, 5000)
+        self.spritesheet = pygame.image.load("assets/orb.png")
+        self.frame_count = 0 
+        self.frame_index = 0
         self.path = self.generate_loopy_path(length=path_length, step_range=(2, 10), loopiness=10, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
     def update(self):
         if pygame.time.get_ticks() - self.update_time > 10:
@@ -409,7 +416,9 @@ class SpiritOrb(Entity):
                 self.path_index -= 1
             else:
                 self.path_index += 1
+        self.frame_count += 1
         super().update()
+        self.handle_sprites(16, 1)
 
     def collide(self):
         self.check_contact_damage(1)
@@ -427,14 +436,18 @@ class Slime(Entity):
         self.generate_random_location()
         self.rect.width = 50
         self.rect.height = 50
-        self.action = 'idle'
+        self.scale = 3
         self.drops = []
+        self.spritesheet = pygame.image.load("assets/slime.png")
 
     def __set_size(self, size):
         self.rect.width = size
         self.rect.height = size
+        self.scale /= 2
     
     def update(self):
+        self.handle_sprites(16, self.scale)
+        self.frame_count += 1
         if self.action == 'lunge':
             self.move_towards_player()
             self.lunge_frames -= 1
@@ -446,6 +459,7 @@ class Slime(Entity):
                 self.lunge_frames = 50
         self.check_damage_timeout()
         super().update()
+        
 
     def end(self):
             if self.rect.width > 25:

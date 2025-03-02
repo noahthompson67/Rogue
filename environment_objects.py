@@ -346,7 +346,6 @@ class Bomb(Entity):
     def update(self):
         self.frame_count += 1
         if self.frame_count < self.charge_frames_max:
-            print(self.frame_count)
             if self.frame_count % 10 == 0:
                 red_amount = min((self.frame_count/self.charge_frames_max) * 250, 200)
                 self.color = (red_amount, 10, 10)

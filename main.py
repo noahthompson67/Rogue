@@ -261,7 +261,6 @@ class MainTask:
                 try:
                     if cmd[1] == 'all':
                         for mob in config.mob_registry:
-                            print(mob)
                             to_add = config.mob_registry.get(mob)(self.player, self.map)
                             self.map_generator.current_map.add_entity(to_add)
                     else:
@@ -274,7 +273,6 @@ class MainTask:
                             to_add = mob(self.player, self.map)
                             self.map_generator.current_map.add_entity(to_add)
                 except UnicodeError as e:
-                    print(f"No entity of type {cmd[1]}")
                     print(e)
             elif cmd[0] == "health":
                 self.player.update_health(int(cmd[1]))
