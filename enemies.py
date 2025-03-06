@@ -21,15 +21,15 @@ class Enemy:
 
 
 class Zombie(Entity, Enemy):
-    def __init__(self, player, map):
-        super().__init__(player, map, size=30)
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, size=30, position=None)
         self.health = 3
         self.default_color = c.ZOMBIE_RED
         self.color = self.default_color
         self.speed = 0.75
         self.action_rect = self.rect.inflate(ZOMBIE_SIZE * 5, ZOMBIE_SIZE * 5)
         self.sleeping = True
-        self.generate_random_location()
+
     def update(self):
         if self.sleeping:
             return
@@ -55,9 +55,8 @@ class Zombie(Entity, Enemy):
 
 
 class Shooter(Entity, Enemy):
-    def __init__(self, player, map, position=(-1, -1)):
-        pos = (random.choice([1, 3]) * ss.SCREEN_WIDTH / 4, random.choice([1, 3]) * ss.SCREEN_HEIGHT / 4)
-        super().__init__(player, map, position = pos, size=50)
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position, size=50)
         self.last_shot_time = 0
         self.action_rect = self.rect.inflate(500, 500)
         self.color = c.SHOOTER_COLOR
@@ -66,15 +65,17 @@ class Shooter(Entity, Enemy):
             resources.gargoyle, (self.rect.width, self.rect.height)
         )
         self.shot = False
-
+        self.knockback = False
+        self.block_rect = self.rect.inflate(10, 10)
     def update(self):
+        self.block_path()
         if (
             self.action_rect.colliderect(self.player.rect)
             and pygame.time.get_ticks() - self.last_shot_time > 5000
             and self.map.is_active()
         ):
             self.shot = True
-            to_add = Projectile(self.player, self.map, self.rect.centerx + 16, self.rect.centery)
+            to_add = Projectile(self.player, self.map, position=(self.rect.centerx + 16, self.rect.centery))
             to_add.reflectable = True
             self.map.add_entity(to_add)
             self.last_shot_time = pygame.time.get_ticks()
@@ -83,15 +84,15 @@ class Shooter(Entity, Enemy):
 
 
 class Projectile(Entity, Enemy):
-    def __init__(self, player, map, x, y):
-        super().__init__(player, map, size=20)
+    def __init__(self, player, map, position):
+        super().__init__(player, map, size=20, position=position)
         target_pos = player.rect.center
-        self.rect.center = x, y
+        
         self.speed = 1
         self.color = c.RED
         self.creation_time = pygame.time.get_ticks()
-        self.direction_x = target_pos[0] - x
-        self.direction_y = target_pos[1] - y
+        self.direction_x = target_pos[0] - self.rect.centerx
+        self.direction_y = target_pos[1] - self.rect.centery
         self.reflectable = False
         self.reflected = False
         distance = math.sqrt(self.direction_x**2 + self.direction_y**2)
@@ -156,7 +157,7 @@ class Projectile(Entity, Enemy):
                     else:
                         print(7)
                     target_x = 0
-                    target_y = self * self.rect.centery
+                    target_y = -self.rect.centerx * self.rect.centery
                 elif upper and not left and not middle_y and not middle_x:
                     if x < y:
                         print(1)
@@ -180,9 +181,8 @@ class Projectile(Entity, Enemy):
                     self.direction_y /= distance
 
 class BoomerangProjectile(Entity, Enemy):
-    def __init__(self, player, map, x_pos, y_pos):
-        super().__init__(player, map, size=10)
-        self.rect.center = x_pos, y_pos
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, size=10, position=position)
         self.color = (100, 50, 30)
         center1, center2, radius = self.find_circle_center_and_radius(self.rect.center, player.rect.center)
         self.path = self.generate_circle_points(center2, radius, self.rect.center)
@@ -281,13 +281,12 @@ class Ghost(Entity, Enemy):
 class Bat(Entity, Enemy):
     def __init__(self, player, map, position=None):
         super().__init__(player, map, size=20, position=position)
-        self.generate_nearby_location()
+        if position is None:
+            self.generate_nearby_location()
         self.health = 1
         self.default_color = c.BLACK
         self.color = self.default_color
         self.speed = 1.75
-
-        
         self.frame_count = random.randrange(0, 50)
         self.first_frame = True
         self.image = resources.bat_1
@@ -359,9 +358,8 @@ class MobGenerator(Entity, Enemy):
 
 
 class BadRock(Entity, Enemy):
-    def __init__(self, player, map):
-        super().__init__(player, map, size=50)
-        self.generate_nearby_location()
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, size=50, position=position)
         self.health = 100
         self.action_rect = self.rect.inflate(250, 250)
         self.image = pygame.transform.scale(
@@ -370,14 +368,17 @@ class BadRock(Entity, Enemy):
         self.default_color = c.ZOMBIE_RED
         self.color = self.default_color
         self.speed = 0.75
+        self.active = False
 
     def update(self):
         if self.health <= 0:
             if self.state == "alive":
                 self.end()
             return
-        self.move_towards_player()
-
+        if not self.active and self.rect.inflate(50, 50).colliderect(self.player.rect):
+            self.active = True
+        if self.active:
+            self.move_towards_player()
         self.check_damage_timeout()
 
     def collide(self):
@@ -390,8 +391,8 @@ class BadRock(Entity, Enemy):
             self.player.weapon.collide(self)
 
 class SpiritOrb(Entity):
-    def __init__(self, player, map):
-        super().__init__(player, map)
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position)
         self.interacted = False
         self.path_index = 0
         self.health = 1
@@ -404,6 +405,7 @@ class SpiritOrb(Entity):
         self.frame_count = 0 
         self.frame_index = 0
         self.path = self.generate_loopy_path(length=path_length, step_range=(2, 10), loopiness=10, x_bounds=(50, ss.SCREEN_WIDTH*.95), y_bounds=(ss.HUD_HEIGHT+50, ss.SCREEN_HEIGHT*.95))
+   
     def update(self):
         if pygame.time.get_ticks() - self.update_time > 10:
             self.update_time = pygame.time.get_ticks()
@@ -427,8 +429,8 @@ class SpiritOrb(Entity):
                 self.player.weapon.collide(self)
 
 class Slime(Entity):
-    def __init__(self, player, map, location=None):
-        super().__init__(player, map, location)
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position)
         self.color = (20, 100, 50)
         self.default_color = self.color
         self.speed = 10

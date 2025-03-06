@@ -14,8 +14,6 @@ HEALTH_PICKUP_SIZE = 30
 
 class HealthPickup(Entity):
     def __init__(self, player, map, health_amount=10, position=None):
-        if position is None:
-            position = (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2)
         super().__init__(player, map, position=position, size=30)
         self.health_amount = health_amount
         self.image = pygame.transform.scale(

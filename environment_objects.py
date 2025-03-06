@@ -11,18 +11,9 @@ from items import Coin
 import utils
 
 class Hole(Entity):
-    def __init__(self, player, map):
-        super().__init__(player, map)
-        x = random.randrange(
-            min(player.rect.centerx - 40, 0), max(player.rect.centery + 40, ss.SCREEN_HEIGHT)
-        )
-        y = random.randrange(
-            min(player.rect.centery - 40, 0), max(player.rect.centery + 40, ss.SCREEN_WIDTH)
-        )
-        self.block_rect = Rect(0, 0, 30, 30)
-        self.rect.center = x, y
-        self.block_rect.center = x, y
-
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position)
+        self.block_rect = self.rect
         self.color = c.BLACK
 
     def draw(self, screen):
@@ -35,15 +26,8 @@ class Hole(Entity):
 
 
 class Fire(Entity):
-    def __init__(self, player, map):
-        super().__init__(player, map)
-        x = random.randrange(
-            min(player.rect.centerx - 40, 0), max(player.rect.centerx + 40, ss.SCREEN_HEIGHT)
-        )
-        y = random.randrange(
-            min(player.rect.centery - 40, 0), max(player.rect.centery + 40, ss.SCREEN_WIDTH)
-        )
-        self.rect.center = x, y
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position)
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.color_index = 0
@@ -71,7 +55,7 @@ class Fire(Entity):
 
 
 class Water(Entity):
-    def __init__(self, player, map):
+    def __init__(self, player, map, position=None):
         super().__init__(player, map)
         self.points = []
         size = 150
@@ -118,19 +102,12 @@ class Water(Entity):
 
 
 class Grass(Entity):
-    def __init__(self, player, map):
-        super().__init__(player, map, size=30)
-        x = random.randrange(
-            min(player.rect.centerx - 40, 0), max(player.rect.centery + 40, ss.SCREEN_HEIGHT)
-        )
-        y = random.randrange(
-            min(player.rect.centery - 40, 0), max(player.rect.centery + 40, ss.SCREEN_WIDTH)
-        )
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, size=30, position=position)
         self.image = pygame.transform.scale(
             resources.grass, (self.rect.width, self.rect.height)
         )
         self.health = 1
-        self.rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.xp = 0
@@ -170,26 +147,15 @@ def generate_cartesian_outline(start=(200, 200), point_count=100, max_distance=5
 
 
 class Rock(Entity):
-    def __init__(self, player, map, location=(0, 0)):
-        if location == (0, 0):
-            x = random.randrange(
-                min(player.rect.centerx - 40, 75), max(player.rect.centery + 40, ss.SCREEN_HEIGHT - 75)
-            )
-            y = random.randrange(
-                min(player.rect.centery - 40, 75), max(player.rect.centery + 40, ss.SCREEN_WIDTH - 75)
-            )
-        else:
-            x = location[0]
-            y = location[1]
-        super().__init__(player, map, position=(x,y), size=50)
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position, size=50)
 
         
-        self.block_rect = Rect(0, 0, 60, 60)
+        self.block_rect = self.rect.inflate(5,5)
         self.health = 1
         self.image = pygame.transform.scale(
             resources.rock, (self.rect.width, self.rect.height)
         )
-        self.block_rect.center = x, y
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.xp = 0
@@ -246,13 +212,12 @@ def nearest_neighbor_path(points):
 
 
 class MushroomPatch(Entity):
-    def __init__(self, player, map):
-        x = random.randrange(30, ss.SCREEN_WIDTH - 30)
-        y = random.randrange(ss.HUD_HEIGHT + 30, ss.SCREEN_HEIGHT - 30)
-        super().__init__(player, map, position=(x, y), size=30)
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position, size=30)
         self.image = pygame.transform.scale(
             resources.mushroom, (self.rect.width, self.rect.height)
         )
+        self.knockback = False
         self.health = 1
         self.action_rect = self.rect.inflate(15, 15)
         self.drops = [("healthpickup", 5), ("energy", 5), ("coin", 5)]
@@ -285,8 +250,8 @@ class HotSpring(Entity):
                 self.frame_count = 0
 
 class Tree(Entity):
-    def __init__(self, player, map, pos=None):
-        super().__init__(player, map, position=pos, size=50)
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position, size=50)
         self.color = (0, 120, 0)
         self.health = 5
         self.block_rect = self.rect.inflate(10, 10)
