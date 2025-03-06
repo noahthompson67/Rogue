@@ -7,7 +7,8 @@ import math
 import resources
 import config_files.screen_size as ss
 import config
-
+from items import Coin
+import utils
 
 class Hole(Entity):
     def __init__(self, player, map):
@@ -397,3 +398,39 @@ class Path(Entity):
     def update(self):
         pass
 
+
+class Crate(Entity):
+    def __init__(self, player, entity_map=None, position=None, size=32):
+        super().__init__(player, entity_map, position, size)
+        self.generate_random_location()
+        self.spritesheet = resources.crate
+        self.image = utils.get_sprite(self.spritesheet, (0,0), 32, 32, 1)
+        self.block_rect = self.rect.inflate(10,10)
+        self.knockback = False
+        self.state = "alive"
+
+    def update_health(self, num):
+        if self.state == "alive":
+            self.state = "broken"
+            self.image = utils.get_sprite(self.spritesheet, (32,0), 32, 32, 1)
+            self.player.weapon.active = False
+            r = random.random()
+            entity = None
+            if r < 0.1:
+                entity = Coin(self.player, self.map, self.rect.center, 1)
+            elif r < 0.2:
+                entity = config.Slime(self.player, self.map, self.rect.center)
+            elif r < 0.3:
+                entity = config.Bat(self.player, self.map, self.rect.center)
+            elif r < 0.4:
+                entity = config.Bomb(self.player, self.map, self.rect.center)
+                
+            if entity is not None:
+                self.map.add_entity(entity)
+
+    def collide(self):
+        if self.state == "alive":
+            self.block_path()
+        self.player.weapon.collide(self)
+
+    
