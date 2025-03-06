@@ -29,7 +29,7 @@ class Entity:
         if position is not None:
             self.rect.center = position
         else:
-            self.rect.center = (ss.SCREEN_WIDTH / 2, ss.SCREEN_HEIGHT / 2)
+            self.generate_random_location()
         self.drops = [("coin", 5), ("healthpickup", 5)]
         self.xp = 1
         self.knockback = True
