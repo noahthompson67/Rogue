@@ -279,8 +279,8 @@ class Ghost(Entity, Enemy):
 
 
 class Bat(Entity, Enemy):
-    def __init__(self, player, map):
-        super().__init__(player, map, size=20)
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, size=20, position=position)
         self.generate_nearby_location()
         self.health = 1
         self.default_color = c.BLACK
@@ -427,13 +427,12 @@ class SpiritOrb(Entity):
                 self.player.weapon.collide(self)
 
 class Slime(Entity):
-    def __init__(self, player, map):
-        super().__init__(player, map)
+    def __init__(self, player, map, location=None):
+        super().__init__(player, map, location)
         self.color = (20, 100, 50)
         self.default_color = self.color
         self.speed = 10
         self.health = 3
-        self.generate_random_location()
         self.rect.width = 50
         self.rect.height = 50
         self.scale = 3
@@ -472,3 +471,8 @@ class Slime(Entity):
                     to_add.__set_size(self.rect.width-5)
                     self.map.add_entity(to_add)
             super().end()
+
+    def collide(self):
+        if self.state != "dead":
+            self.check_contact_damage(1)
+            self.player.weapon.collide(self)
