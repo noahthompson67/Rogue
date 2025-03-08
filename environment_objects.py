@@ -37,21 +37,16 @@ class Fire(Entity):
             (250, 0, 0),
         ]
         self.flicker = True
-
-    def update(self):
-        if self.frame_count % 10 == 0:
-            if self.color_index == len(self.colors):
-                self.color_index = 0
-            self.color = self.colors[self.color_index]
-            self.color_index += 1
-
-        if self.frame_count > 1000000:
-            self.frame_count = 0
-        self.frame_count += 1
-
+        self.spritesheet = resources.fire
+        self.image = utils.get_sprite(self.spritesheet, (0,0), 32, 32, 1)
+        
     def collide(self):
         if self.rect.colliderect(self.player.rect):
             self.player.add_status("fire", 2)
+
+    def update(self):
+        self.handle_simple_sprites(32, 1, 10)
+        super().update()
 
 
 class Water(Entity):
