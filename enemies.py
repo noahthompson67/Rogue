@@ -55,7 +55,7 @@ class Zombie(Entity, Enemy):
 
 
 class Shooter(Entity, Enemy):
-    def __init__(self, player, map, position=None):
+    def __init__(self, player, map, position=None, shot_target=None):
         super().__init__(player, map, position=position, size=50)
         self.last_shot_time = 0
         self.action_rect = self.rect.inflate(500, 500)
@@ -65,18 +65,18 @@ class Shooter(Entity, Enemy):
             resources.gargoyle, (self.rect.width, self.rect.height)
         )
         self.shot = False
+        self.shot_target = shot_target
         self.knockback = False
         self.block_rect = self.rect.inflate(10, 10)
+
     def update(self):
         self.block_path()
         if (
-            self.action_rect.colliderect(self.player.rect)
-            and pygame.time.get_ticks() - self.last_shot_time > 5000
+            pygame.time.get_ticks() - self.last_shot_time > 2000
             and self.map.is_active()
         ):
             self.shot = True
-            to_add = Projectile(self.player, self.map, position=(self.rect.centerx + 16, self.rect.centery))
-            to_add.reflectable = True
+            to_add = Projectile(self.player, self.map, position=(self.rect.centerx, self.rect.centery), target_pos=self.shot_target)
             self.map.add_entity(to_add)
             self.last_shot_time = pygame.time.get_ticks()
 
@@ -84,11 +84,12 @@ class Shooter(Entity, Enemy):
 
 
 class Projectile(Entity, Enemy):
-    def __init__(self, player, map, position):
+    def __init__(self, player, map, position, target_pos=None):
         super().__init__(player, map, size=20, position=position)
-        target_pos = player.rect.center
+        if target_pos is None:
+            target_pos = player.rect.center
         
-        self.speed = 1
+        self.speed = 5
         self.color = c.RED
         self.creation_time = pygame.time.get_ticks()
         self.direction_x = target_pos[0] - self.rect.centerx

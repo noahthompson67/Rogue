@@ -273,7 +273,7 @@ class Golem(Boss):
                 if isinstance(entity, Rock):
                     self.map.entities.remove(entity)
                     proj = Projectile(
-                        self.player, self.map, self.rect.centerx + 16, self.rect.centery
+                        self.player, self.map, position=(self.rect.centerx + 16, self.rect.centery)
                     )
                     proj.speed = 8
                     proj.reflectable = True
@@ -367,7 +367,7 @@ class Reaper(Boss):
             if len(self.projectiles) > 0:
                 self.action = 'idle'
                 return
-            proj = BoomerangProjectile(self.player, self.map, self.rect.centerx, self.rect.centery)
+            proj = BoomerangProjectile(self.player, self.map, (self.rect.centerx, self.rect.centery))
             proj.speed = 0.2
             self.map.add_entity(proj)
             self.projectiles.append(proj)

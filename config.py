@@ -1,7 +1,7 @@
 from enemies import Zombie, Shooter, Ghost, Bat, BadRock, SpiritOrb, Slime
-from environment_objects import Hole, Fire, Water, Grass, Rock, MushroomPatch, HotSpring, Bomb
+from environment_objects import Hole, Fire, Water, Grass, Rock, MushroomPatch, HotSpring, Bomb, Path, Crate 
 from boss import Telekinetic, Golem, Reaper
-from npc import NPC, Medic, Merchant, DemonMerchant
+from npc import NPC, Medic, Merchant, DemonMerchant, Dog
 from items import Coin, HealthPickup, EnergyPickup, TreasureChest, Key
 import config_files.screen_size as ss
 from weapon import Pickaxe, GhostBlade, CursedBlade, LaserBeam, Bow
@@ -51,7 +51,10 @@ mob_registry = {
     "orb": SpiritOrb,
     "reaper": Reaper,
     "slime": Slime,
-    "bomb": Bomb
+    "bomb": Bomb,
+    "path": Path,
+    "dog": Dog,
+    "crate": Crate
 }
 
 
