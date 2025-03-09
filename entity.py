@@ -70,6 +70,10 @@ class Entity:
             if self.state == "alive":
                 self.end()
             return
+        self.frame_count += 1
+        if self.frame_count > 99999:
+            self.frame_count = 0
+
 
     def collide(self):
         self.player.weapon.collide(self)
@@ -153,6 +157,11 @@ class Entity:
         x = random.randrange(40, int(ss.SCREEN_WIDTH*0.95))
         y = random.randrange(ss.HUD_HEIGHT, int(ss.SCREEN_HEIGHT*0.95))
         self.rect.center = x, y
+        entity_rects = []
+        for entity in self.map.get_entities():
+            entity_rects.append(entity.rect)
+        while any(self.rect.colliderect(other) for other in entity_rects):
+            self.rect.center = (random.randrange(40, int(ss.SCREEN_WIDTH*0.95)), random.randrange(ss.HUD_HEIGHT, int(ss.SCREEN_HEIGHT*0.95)))
 
 
     def point_in_polygon(self, point, polygon):
@@ -281,10 +290,10 @@ class Entity:
 
         return path
     
-    def handle_sprites(self, tile_size, scale):
+    def handle_sprites(self, tile_size, scale, update_rate=5):
         if self.action is None or self.spritesheet == None:
             return
-        if self.frame_count % 5 != 0:
+        if self.frame_count % update_rate != 0:
             return
         flip_h = self.rect.centerx > self.player.rect.centerx
         looking_up = self.rect.centery < self.player.rect.centery and abs(self.rect.centerx - self.player.rect.centerx) < 200
@@ -303,3 +312,4 @@ class Entity:
                 self.frame_index = 1
 
 
+    
