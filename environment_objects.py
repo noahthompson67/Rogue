@@ -31,6 +31,8 @@ class Fire(Entity):
         self.action_rect = self.rect.inflate(15, 15)
         self.frame_count = 0
         self.color_index = 0
+        self.state = "alive"
+        self.health = 1
         self.light_source = True
         self.colors = [
             (200, 0, 0),
@@ -43,10 +45,34 @@ class Fire(Entity):
     def collide(self):
         if self.rect.colliderect(self.player.rect):
             self.player.add_status("fire", 2)
+        self.player.weapon.collide(self)
 
     def update(self):
         self.handle_simple_sprites(32, 1, 10)
         super().update()
+
+
+    def handle_simple_sprites(self, tile_size, scale, update_rate=5):
+        if self.frame_count % update_rate != 0:
+            return
+        y = 0 if self.state == "alive" else 32
+        if self.frame_index == 1:
+            self.image = utils.get_sprite(self.spritesheet, (0,y), tile_size, tile_size, scale)
+            self.frame_index = 0
+        else:
+            self.image = utils.get_sprite(self.spritesheet, (tile_size,y), tile_size, tile_size, scale)
+            self.frame_index = 1
+
+    def update_health(self, num):
+        if self.state == "alive":
+            self.state = "out"
+            self.player.weapon.active = False
+            r = random.random()
+            entity = None
+            if r < 0.1:
+                entity = Coin(self.player, self.map, self.rect.center, 1)        
+            if entity is not None:
+                self.map.add_entity(entity)
 
 
 class Water(Entity):
