@@ -159,6 +159,8 @@ class Map:
         return self.west_map
 
     def get_entities(self):
+        if self.entities is None:
+            return []
         return self.entities
 
     def add_entity(self, entity):
