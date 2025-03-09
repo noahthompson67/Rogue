@@ -1,339 +1,226 @@
 import pygame.draw
 from entity import Entity
-from pygame import Rect
 import colors as c
 import random
-import config_files.screen_size as ss
 import resources
 from weapon import CursedBlade
-import utils
 
 
 class NPC(Entity):
     def __init__(self, player, map):
         super().__init__(player, map)
-        self.size = 28
-        self.message_text = ["NPC message..."]
-        self.rect = Rect(0, 0, self.size, self.size)
-        self.set_random_position()
-        self.action_rect = self.rect.inflate(50, 50)
-        self.default_color = c.GREEN
-        self.color = c.GREEN
-        self.active = False
-        self.message_index = 0
-        self.prompt_cursor = Rect(0, 0, 30, 30)
-        self.prompt_cursor_index = 0
-        self.prompt = False
-        self.prompt_text = None
-        self.prompt_time = 0
-        self.interactions = 0
-        self.health = 1000
-        self.prompt_options = ["yes", "no"]
-        self.prompt_options_rects = []
-        self.default_message_text = self.message_text
-        self.visible = True
-        self.inactive = False
-        self.message_visible = False
-        self.interact_time = 0
+        self.recipe = [
+            {"message": "hello",
+             "promptOptions": None,
+             "optionHandlers": None,
+             },
+            {
+                 "message": "Yes or no?",
+                 "promptOptions": ["yes", "no"],
+                 "optionHandlers": [self.accept_prompt, self.reject_prompt]
+             },
+             {
+                 "message": "Goodbye",
+                 "promptOptions": None,
+                 "optionHandlers": None
+             } 
+        ]
+        self.message_index = -1
         self.font = pygame.font.Font("freesansbold.ttf", 20)
-        self.console_rect = Rect(0, ss.SCREEN_HEIGHT - 75, ss.SCREEN_WIDTH - 10, 50)
-        self.console_rect_inner = Rect(
-            5, ss.SCREEN_HEIGHT - 70, ss.SCREEN_WIDTH - 20, 40
-        )
-        self.console_text_rect = Rect(
-            10, ss.SCREEN_HEIGHT - 65, ss.SCREEN_WIDTH - 25, 30
-        )
+        self.active = False
+        self.interaction_rect = self.rect.inflate(40,40)
+        self.prompt_objects = []
+        self.knockback = False
+        self.prompt_selection = 0
+        self.prompt_options = None
 
-        self.console_right_end_image = resources.console_right
-        self.console_left_end_image = resources.console_left
-        self.console_mid_image = resources.console_mid
+    def accept_prompt(self):
+        print("Prompt accepted!")
 
-        self.hud_left_image = resources.hud_left
-        self.hud_mid_image = resources.hud_mid
-        self.hud_right_image = resources.hud_right
-
-        self.hud_left = Rect(0, 0, ss.SCREEN_WIDTH * 0.01, ss.HUD_HEIGHT)
-        self.hud_mid = Rect(0, 0, ss.SCREEN_WIDTH, ss.HUD_HEIGHT)
-        self.hud_right = Rect(
-            ss.SCREEN_WIDTH * 0.99, 0, ss.SCREEN_WIDTH * 0.01, ss.HUD_HEIGHT
-        )
-
-        self.console_right_end = Rect(
-            ss.SCREEN_WIDTH * 0.95,
-            ss.SCREEN_HEIGHT * 0.9,
-            ss.SCREEN_WIDTH * 0.01,
-            ss.SCREEN_HEIGHT * 0.05,
-        )
-        self.console_left_end = Rect(
-            0, ss.SCREEN_HEIGHT * 0.9, ss.SCREEN_WIDTH * 0.01, ss.SCREEN_HEIGHT * 0.05
-        )
-        self.console_mid = Rect(
-            self.console_left_end.width,
-            ss.SCREEN_HEIGHT * 0.9,
-            ss.SCREEN_WIDTH * 0.95 - self.console_right_end.width,
-            ss.SCREEN_HEIGHT * 0.05,
-        )
-
-        self.console_right_end_image = pygame.transform.scale(
-            self.console_right_end_image,
-            (self.console_right_end.width, self.console_right_end.height),
-        )
-        self.console_left_end_image = pygame.transform.scale(
-            self.console_left_end_image,
-            (self.console_left_end.width, self.console_left_end.height),
-        )
-        self.console_mid_image = pygame.transform.scale(
-            self.console_mid_image, (self.console_mid.width, self.console_mid.height)
-        )
-
-        self.hud_right_end_image = pygame.transform.scale(
-            self.hud_right_image, (self.hud_right.width, self.hud_right.height)
-        )
-        self.hud_mid_image = pygame.transform.scale(
-            self.hud_mid_image, (self.hud_mid.width, self.hud_mid.height)
-        )
-        self.hud_left_end_image = pygame.transform.scale(
-            self.hud_left_image, (self.hud_left.width, self.hud_left.height)
-        )
-
-        self.console_rect_inner = Rect(
-            15, ss.SCREEN_HEIGHT - 70, ss.SCREEN_WIDTH - 25, 40
-        )
-        self.console_text_rect = Rect(
-            20,
-            ss.SCREEN_HEIGHT * 0.9 + self.console_mid.height * 0.3,
-            ss.SCREEN_WIDTH - 30,
-            30,
-        )
-
-        self.pause_rect_outer = Rect(
-            ss.SCREEN_WIDTH * 0.75,
-            ss.SCREEN_HEIGHT * 0.05,
-            ss.SCREEN_WIDTH * 0.15,
-            ss.PAUSE_HEIGHT,
-        )
-        self.pause_rect_inner = Rect(
-            ss.SCREEN_WIDTH * 0.75 + 5,
-            ss.SCREEN_HEIGHT * 0.05 + 5,
-            ss.SCREEN_WIDTH * 0.15 - 10,
-            ss.PAUSE_HEIGHT - 10,
-        )
-        #self.spritesheet = pygame.image.load("assets/cave-npc.png").convert_alpha()
-       # self.image = utils.get_sprite(self.spritesheet, 0, 32, 32, 2, False)
-       # self.image_rect = self.image.get_rect(center=self.rect.center)
-
-        self.block_rect = self.rect
-    def set_pos(self, x, y):
-        self.rect.center = x, y
-        self.action_rect.center = x, y
-        self.block_rect = self.rect.inflate(15,15)
-
-    def update(self):
-        if not self.action_rect.colliderect(self.player.rect):
-            self.active = False
-            self.message_index = 0
-        if self.prompt and self.active:
-            keys = pygame.key.get_pressed()
-            if (
-                keys[pygame.K_RIGHT]
-                and pygame.time.get_ticks() - self.prompt_time > 250
-            ):
-                self.prompt_cursor_index += 1
-                self.prompt_time = pygame.time.get_ticks()
-                if self.prompt_cursor_index > len(self.prompt_options) - 1:
-                    self.prompt_cursor_index = 0
-                self.prompt_cursor.center = self.prompt_options_rects[
-                    self.prompt_cursor_index
-                ].center
-            elif (
-                keys[pygame.K_LEFT] and pygame.time.get_ticks() - self.prompt_time > 250
-            ):
-                self.prompt_time = pygame.time.get_ticks()
-                self.prompt_cursor_index -= 1
-                if self.prompt_cursor_index < 0:
-                    self.prompt_cursor_index = len(self.prompt_options) - 1
-                self.prompt_cursor.center = self.prompt_options_rects[
-                    self.prompt_cursor_index
-                ].center
+    def reject_prompt(self):
+        print("prompt rejected!")
 
     def draw(self, screen):
-        pygame.draw.rect(screen, c.BLACK, self.block_rect)
-        pygame.draw.rect(screen, c.BLACK, self.rect.inflate(2,2))
-        super().draw(screen)
         if self.active:
-            if self.inactive:
-                self.message = self.font.render(
-                    self.inactive_text, True, c.BLACK, c.CONSOLE_BACKGROUND
-                )
-            else:
-                self.message = self.font.render(
-                    self.message_text[self.message_index],
-                    True,
-                    c.BLACK,
-                    c.CONSOLE_BACKGROUND,
-                )
-            screen.blit(self.console_right_end_image, self.console_right_end)
-            screen.blit(self.console_left_end_image, self.console_left_end)
-            screen.blit(self.console_mid_image, self.console_mid)
-            if self.prompt:
-                self.prompt_font = self.font.render(
-                    self.prompt_text, True, c.BLACK, c.CONSOLE_BACKGROUND
-                )
-                screen.blit(self.prompt_font, self.console_text_rect)
-                for i in range(len(self.prompt_options)):
-                    temp = self.font.render(
-                        self.prompt_options[i], True, c.BLACK, c.CONSOLE_BACKGROUND
-                    )
-                    # Draw the text
-                    screen.blit(temp, self.prompt_options_rects[i])
+            screen.blit(self.message_object, self.rect.move(0, 50))
+            if len(self.prompt_objects) > 1:
+                for i in range(len(self.prompt_objects)):
+                    screen.blit(self.prompt_objects[i], self.rect.move(50 + 50*i, 100))
+                    if self.prompt_selection == i:
+                        pygame.draw.rect(screen, c.RED, self.rect.move(50 + 50*i, 120))
+        pygame.draw.rect(screen, c.HOTSPRING, self.interaction_rect)
+        pygame.draw.rect(screen, c.GREEN, self.rect.inflate(2,2))
 
-                    if i == self.prompt_cursor_index:
-                        pygame.draw.rect(
-                            screen,
-                            c.BLACK,
-                            self.prompt_options_rects[i].move(0, -5).inflate(15, 0),
-                            width=3,
-                        )
-            else:
-                screen.blit(self.message, self.console_text_rect)
-
-    def interact(self, screen):
-        if self.action_rect.colliderect(self.player.rect):
-            keys = pygame.key.get_pressed()
-            if (
-                keys[pygame.K_SPACE]
-                and pygame.time.get_ticks() - self.prompt_time > 800
-            ):
-                self.prompt_time = pygame.time.get_ticks()
-                if self.interactions == 0:
-                    self.active = True
-                    self.interactions += 1
-                elif self.message_index + 1 < len(self.message_text):
-                    self.message_index += 1
-                    self.interactions += 1
-                elif not self.prompt and self.prompt_text is not None:
-                    self.prompt = True
-                elif self.prompt:
-                    self.handle_prompt(self.prompt_options[self.prompt_cursor_index])
-                else:
-                    self.active = False
-                    self.message_text = self.default_message_text
-                    self.message_index = 0
+    def interact(self):
+        self.message_index += 1
+        if self.message_index >= len(self.recipe):
+            self.message_index = -1
+            self.active = False
+            print('empty')
+            self.player.interacting = False
+            return
+        if self.prompt_options is None and self.recipe[self.message_index]["promptOptions"] is None:
+            self.active = True
+            self.player.interacting = True
+            self.message_text = self.recipe[self.message_index]["message"]
+            self.message_object = self.font.render(self.message_text, True, c.BLACK, c.CONSOLE_BACKGROUND)
+        elif self.prompt_options is not None:
+            self.recipe[self.message_index-1]["optionHandlers"][self.prompt_selection]()
+            self.prompt_options = None
+            self.prompt_objects = []
         else:
-            if self.message_index != 0 or self.active:
-                self.message_index = 0
-                self.active = False
-                self.interactions = 0
-                self.message_text = self.default_message_text
+            self.prompt_options = self.recipe[self.message_index]["promptOptions"]
+            self.prompt_objects = []
+            for option in self.prompt_options:
+                 self.prompt_objects.append(self.font.render(option, True, c.BLACK, c.CONSOLE_BACKGROUND))
+        self.message_text = self.recipe[self.message_index]["message"]
+        self.message_object = self.font.render(self.message_text, True, c.BLACK, c.CONSOLE_BACKGROUND)
 
-    def generate_prompt_option_rects(self):
-        current_pos = (
-            self.console_text_rect.right - ss.SCREEN_WIDTH * 0.30,
-            self.console_text_rect.top,
-        )
-        for i in range(len(self.prompt_options)):
-            self.prompt_options_rects.append(
-                Rect(current_pos[0] + (i * 50), current_pos[1], 30, 30)
-            )
-    def collide(self):
-        self.block_path()
+    def update(self):
+        if self.active and len(self.prompt_objects) > 0:
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                self.prompt_selection -= 1
+            elif keys[pygame.K_RIGHT]:
+                self.prompt_selection += 1
+            if self.prompt_selection < 0:
+                self.prompt_selection = len(self.recipe[self.message_index]["promptOptions"]) - 1
+            elif self.prompt_selection > len(self.recipe[self.message_index]["promptOptions"]) - 1:
+                self.prompt_selection = 0
+
 
 
 class Medic(NPC):
     def __init__(self, player, map):
         super().__init__(player, map)
-        self.interactions = 0
-        self.message_text = ["That looks like it hurts..."]
-        self.default_message_text = self.message_text
-        self.prompt_text = "Let me help you with that."
-        self.inactive_text = "All patched up. That's all I can do."
-        self.generate_prompt_option_rects()
-        self.color = (150, 19, 12)
+        self.recipe = [
+            {"message": "That looks like it hurts...",
+             "promptOptions": None,
+             "optionHandlers": None,
+             },
+             {
+                 "message": "Let me help you with that.",
+                 "promptOptions": ["yes", "no"],
+                 "optionHandlers": [self.accept_prompt, self.reject_prompt]
+             },
+             {
+                 "message": "All patched up. That's all I can do.",
+                 "promptOptions": None,
+                 "optionHandlers": None
+             }
+        ]
 
-    def handle_prompt(self, response):
-        if response == "no":
-            self.prompt = False
-            self.message_text.append("Suit yourself, hombre.")
-            self.message_index = len(self.message_text) - 1
-        elif response == "yes":
-            self.prompt = False
-            self.message_index = len(self.message_text) - 1
-            self.inactive = True
+    def accept_prompt(self):
+        self.player.update_health(100)
+        self.recipe = [
+            {
+                 "message": "All patched up. That's all I can do.",
+                 "promptOptions": None,
+                 "optionHandlers": None
+             }
+        ]
+        self.message_index = -1
+
+
+    def reject_prompt(self):
+        self.recipe[2]["message"] = "Suit yourself, hombre"
 
 
 class Merchant(NPC):
     def __init__(self, player, map):
         super().__init__(player, map)
-        self.interacted = False
-        self.generate_prompt_option_rects()
-        self.message_text = ["I found this rusty key on the ground."]
-        self.default_message_text = self.message_text
-        self.prompt_text = "I'll sell it to you for 25 cents."
-        self.inactive_text = "Pleasure doing business with you"
-        self.prompt_cursor.center = self.prompt_options_rects[0].center
-        self.color = (222, 111, 20)
+        self.recipe = [
+            {"message": "I found this old key on the ground...",
+             "promptOptions": None,
+             "optionHandlers": None,
+            },
+             {
+                 "message": "I'll sell it for 25 cents.",
+                 "promptOptions": ["Yes [25 cents]", "No"],
+                 "optionHandlers": [self.accept_prompt, self.reject_prompt]
+             },
+             {
+                 "message": "No problem. Lemme know if you change your mind.",
+                 "promptOptions": None,
+                 "optionHandlers": None
+             }
+        ]
+    
+    def accept_prompt(self):
+        if self.player.money >= 25:
+            self.player.money -= 25
+            self.player.keys += 1
+            self.recipe = [
+                {
+                    "message": "Pleasure doing business with you.",
+                    "promptOptions": None,
+                    "optionHandlers": None
+                }
+            ]
+            self.message_index = -1
+        else:
+            self.recipe[2]["message"] = "You don't have enough money, broke boi"
 
-    def handle_prompt(self, response):
-        if response == "no":
-            self.prompt = False
-            self.message_text.append("Suit yourself, hombre.")
-            self.message_index = len(self.message_text) - 1
-        elif response == "yes":
-            if self.player.money >= 25:
-                self.prompt = False
-                self.player.money -= 25
-                self.message_index = len(self.message_text) - 1
-                self.player.keys += 1
-                self.inactive = True
-            else:
-                self.prompt = False
-                self.message_text.append("You don't have enough money.")
-                self.message_index = len(self.message_text) - 1
-
+    def reject_prompt(self):
+        pass
 
 class DemonMerchant(NPC):
     def __init__(self, player, map):
         super().__init__(player, map)
-        self.interacted = False
-        self.color = (50, 50, 40)
-        self.generate_prompt_option_rects()
-        self.message_text = ["..."]
         self.cursed = random.random() < 0.1
+        blade_name = "cursed" if self.cursed else "dark"
+        self.recipe = [
+            {"message": str(f"[The beast silently offers you a {blade_name} blade...]"),
+                "promptOptions": None,
+                "optionHandlers": None,
+            },
+            {
+                "message": "[Accept the offering?]",
+                "promptOptions": ["Yes", "No"],
+                "optionHandlers": [self.accept_prompt, self.reject_prompt]
+            },
+            {
+                "message": "",
+                "promptOptions": None,
+                "optionHandlers": None
+            }
+        ]
+        self.accepted = False
+    def interact(self):
+        super().interact()
+        if self.accepted:
+            self.recipe = [
+                {
+                    "message": "...",
+                    "promptOptions": None,
+                    "optionHandlers": None
+                }
+            ]
+        
+    def accept_prompt(self):
+        self.accepted = True
         if self.cursed:
-            self.prompt_text = "[Accept the cursed offering?]"
-            self.inactive_text = "[You feel cursed]"
+            self.player.health_max *= 0.5
+            self.player.health = 1
+            self.player.weapons.append(CursedBlade(self.player, "Cursed Blade"))
+            self.recipe = [
+                {
+                    "message": "[You feel cursed]",
+                    "promptOptions": None,
+                    "optionHandlers": None
+                }
+            ]
         else:
-            self.prompt_text = "[Exchange life force for power?]"
-            self.inactive_text = "[You feel stronger]"
-        self.default_message_text = self.message_text
-        self.prompt_cursor.center = self.prompt_options_rects[0].center
+            self.player.damage += 3
+            self.player.health_max *= 0.75
+            self.recipe = [
+                {
+                    "message": "[You feel stronger]",
+                    "promptOptions": None,
+                    "optionHandlers": None
+                }
+            ]
+        self.message_index = -1
 
-    def handle_prompt(self, response):
-        if response == "no":
-            self.prompt = False
-            self.message_index = 0
-        elif response == "yes":
-            if self.cursed:
-                weapon = CursedBlade(self.player, "Cursed Blade")
-                self.player.weapons.append(weapon)
-                self.player.health_max *= 0.5
-                self.player.health = 1
-            else:
-                self.player.damage += 3
-                self.player.health_max *= 0.5
-                self.prompt = False
-                self.message_index = len(self.message_text) - 1
-                self.inactive = True
-                self.state = "dead"
-
-class Dog(NPC):
-    def __init__(self, player, map):
-        super().__init__(player, map)
-        self.speed = 3
-
-    # def update(self):
-    #     if not self.rect.colliderect(self.player.rect.inflate(100,100)):
-    #         self.move_towards_player()
-    #     super().update()
-
-
+    def reject_prompt(self):
+        self.recipe[2]["message"] = "[The beast snorts in contempt]"

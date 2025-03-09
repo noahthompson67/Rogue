@@ -40,6 +40,8 @@ class Weapon:
                 self.active = False
 
     def key_up(self, key):
+        if self.player.interacting:
+            return
         if key == pygame.K_UP:
             self.dir_up = 'up'
         elif key == pygame.K_DOWN:
@@ -51,6 +53,8 @@ class Weapon:
 
 
     def key_down(self, key):
+        if self.player.interacting:
+            return
         if key == pygame.K_UP:
             self.dir_down = 'up'
             self.active = True

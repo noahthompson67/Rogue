@@ -96,12 +96,6 @@ class Player:
             self.shield_active = False
         if self.console_state or self.paused:
             return
-        if (
-            keys[pygame.K_SPACE]
-            and pygame.time.get_ticks() - self.interaction_time > 250
-        ):
-            self.interaction_time = pygame.time.get_ticks()
-            self.interacting = not self.interacting
         if self.health <= 0:
             return
         if self.status:

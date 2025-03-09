@@ -170,10 +170,7 @@ class MainTask:
                             self.console_command = self.console_command[:-1]
                         else:
                             self.console_command += event.unicode
-                elif event.type == pygame.KEYDOWN:
-                    self.player.key_down(event.key)
-                elif event.type == pygame.KEYUP:
-                    self.player.key_up(event.key)
+                
                 else:
                     if keys[pygame.K_f]:
                         self.fullscreen = not self.fullscreen
@@ -185,6 +182,17 @@ class MainTask:
                             self.screen = pygame.display.set_mode(
                                 (ss.SCREEN_WIDTH, ss.SCREEN_HEIGHT)
                             )
+                    elif keys[pygame.K_SPACE]:
+                        for entity in self.map.entities:
+                            if not hasattr(entity, "interaction_rect"):
+                                continue
+                            if entity.interaction_rect.colliderect(self.player.rect):
+                                entity.interact()
+
+                if event.type == pygame.KEYDOWN:
+                    self.player.key_down(event.key)
+                elif event.type == pygame.KEYUP:
+                    self.player.key_up(event.key)
             self.update_time()
             self.screen.fill(c.BIOME_BACKGROUND_COLORS[self.map_generator.biome.name])
             self.player.update()
@@ -196,7 +204,6 @@ class MainTask:
                 if update_entity:
                     entity.update()
                     entity.collide()
-                    entity.interact(self.screen)
                 entity.draw(self.screen)
             self.player.draw(self.screen)
 
