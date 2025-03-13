@@ -434,7 +434,7 @@ class Slime(Entity):
         super().__init__(player, map, position=position)
         self.color = (20, 100, 50)
         self.default_color = self.color
-        self.speed = 10
+        self.speed = 5
         self.health = 3
         self.rect.width = 50
         self.rect.height = 50

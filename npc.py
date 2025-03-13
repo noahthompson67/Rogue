@@ -186,6 +186,7 @@ class DemonMerchant(NPC):
             }
         ]
         self.accepted = False
+
     def interact(self):
         super().interact()
         if self.accepted:
@@ -224,3 +225,31 @@ class DemonMerchant(NPC):
 
     def reject_prompt(self):
         self.recipe[2]["message"] = "[The beast snorts in contempt]"
+
+
+class Dog(NPC):
+    def __init__(self, player, map):
+        super().__init__(player, map)
+        self.recipe = [
+            {"message": "Woof!",
+             "promptOptions": None,
+             "optionHandlers": None,
+             }
+        ]
+        self.tamed = True
+        self.interaction_rect = self.rect.inflate(100, 100)
+        self.bark_timer = 0
+    
+    def update(self):
+        if not self.rect.inflate(200, 200).colliderect(self.player.rect):
+            self.move_towards_player()
+        if pygame.time.get_ticks() - self.bark_timer > 10000:
+            for entity in self.map.get_entities():
+                if entity.rect.colliderect(self.rect.inflate(200, 200)):
+                    self.bark_timer = pygame.time.get_ticks()
+                    entity.add_fear(100)
+
+    def add_fear(self, frames, override=False):
+        if override:
+            return super().add_fear(frames)
+                

@@ -15,6 +15,7 @@ class Entity:
         self.health_time = 0
         self.frame_count = 0
         self.frame_index = 0
+        self.speed = 1
         self.health = 10
         self.default_color = c.BLACK
         self.color = self.default_color
@@ -38,7 +39,9 @@ class Entity:
         self.light_source = False
         self.flicker = False
         self.flicker_radius = 75
-
+        self.interaction_rect = None
+        self.block_rect = None
+        self.fear = False
     def set_entities(self, entities):
         self.entities = entities
 
@@ -52,14 +55,21 @@ class Entity:
             self.health += num
             self.health_time = pygame.time.get_ticks()
             if self.knockback:
-                if self.player.weapon.hitbox.left > self.player.rect.left:
-                    self.rect.centerx += 50
-                elif self.player.weapon.hitbox.left < self.player.rect.left:
-                    self.rect.centerx -= 50
-                if self.player.weapon.hitbox.top > self.player.rect.top:
-                    self.rect.centery += 50
-                elif self.player.weapon.hitbox.top < self.player.rect.top:
-                    self.rect.centery -= 50
+                self.handle_knockback()
+
+    def handle_knockback(self, val=None):
+        if val is None:
+            knockback = 50
+        else:
+            knockback = val
+            if self.player.weapon.hitbox.left > self.player.rect.left:
+                self.rect.centerx += knockback
+            elif self.player.weapon.hitbox.left < self.player.rect.left:
+                self.rect.centerx -= knockback
+            if self.player.weapon.hitbox.top > self.player.rect.top:
+                self.rect.centery += knockback
+            elif self.player.weapon.hitbox.top < self.player.rect.top:
+                self.rect.centery -= knockback
 
     def update_health_override(self, num):
         self.health += num
@@ -104,6 +114,11 @@ class Entity:
         )
 
 
+    def add_fear(self, frames):
+        self.fear_frames = frames
+        self.fear = True
+
+
     def move_towards_player(self):
         dx = self.player.rect.centerx - self.rect.centerx
         dy = self.player.rect.centery - self.rect.centery
@@ -111,8 +126,19 @@ class Entity:
         if distance > 0:  # Avoid division by zero
             dx /= distance
             dy /= distance
+            if self.fear:
+                dx = -dx
+                dy = -dy
+                self.fear_frames -= 1
+                if self.fear_frames <= 0:
+                    self.fear = False
             self.rect.centerx += dx * self.speed
             self.rect.centery += dy * self.speed
+
+        if self.interaction_rect is not None:
+            self.interaction_rect.center = self.rect.center
+        if self.block_rect is not None:
+            self.block_rect.center = self.rect.center
 
 
     def check_contact_damage(self, damage):
