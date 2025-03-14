@@ -419,4 +419,27 @@ class Crate(Entity):
             self.block_path()
         self.player.weapon.collide(self)
 
+
+class Spikes(Entity):
+    def __init__(self, player, map, position=None, mode="timed"):
+        super().__init__(player, map, position=position, size=30)
+        self.swap_rate = 100
+        self.active = False
+        self.spritesheet = resources.spikes
+        self.image = utils.get_sprite(self.spritesheet, (0,0), 16, 16, 5)
+       
+    def collide(self):
+        if self.active:
+            self.check_contact_damage(1)
+
+
+    def update(self):
+        if self.frame_count % self.swap_rate == 0:
+            self.active = not self.active
+            if self.active:
+                self.image = utils.get_sprite(self.spritesheet, (16,0), 16, 16, 3)
+            else:
+                self.image = utils.get_sprite(self.spritesheet, (0,0), 16, 16, 3)
+        self.frame_count += 1
+
     
