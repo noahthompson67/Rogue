@@ -442,4 +442,21 @@ class Spikes(Entity):
                 self.image = utils.get_sprite(self.spritesheet, (0,0), 16, 16, 3)
         self.frame_count += 1
 
-    
+class PressurePlate(Entity):
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position, size=30)
+        self.active = False
+        self.spritesheet = resources.pressure_plate
+        self.image = utils.get_sprite(self.spritesheet, (0,0), 32, 32, 1)
+        self.knockback = False
+        self.mode = "spawn"
+
+    def collide(self):
+        if self.rect.colliderect(self.player.rect) and not self.active:
+            self.active = True
+            self.image = utils.get_sprite(self.spritesheet, (32,0), 32, 32, 1)
+            self.handle_action()
+
+    def handle_action(self):
+        if self.mode == "spawn":
+            self.map.add_entity(config.Coin(self.player, self.map))
