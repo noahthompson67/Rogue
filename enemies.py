@@ -1,5 +1,4 @@
 import pygame.locals
-import config
 import resources
 import weapon
 from entity import Entity
@@ -9,7 +8,6 @@ import pygame
 import colors as c
 from pygame import Rect
 import math
-import utils
 
 ZOMBIE_SIZE = 50
 ENEMY_HEALTH_TIMEOUT = 0.5
@@ -68,17 +66,19 @@ class Shooter(Entity, Enemy):
         self.shot_target = shot_target
         self.knockback = False
         self.block_rect = self.rect.inflate(10, 10)
+        self.shot_rate = 75
+
 
     def update(self):
         self.block_path()
         if (
-            pygame.time.get_ticks() - self.last_shot_time > 2000
+            self.frame_count % self.shot_rate == 0
             and self.map.is_active()
         ):
             self.shot = True
             to_add = Projectile(self.player, self.map, position=(self.rect.centerx, self.rect.centery), target_pos=self.shot_target)
             self.map.add_entity(to_add)
-            self.last_shot_time = pygame.time.get_ticks()
+        self.frame_count += 1
 
 
 
