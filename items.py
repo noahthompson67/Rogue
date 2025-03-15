@@ -1,10 +1,8 @@
 import random
 
-import config_files.screen_size as ss
 import resources
 from entity import Entity
 import pygame
-from pygame import Rect
 import colors as c
 import weapon
 import utils
@@ -67,6 +65,7 @@ class Coin(Entity):
         self.frame_count += 1
         if self.frame_count > 1000000:
             self.frame_count = 0
+        self.frame_count += 1
 
 
     
