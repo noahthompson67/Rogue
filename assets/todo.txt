@@ -5,14 +5,12 @@ Map
         - deep water: impassable without some ability
         - lava: impassable, deals fire damage
 
- NPCs
-    - signs/NPCs with dialog
-    - shopkeeper
-    - buildings/villages
-
- Pause menu
+Pause menu
     - Options
-    - Pause everything
+
+stats
+    - Achievements
+    - kill counters per mob
 
  Console commands
     -spawn items
@@ -103,7 +101,6 @@ Elder Tree
 
  Fixes
     - make speed modifiers smarter (and probably processed by player, not entity)
-    - Statis HUD above normal screen
 
  Day/night cycle
     - different mobs/items available at different times
