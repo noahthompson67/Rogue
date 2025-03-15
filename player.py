@@ -5,7 +5,7 @@ import pygame.time
 from pygame import Rect
 import utils
 import config
-from colors import BLUE, BLACK, GREEN, CLEAR_WHITE
+from colors import BLUE, BLACK, CLEAR_WHITE
 import colors as c
 import config_files.screen_size as ss
 

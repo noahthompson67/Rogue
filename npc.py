@@ -2,7 +2,6 @@ import pygame.draw
 from entity import Entity
 import colors as c
 import random
-import resources
 from weapon import CursedBlade
 
 

@@ -6,7 +6,6 @@ from entity import Entity
 from environment_objects import Rock, Hole
 from enemies import Projectile
 import colors as c
-from pygame import Rect
 import config_files.screen_size as ss
 import numpy as np
 from items import Coin
