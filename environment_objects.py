@@ -449,7 +449,6 @@ class PressurePlate(Entity):
         self.spritesheet = resources.pressure_plate
         self.image = utils.get_sprite(self.spritesheet, (0,0), 32, 32, 1)
         self.knockback = False
-        self.mode = "spawn"
 
     def collide(self):
         if self.rect.colliderect(self.player.rect) and not self.active:
@@ -458,5 +457,13 @@ class PressurePlate(Entity):
             self.handle_action()
 
     def handle_action(self):
-        if self.mode == "spawn":
-            self.map.add_entity(config.Coin(self.player, self.map))
+        pass
+
+class DoorLockPlate(PressurePlate):
+    def __init__(self, player, map, position=None):
+        super().__init__(player, map, position=position)
+        self.map.door_locks += 1
+
+    def handle_action(self):
+        self.map.door_locks -= 1
+

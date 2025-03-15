@@ -34,7 +34,7 @@ class MapGenerator:
 
     def warp(self, warp_rect, map_idx=-1):
         if map_idx >= 0:
-            if not self.current_map.warps[map_idx].locked:
+            if not self.current_map.warps[map_idx].locked and self.current_map.door_locks <= 0:
                 warp = self.current_map.warps[map_idx]
                 self.set_current_map(warp.map)
                 warp.translate_player()

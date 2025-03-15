@@ -6,7 +6,6 @@ from pygame import Rect
 import colors as c
 import config
 import config_files.screen_size as ss
-from environment_objects import Path
 from enemies import Enemy
 import utils
 import math
@@ -62,6 +61,7 @@ class Map:
         self.entities = []
         self.generate_random_enemies()
         self.generate_background()
+        self.door_locks = 0
 
     def generate_warps(self):
         if self.north:
